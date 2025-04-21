@@ -1,0 +1,53 @@
+
+export default (api) => {
+
+    const getConfig = () => {
+        return api.get(`/billing//get-invoice-config`)
+    };
+
+    const getVendorList = () => {
+        return api.get(`/billing/vendor/list`)
+    };
+
+    const getInvoiceList = ({company, id, page}) => {
+        const endpoint = id ? `/billing/invoice/${id}` : `/billing/invoice/list/${company}?page=${page}`;
+        return api.get(endpoint);
+    };
+
+    const postInvoice = (payload) => {
+        return api.post(`/billing/invoice`, payload)
+    };
+
+    const updateInvoice = (id, payload) => {
+        return api.patch(`/billing/update/invoice/${id}`, payload)
+    };
+
+    const updateVendorList = (payload) => {
+        return api.post(`/billing/update/vendor/list`, payload)
+    };
+
+    const getBillPdf = (payload) => {
+        return api.get(`/billing/generate-pdf/${payload.id}/${payload.downloadOriginal}`, {
+          responseType: 'blob',
+          headers: {
+            Accept: 'application/pdf',
+          },
+        });
+      };
+
+    const getVendor = (id) => {
+        return api.get(`/billing/vendor/${id}`);
+    };
+
+
+    return {
+        getConfig,
+        getVendor,
+        getBillPdf,
+        postInvoice,
+        getVendorList,
+        getInvoiceList,
+        updateInvoice,
+        updateVendorList
+    };
+};

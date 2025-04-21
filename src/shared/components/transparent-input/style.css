@@ -1,0 +1,21 @@
+.transparentInput{
+  width: 150px;
+  margin: 0 auto;
+  background-color: whitesmoke !important;
+
+}
+.transparentInput  input {
+    border: none !important;
+    text-align: left;
+    border-bottom: 1px solid #c7c0c0 !important;
+    background-color: whitesmoke !important;
+    width: 100% !important;
+  }
+
+.transparentInput input:focus {
+    border: none !important;
+    border-bottom: 1px solid #c7c0c0 !important;
+    width: 100% !important;
+    background-color: none !important;
+    outline: 0 !important;
+  }

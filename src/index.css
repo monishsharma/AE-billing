@@ -1,0 +1,50 @@
+/* =========== Google Fonts ============ */
+
+/* =============== Globals ============== */
+* {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --blue: #0C0C0C;
+  --white: #fff;
+  --gray: #f5f5f5;
+  --black1: #222;
+  --black2: #999;
+}
+
+body {
+  height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--blue) !important;
+}
+
+
+ol, ul {
+  list-style: none;
+  outline: none;
+  padding-left: 0 !important;
+}
+
+.scrollableDiv {
+  padding: 0px 30px;
+  overflow: auto;
+  height: 85vh;
+}
+/* ===================== Main ===================== */
+.main {
+  position: absolute;
+  left: 300px;
+  background: var(--white);
+  transition: 0.5s;
+  height: 95vh;
+  margin-top: 20px;
+  border-radius: 25px;
+  overflow: auto;
+}
+.main.active {
+  left: 80px;
+}

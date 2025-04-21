@@ -1,0 +1,68 @@
+.invoiceDetailWrapper {
+    max-width: 1024px;
+    margin: 0 auto;
+    background-color: whitesmoke;
+    height: auto;
+    border-radius: 25px;
+}
+.invoiceContainer {
+    padding:20px;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+}
+.invoiceHeading {
+    display: inline-block;
+    margin: 0 auto;
+    line-height: 1.2;
+    color: black;
+    cursor: pointer;
+    font-weight: 400;
+    border-bottom: 1px dashed black;
+}
+.heading {
+    font-size: 2rem;
+}
+.subHeading {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.invoiceDetail {
+    padding: 20px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 40px;
+}
+.invoiceDetail span {
+    margin-left: 50px;
+}
+
+.detailcontainer {
+    display: flex;
+    gap: 50px;
+}
+.secondChild  {
+    gap: 35px;
+}
+.logoContainer {
+    display: flex;
+    flex: 1 1;
+    justify-content: flex-end;
+}
+.logoContainer img {
+    width: 50%;
+    height: 100%;
+}
+.vendorDetails {
+    display: flex;
+    flex-direction: row;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 16px 0px;
+
+}
