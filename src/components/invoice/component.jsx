@@ -98,39 +98,48 @@ const Invoice = ({
 
       };
 
-      const handleDownload = async(e,row, downloadOriginal = false) => {
+      const handleDownload = async (e, row, downloadOriginal = false) => {
         e.stopPropagation(); // prevent triggering row click
 
         const payload = {
-            downloadOriginal,
-            id: row._id
-        }
+          downloadOriginal,
+          id: row._id
+        };
+
         try {
-            // Get PDF blob using GET
-            setIsLoading(true)
-            const pdfResponse = await getBillPdfConnect(payload, {
-                responseType: "blob",
-                headers: {
-                Accept: "application/pdf",
-                },
-            });
+          setIsLoading(true);
+          const pdfResponse = await getBillPdfConnect(payload, {
+            responseType: "blob",
+            headers: {
+              Accept: "application/pdf",
+            },
+          });
 
-            const contentType = pdfResponse.headers["content-type"];
-            const blob = new Blob([pdfResponse.data], { type: contentType });
+          const contentDisposition = pdfResponse.headers["content-disposition"];
+          const match = contentDisposition?.match(/filename="?(.+)"?/);
+          const filename = match?.[1] || "invoice.pdf";
 
-            const fileURL = URL.createObjectURL(blob);
-            window.open(fileURL, "_blank");
-            setIsLoading(false)
+          const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
+          const fileURL = URL.createObjectURL(blob);
 
-            } catch (pdfErr) {
-            console.error("PDF generation error", pdfErr);
-            Swal.fire({
-                icon: "error",
-                text: "Failed to generate PDF",
-            });
-            setIsLoading(false)
-            }
+          const link = document.createElement("a");
+          link.href = fileURL;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          setIsLoading(false);
+        } catch (pdfErr) {
+          console.error("PDF generation error", pdfErr);
+          Swal.fire({
+            icon: "error",
+            text: "Failed to generate PDF",
+          });
+          setIsLoading(false);
+        }
       };
+
 
 
       const columns1 = [
