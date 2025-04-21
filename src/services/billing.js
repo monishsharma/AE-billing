@@ -2,7 +2,7 @@
 export default (api) => {
 
     const getConfig = () => {
-        return api.get(`/billing//get-invoice-config`)
+        return api.get(`/billing/get-invoice-config`)
     };
 
     const getVendorList = () => {
