@@ -18,6 +18,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { ColumnsPanelTrigger, DataGrid, ToolbarButton, Toolbar, FilterPanelTrigger, ExportCsv, ExportPrint, QuickFilterControl, GridToolbarContainer, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import { GridToolbar } from "@mui/x-data-grid";
 import DatePicker from "react-datepicker";
+import moment from "moment/moment";
 
 const Invoice = ({
     invoiceForm,
@@ -167,7 +168,7 @@ const Invoice = ({
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
             width: 150,
-            valueGetter: (value, row) => `${row.invoiceDetail.invoiceDate}`,
+            valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("DD-MM-YYYY")}`,
           },
           {
             field: 'status',

@@ -8,6 +8,8 @@ import {VENDOR_NAME} from "../../../constants/app-constant";
 import PageLoader from "../../../components/page-loader";
 import Swal from 'sweetalert2'
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 
 const ShippingDetails = ({
@@ -32,6 +34,7 @@ const ShippingDetails = ({
         component: TextField
     };
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [dynamicInputs, setDynamicInputs] = useState(INPUTS || []);
@@ -126,33 +129,40 @@ const ShippingDetails = ({
           const action = id ? () => updateInvoiceConnect(id, payload) : () => postInvoiceConnect(payload);
 
           action()
-            .then(async (res) => {
-                const payload = {
-                    downloadOriginal: false,
-                    id: res.id
-                }
+            .then(async () => {
+            //     const payload = {
+            //         downloadOriginal: false,
+            //         id: res.id
+            //     }
 
-              try {
-                // Get PDF blob using GET
-                const pdfResponse = await getBillPdfConnect(payload, {
-                  responseType: "blob",
-                  headers: {
-                    Accept: "application/pdf",
-                  },
-                });
+            //   try {
+            //     // Get PDF blob using GET
+            //     const pdfResponse = await getBillPdfConnect(payload, {
+            //       responseType: "blob",
+            //       headers: {
+            //         Accept: "application/pdf",
+            //       },
+            //     });
 
-                const contentType = pdfResponse.headers["content-type"];
-                const blob = new Blob([pdfResponse.data], { type: contentType });
+            //     const contentType = pdfResponse.headers["content-type"];
+            //     const blob = new Blob([pdfResponse.data], { type: contentType });
 
-                const fileURL = URL.createObjectURL(blob);
-                window.open(fileURL, "_blank");
-              } catch (pdfErr) {
-                console.error("PDF generation error", pdfErr);
-                Swal.fire({
-                  icon: "error",
-                  text: "Failed to generate PDF",
-                });
-              }
+            //     const fileURL = URL.createObjectURL(blob);
+            //     window.open(fileURL, "_blank");
+            //   } catch (pdfErr) {
+            //     console.error("PDF generation error", pdfErr);
+            //     Swal.fire({
+            //       icon: "error",
+            //       text: "Failed to generate PDF",
+            //     });
+            //   }
+            Swal.fire({
+                icon: "Success",
+                title: `Invoice ${id ? "Updated" : "Created"} Successfully`
+            }).then(() => {
+                navigate('/invoice', { replace: true });
+
+            })
               handleNext();
               resetReducerConnect();
               setIsLoading(false);
