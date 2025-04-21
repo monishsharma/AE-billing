@@ -157,7 +157,7 @@ const ShippingDetails = ({
             //     });
             //   }
             Swal.fire({
-                icon: "Success",
+                icon: "success",
                 title: `Invoice ${id ? "Updated" : "Created"} Successfully`
             }).then(() => {
                 navigate('/invoice', { replace: true });
