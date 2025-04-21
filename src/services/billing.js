@@ -22,6 +22,10 @@ export default (api) => {
         return api.patch(`/billing/update/invoice/${id}`, payload)
     };
 
+    const generateCSV = ({company, month, year}) => {
+        return api.get(`/billing/generate-csv?company=${company}&month=${month}&year=${year}`)
+    };
+
     const updateVendorList = (payload) => {
         return api.post(`/billing/update/vendor/list`, payload)
     };
@@ -45,6 +49,7 @@ export default (api) => {
         getVendor,
         getBillPdf,
         postInvoice,
+        generateCSV,
         getVendorList,
         getInvoiceList,
         updateInvoice,

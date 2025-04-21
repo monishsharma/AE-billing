@@ -123,6 +123,23 @@ export const updateInvoice = (id, payload) => () => {
 }
 
 
+export const generateCSV = ({company, month, year}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.generateCSV({company, month, year})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+
 export {
     setData,
     saveData,

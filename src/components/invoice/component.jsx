@@ -23,6 +23,7 @@ const Invoice = ({
     invoiceForm,
     getInvoiceListConnect,
     getBillPdfConnect,
+    generateCSVConnect,
     resetReducerConnect
 }) => {
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ const Invoice = ({
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [dateValue, setDateValue] = useState(new Date(getDateValue()));
-
+  console.log()
 
     const onClick = () => {
         if (_id){
@@ -206,17 +207,29 @@ const Invoice = ({
 
 
       const downloadCSV = async () => {
-        const response = await fetch(`http://localhost:5050/billing/generate-csv?company=${value}&month=04&year=2025`);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${value} SALES APR 2025 .csv`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
+        generateCSVConnect({ company: value, month: dateValue.getMonth() + 1, year: dateValue.getFullYear() })
+          .then((csvText) => {
+            const blob = new Blob([csvText], { type: 'text/csv' }); // Convert text to Blob
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${value} SALES APR 2025.csv`; // Customize filename here
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            window.URL.revokeObjectURL(url);
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              text: "Failed to generate CSV",
+            });
+          });
       };
+
 
       const handleDateChange = (selectedDate) => {
         setDateValue(selectedDate)
