@@ -33,7 +33,7 @@ const BuyerDetail = ({
 
     const {vendorsList = []} = config;
 
-    const isUnqiueVendor = customer === VENDOR_NAME.RAJASTHAN_EXPLOSIVES_AND_CHEMICALS_LTD;
+    const isUnqiueVendor = [VENDOR_NAME.PARINAMITRA_ELECTRICALS,VENDOR_NAME.RAJASTHAN_EXPLOSIVES_AND_CHEMICALS_LTD].includes(customer);
 
     const getValueByKey = (obj, value) => {
         return Object.keys(obj).find(key => obj[key] === value);
