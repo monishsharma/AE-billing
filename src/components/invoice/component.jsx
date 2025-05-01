@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Box, Chip, Typography, Select, MenuItem } from "@mui/material";
-import { COMPANY_TYPE, STEPPER_NAME } from "../../constants/app-constant";
+import { Paper,IconButton, Box, Chip, Typography } from "@mui/material";
+import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -14,8 +13,7 @@ import Swal from "sweetalert2";
 import PageLoader from "../page-loader";
 import DownloadIcon from '@mui/icons-material/Download';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { ColumnsPanelTrigger, DataGrid, ToolbarButton, Toolbar, FilterPanelTrigger, ExportCsv, ExportPrint, QuickFilterControl, GridToolbarContainer, GridToolbarQuickFilter } from "@mui/x-data-grid";
-import { GridToolbar } from "@mui/x-data-grid";
+import {  DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
 import DatePicker from "react-datepicker";
 import moment from "moment/moment";
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -63,7 +61,6 @@ const Invoice = ({
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [dateValue, setDateValue] = useState(new Date(getDateValue()));
-    const [selectedBill, setSelectedBill] = useState(null);
 
     const onClick = () => {
         if (_id){
@@ -252,10 +249,7 @@ const Invoice = ({
 
     const CustomToolbar = () => (
         <GridToolbarContainer>
-            <div className="d-flex align-items-center justify-content-between" style={{width: "100%"}}>
-                <div>
-                    <GridToolbarQuickFilter />
-                </div>
+            <div className="d-flex align-items-center customToolbarBtn" style={{width: "100%"}}>
                 <div className="d-flex">
                     <div className={`m-1 ${styles.end}`}>
                         <DatePicker
@@ -283,8 +277,20 @@ const Invoice = ({
                 <Box sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
+                    flexDirection: {
+                      xs: 'column',   // stack on mobile
+                      sm: 'row',      // row on tablets and up
+                    },
                     alignItems: 'center',
-                    p: 1,
+                    p: {
+                      xs: 1,  // 8px
+                      sm: 2,  // 16px
+                      md: 3,  // 24px
+                    },
+                    gap: {
+                      xs: 1,
+                      sm: 2,
+                    },
                     borderBottom: '1px solid rgba(224, 224, 224, 1)',
                     backgroundColor: 'rgba(0, 0, 0, 0.02)',
                     borderRadius: '4px 4px 0 0'
@@ -359,7 +365,7 @@ const Invoice = ({
                     showToolbar
                     slots={{ toolbar: CustomToolbar }}
                     editMode="row"
-                    processRowUpdate={(newRow, oldRow) => {
+                    processRowUpdate={(newRow) => {
                         // Handle row update here if needed
                         return newRow;
                     }}
@@ -417,10 +423,22 @@ const Invoice = ({
                             <Tab label={COMPANY_TYPE.PADMA} value={COMPANY_TYPE.PADMA} />
                         </TabList>
                     </Box>
-                    <TabPanel value={COMPANY_TYPE.ASHOK}>
+                    <TabPanel value={COMPANY_TYPE.ASHOK} sx={{
+                      p:{
+                        xs: 0,
+                        sm: 2,
+                        md: 3
+                      }
+                    }}>
                         {renderInvoices()}
                     </TabPanel>
-                    <TabPanel value={COMPANY_TYPE.PADMA}>
+                    <TabPanel value={COMPANY_TYPE.PADMA} sx={{
+                      p:{
+                        xs: 0,
+                        sm: 2,
+                        md: 3
+                      }
+                    }}>
                         {renderInvoices()}
                     </TabPanel>
                 </TabContext>

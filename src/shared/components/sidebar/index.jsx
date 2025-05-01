@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import "./styles.css";
 import PropTypes from "prop-types";
 import { useLocation } from 'react-router-dom';
-// import { isMobileDevice } from "../../../helpers/is-mobile-device";
+import { isMobileDevice } from "../../../helpers/is-mobile-device";
 
 const SideBar = ({
     isActive,
@@ -13,9 +13,9 @@ const SideBar = ({
     const { pathname } = location;
 
     const onClick = () => {
-        // if (isMobileDevice()) {
-        //     toggleNavigation(true)
-        // }
+        if (isMobileDevice()) {
+            toggleNavigation(true)
+        }
     }
 
 

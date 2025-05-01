@@ -9,7 +9,6 @@ import Items from "../../items";
 import styles from "./style.module.css";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CustomSelect from "../../custom-select";
-import { roundOff } from "../../../helpers/round-off";
 import Summary from "../../summary";
 import { useParams } from "react-router-dom";
 
@@ -148,16 +147,25 @@ const GoodsDescription = ({
     };
 
     const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
-        const { target: { id,value:inputValue } } = event;
+        const { target: { id, value: inputValue } } = event;
         const finalValue = inputValue ? inputValue : value || "";
-        const description = finalValue ? finalValue.split("-").length > 1 ? finalValue.split("-")[2] : "" : ""
+
+        // Split the value properly to handle long descriptions
+        const parts = finalValue.split("-");
+        let description = "";
+        if (parts.length > 2) {
+            // Join all parts after the second one to get the full description
+            description = parts.slice(2).join("-").trim();
+        }
+
         const selectedId = id.split("-")[0];
-        const selectedValue = finalValue ? finalValue.split("-").length > 1 ? finalValue.split("-")[1] : finalValue : ""; // Handle empty selection
+        const selectedValue = parts.length > 1 ? parts[1] : finalValue;
+
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
             ...(!invoiceId && {
-                description
+                description: description
             }),
             [selectedId || "rate"]: selectedValue || 0,
         };
@@ -281,14 +289,16 @@ const GoodsDescription = ({
                                                 id={row.label}
                                                 label={row.label}
                                                 name={row.key}
-                                                value={localItems[idx][row.key] || ''}
+                                                value={item[row.key] || ''}
                                                 variant="standard"
                                                 error={!itemsValidation[idx][row.key]}
                                                 onChange={(e) => onItemChange(e, idx)}
                                                 inputProps={{
                                                     style: {
                                                         textAlign: 'left',
-                                                        padding: '8px 0'
+                                                        padding: '8px 0',
+                                                        whiteSpace: 'pre-wrap',
+                                                        wordBreak: 'break-word'
                                                     }
                                                 }}
                                                 {...row.extraProps}

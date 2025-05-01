@@ -6,7 +6,6 @@
   transition: 0.5s;
   overflow: hidden;
   border-left: 10px solid var(--blue);
-  z-index: 1000;
 }
 
 .navigation.active {

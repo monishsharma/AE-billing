@@ -61,7 +61,7 @@ const Vendors = ({ config }) => {
       </div>
       <div className="mt-4">
         <TableContainer component={Paper}>
-          <Table>
+          <Table sx={{minWidth: "1000px"}}>
             <TableHead>
               <TableRow>
                 <TableCell>S.no</TableCell>
@@ -89,7 +89,7 @@ const Vendors = ({ config }) => {
                       <TableCell component="th" scope="row">
                         {index + 1}
                       </TableCell>
-                      <TableCell>{vendor.name}</TableCell>
+                      <TableCell >{vendor.name}</TableCell>
                       <TableCell>{vendor.label}</TableCell>
                       <TableCell>{vendor.GSTIN}</TableCell>
                     </TableRow>

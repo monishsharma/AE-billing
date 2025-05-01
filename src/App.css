@@ -37,3 +37,14 @@
   cursor: pointer;
   margin-top: 20px;
 }
+@media only screen and (max-width: 600px) {
+  .main.active {
+    left: 0 !important;
+  }
+  .bigmain {
+    width: 100%;
+  }
+  .smallmain {
+    width: 100%;
+  }
+}
