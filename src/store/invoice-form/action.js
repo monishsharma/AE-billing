@@ -90,9 +90,9 @@ export const getBillPdf = (payload) => () => {
 }
 
 
-export const getInvoiceList = ({company, id, page}) => () => {
+export const getInvoiceList = ({company, id, page, month, year}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.getInvoiceList({company, id, page})
+        BillingService.getInvoiceList({company, id, page, month, year})
         .then((res) => {
             resolve(res.data);
         })

@@ -9,8 +9,8 @@ export default (api) => {
         return api.get(`/billing/vendor/list`)
     };
 
-    const getInvoiceList = ({company, id, page}) => {
-        const endpoint = id ? `/billing/invoice/${id}` : `/billing/invoice/list/${company}?page=${page}`;
+    const getInvoiceList = ({company, id, page, month, year}) => {
+        const endpoint = id ? `/billing/invoice/${id}` : `/billing/invoice/list/${company}?page=${page}&month=${month}&year=${year}`;
         return api.get(endpoint);
     };
 

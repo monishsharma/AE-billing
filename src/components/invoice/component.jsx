@@ -33,26 +33,12 @@ const Invoice = ({
     const getDateValue = () => {
 
       const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth(); // January is 0, December is 11
-    const day = today.getDate();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1; // January is 0, December is 11
 
-    let salaryMonth, salaryYear;
 
-    if (day <= 10) {
-        if (month === 0) {
-            salaryMonth = 11;
-            salaryYear = year - 1;
-        } else {
-            salaryMonth = month - 1;
-            salaryYear = year;
-        }
-    } else {
-        salaryMonth = month;
-        salaryYear = year;
-    }
 
-    return new Date(salaryYear, salaryMonth);
+    return new Date(year, month);
   }
 
     const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +46,7 @@ const Invoice = ({
     const [totalpage, setTotalpage] = useState(0);
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
-    const [dateValue, setDateValue] = useState(new Date(getDateValue()));
+    const [dateValue, setDateValue] = useState(new Date());
 
     const onClick = () => {
         if (_id){
@@ -72,7 +58,7 @@ const Invoice = ({
 
     useEffect(() => {
       setIsLoading(true);
-      getInvoiceListConnect({ company: value, page: paginationModel.page + 1, limit: paginationModel.pageSize }) // page +1 because frontend is 0-based
+      getInvoiceListConnect({ company: value, page: paginationModel.page + 1, limit: paginationModel.pageSize, month: dateValue.getMonth() +1 , year: dateValue.getFullYear() }) // page +1 because frontend is 0-based
         .then((res) => {
           setInvoices(res.data);
           setTotalpage(Number(res.totalItems)); // must be total documents, not pages
@@ -82,7 +68,7 @@ const Invoice = ({
           setInvoices([]);
           setIsLoading(false);
         });
-    }, [value, paginationModel]);
+    }, [value, paginationModel, dateValue]);
 
     const handleChange = (event, newValue) => {
         setPaginationModel({
@@ -159,7 +145,7 @@ const Invoice = ({
             sortable: false,
             flex: 2,
             minWidth: 200,
-            valueGetter: (value, row) => `${row.buyerDetail.name}`,
+            valueGetter: (value, row) => `${row.buyerDetail.customer}`,
         },
         {
             field: 'date',
