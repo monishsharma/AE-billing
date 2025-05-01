@@ -7,6 +7,7 @@ import { Outlet } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { getVendorList } from './store/config/action';
 import { connect } from 'react-redux';
+import MenuIcon from '@mui/icons-material/Menu';
 
 
 const  App = ({getVendorListConnect}) =>  {
@@ -44,11 +45,11 @@ const  App = ({getVendorListConnect}) =>  {
   return (
     <>
       <Layout>
-        <SideBar isActive={isActive} toggleNavigation={setIsActive} />
+        <SideBar isActive={isActive} toggleNavigation={setIsActive} onClick={toggleNavigation}/>
         <div className={isActive ? "main active bigmain" : "main smallmain"}>
           <div className="topbar">
             <div className="toggle" onClick={toggleNavigation}>
-              <ion-icon name="menu-outline"></ion-icon>
+              <MenuIcon />
             </div>
           </div>
           <div

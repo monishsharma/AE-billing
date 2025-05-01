@@ -36,13 +36,14 @@ export const INITIAL_STATE = {
     currentStep: 0
 };
 
-const generateSummary = (items) => {
+const generateSummary = (items, state) => {
+    const freight = state[STEPPER_NAME.GOODS_DESCRIPTION].freight;
     const totalValue = items.reduce((total, item) => total + (parseFloat(item.value) || 0), 0);
-    const sgstAmount = (totalValue * 9) / 100;
-    const roundOff = addPAckagingcharge(totalValue + sgstAmount + sgstAmount );
-    const billAmount = totalValue + sgstAmount + sgstAmount + roundOff;
+    const sgstAmount = ((totalValue + freight) * 9 ) / 100;
+    const roundOff = addPAckagingcharge(totalValue + freight + sgstAmount + sgstAmount );
+    const billAmount = totalValue + freight + sgstAmount + sgstAmount + roundOff;
     return {
-        taxableValue: totalValue.toFixed(2),
+        taxableValue: (totalValue + freight).toFixed(2),
         Total: billAmount.toFixed(2),
         SGST: sgstAmount.toFixed(2),
         CGST: sgstAmount.toFixed(2),
@@ -90,7 +91,7 @@ export const getComputedValue = (data, state) => {
             ...item,
             value: (parseFloat(item.qty || 0) * parseFloat(item.rate || 0)).toFixed(2)
         }))
-        return {items: computedValue, ...generateSummary(computedValue)}
+        return {items: computedValue, ...generateSummary(computedValue, state)}
 
     }
     if (data.freight !== undefined && data.freight !== null) {

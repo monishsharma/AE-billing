@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
-import { columns, columns1 } from "./selector";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Box, Chip } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Box, Chip, Typography, Select, MenuItem } from "@mui/material";
 import { COMPANY_TYPE, STEPPER_NAME } from "../../constants/app-constant";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -19,6 +18,8 @@ import { ColumnsPanelTrigger, DataGrid, ToolbarButton, Toolbar, FilterPanelTrigg
 import { GridToolbar } from "@mui/x-data-grid";
 import DatePicker from "react-datepicker";
 import moment from "moment/moment";
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const Invoice = ({
     invoiceForm,
@@ -62,7 +63,7 @@ const Invoice = ({
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [dateValue, setDateValue] = useState(new Date(getDateValue()));
-  console.log()
+    const [selectedBill, setSelectedBill] = useState(null);
 
     const onClick = () => {
         if (_id){
@@ -150,61 +151,65 @@ const Invoice = ({
             headerName: 'Invoice No',
             description: 'This column has a value getter and is not sortable.',
             sortable: true,
-            width: 150,
+            flex: 1,
+            minWidth: 150,
             valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
-
-          },
-          {
+        },
+        {
             field: 'Billed To',
             headerName: 'Billed To',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 350,
+            flex: 2,
+            minWidth: 200,
             valueGetter: (value, row) => `${row.buyerDetail.name}`,
-          },
-          {
+        },
+        {
             field: 'date',
             headerName: 'Date',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
+            flex: 1,
+            minWidth: 120,
             valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("DD-MM-YYYY")}`,
-          },
-          {
+        },
+        {
             field: 'status',
             headerName: 'Status',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
+            flex: 1,
+            minWidth: 120,
             renderCell: (value) => <Chip label={value.row.paid ? "Paid" : "Unpaid"} size="small" variant="Outlined" color={value.row.paid ? "primary" : "error"} />,
-            // renderCell: (value, row) => ,
-          },
-          {
+        },
+        {
             field: 'Amount',
             headerName: 'Amount',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
+            flex: 1,
+            minWidth: 120,
             valueGetter: (value, row) => `${parseFloat(row.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-          },
-          {
+        },
+        {
             field: 'Bill',
             headerName: 'Bill',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            width: 150,
-            renderCell:(value)=>(
+            flex: 1,
+            minWidth: 100,
+            renderCell: (value) => (
                 <>
-                    <IconButton onClick={(e) => handleDownload(e,value.row)} size="small">
+                    <IconButton onClick={(e) => handleDownload(e, value.row)} size="small">
                         <FileCopyIcon />
-                        </IconButton>
-                        <IconButton onClick={(e) => handleDownload(e,value.row, true)} size="small">
+                    </IconButton>
+                    <IconButton onClick={(e) => handleDownload(e, value.row, true)} size="small">
                         <DownloadIcon />
                     </IconButton>
                 </>
             )
         },
-      ];
+    ];
 
 
       const downloadCSV = async () => {
@@ -244,15 +249,15 @@ const Invoice = ({
         </div>
        ));
 
-      const CustomToolbar = () => (
+
+    const CustomToolbar = () => (
         <GridToolbarContainer>
             <div className="d-flex align-items-center justify-content-between" style={{width: "100%"}}>
                 <div>
                     <GridToolbarQuickFilter />
                 </div>
-                <div className="d-flex ">
-                <div className={`m-2 ${styles.end} `}>
-
+                <div className="d-flex">
+                    <div className={`m-1 ${styles.end}`}>
                         <DatePicker
                             selected={dateValue}
                             showMonthYearPicker={true}
@@ -261,81 +266,165 @@ const Invoice = ({
                             customInput={<ExampleCustomInput />}
                         />
                     </div>
-                    <div className={`m-2 ${styles.end}`}>
+                    <div className={`m-1 ${styles.end}`}>
                         <Button onClick={downloadCSV} variant="contained" size="small">
                             Export as CSV
-                        </Button>
-                    </div>
-
-                    <div className={`m-2 ${styles.end}`}>
-                      <Button onClick={onClick} variant="contained" size="small">
-                            Create Invoice
                         </Button>
                     </div>
                 </div>
             </div>
         </GridToolbarContainer>
-      )
+    );
 
 
     const renderInvoices = () => (
-        <Paper sx={{ width: '100%' }}>
-
-            <DataGrid
-                rows={invoices}
-                columns={columns1}
-                rowSelection={false}
-                onRowClick={(e,row) => handleRowClick(e, row)}
-                getRowId={(row) => row._id}
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                paginationMode="server"
-                rowCount={totalpage}
-                showToolbar
-                slots={{ toolbar: CustomToolbar }}
-                sx={{ width: '100%',  '.MuiDataGrid-cell:focus': {
-                    outline: 'none'
-                  },
-                  // pointer cursor on ALL rows
-                  '& .MuiDataGrid-row:hover': {
-                    cursor: 'pointer'
-                  } }}
-            />
-
+        <>
+            <Paper sx={{ width: '100%' }}>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    p: 1,
+                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: '4px 4px 0 0'
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        '& .MuiTypography-root': {
+                            color: 'text.secondary',
+                            fontWeight: 500,
+                            fontSize: '0.875rem'
+                        }
+                    }}>
+                        <Typography variant="body2">
+                            Showing {paginationModel.page * paginationModel.pageSize + 1} to {Math.min((paginationModel.page + 1) * paginationModel.pageSize, totalpage)} of {totalpage} entries
+                        </Typography>
+                    </Box>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        '& .MuiButton-root': {
+                            textTransform: 'none',
+                            minWidth: '32px',
+                            height: '32px',
+                            padding: '4px',
+                            borderRadius: '4px',
+                            '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                            },
+                            '&.Mui-disabled': {
+                                color: 'rgba(0, 0, 0, 0.26)',
+                                borderColor: 'rgba(0, 0, 0, 0.12)'
+                            }
+                        }
+                    }}>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            disabled={paginationModel.page === 0}
+                            onClick={() => setPaginationModel(prev => ({ ...prev, page: prev.page - 1 }))}
+                            startIcon={<NavigateBeforeIcon />}
+                        >
+                            Previous
+                        </Button>
+                        <Typography variant="body2" sx={{ mx: 1, color: 'text.secondary' }}>
+                            Page {paginationModel.page + 1} of {Math.ceil(totalpage / paginationModel.pageSize)}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            disabled={(paginationModel.page + 1) * paginationModel.pageSize >= totalpage}
+                            onClick={() => setPaginationModel(prev => ({ ...prev, page: prev.page + 1 }))}
+                            endIcon={<NavigateNextIcon />}
+                        >
+                            Next
+                        </Button>
+                    </Box>
+                </Box>
+                <DataGrid
+                    rows={invoices}
+                    columns={columns1}
+                    rowSelection={false}
+                    onRowClick={(e, row) => handleRowClick(e, row)}
+                    getRowId={(row) => row._id}
+                    paginationModel={paginationModel}
+                    onPaginationModelChange={setPaginationModel}
+                    paginationMode="server"
+                    rowCount={totalpage}
+                    hideFooterPagination
+                    showToolbar
+                    slots={{ toolbar: CustomToolbar }}
+                    editMode="row"
+                    processRowUpdate={(newRow, oldRow) => {
+                        // Handle row update here if needed
+                        return newRow;
+                    }}
+                    sx={{
+                        width: '100%',
+                        '.MuiDataGrid-cell:focus': {
+                            outline: 'none'
+                        },
+                        '& .MuiDataGrid-row:hover': {
+                            cursor: 'pointer'
+                        },
+                        '& .MuiDataGrid-virtualScroller': {
+                            minHeight: '200px'
+                        },
+                        '& .MuiDataGrid-cell': {
+                            padding: '8px 16px'
+                        }
+                    }}
+                />
             </Paper>
-
-    )
+        </>
+    );
 
     if (isLoading) return <PageLoader />
 
     return (
         <React.Fragment>
-
             <div className={`mt-3`}>
                 <h2 className="fw-bold">Invoice</h2>
             </div>
 
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                mt: 2
+            }}>
+                <Button
+                    onClick={onClick}
+                    variant="contained"
+                    size="medium"
+                    sx={{
+                        textTransform: 'none',
+                        minWidth: '120px'
+                    }}
+                >
+                    Create Invoice
+                </Button>
+            </Box>
+
             <div className="mt-2">
-
-            <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList onChange={handleChange} aria-label="lab API tabs example" >
-                        <Tab label={COMPANY_TYPE.ASHOK} value={COMPANY_TYPE.ASHOK} />
-                        <Tab label={COMPANY_TYPE.PADMA} value={COMPANY_TYPE.PADMA} />
-                    </TabList>
-                </Box>
-                <TabPanel value={COMPANY_TYPE.ASHOK}>
-                    {renderInvoices()}
-                </TabPanel>
-                <TabPanel value={COMPANY_TYPE.PADMA}>
-                    {renderInvoices()}
-                </TabPanel>
-            </TabContext>
-
-
-
+                <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList onChange={handleChange} aria-label="lab API tabs example" >
+                            <Tab label={COMPANY_TYPE.ASHOK} value={COMPANY_TYPE.ASHOK} />
+                            <Tab label={COMPANY_TYPE.PADMA} value={COMPANY_TYPE.PADMA} />
+                        </TabList>
+                    </Box>
+                    <TabPanel value={COMPANY_TYPE.ASHOK}>
+                        {renderInvoices()}
+                    </TabPanel>
+                    <TabPanel value={COMPANY_TYPE.PADMA}>
+                        {renderInvoices()}
+                    </TabPanel>
+                </TabContext>
             </div>
-
         </React.Fragment>
     );
 };

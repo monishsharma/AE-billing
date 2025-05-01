@@ -58,6 +58,12 @@ const GoodsDescription = ({
 
     const [totalItems, setTotalItems] = useState([]);
 
+    const [localItems, setLocalItems] = useState(items);
+
+    React.useEffect(() => {
+        setLocalItems(items);
+    }, [items]);
+
     const onFieldChange = (event) => {
         const { value, name } = event.target;
         saveDataConnect({
@@ -125,7 +131,7 @@ const GoodsDescription = ({
     };
 
     const onItemChange = (event, index) => {
-        const { value, name } = event.target;
+        const { value, name, selectionStart } = event.target;
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
@@ -137,6 +143,8 @@ const GoodsDescription = ({
                 items: copyOfItems
             }
         });
+        // Restore cursor position after state update
+
     };
 
     const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
@@ -254,9 +262,16 @@ const GoodsDescription = ({
                                                         id={row.key}
                                                         placeholder={row.label}
                                                         name={row.key}
-                                                        value={item[row.key]}
+                                                        value={item[row.key] || ''}
                                                         error={!itemsValidation[idx][row.key]}
                                                         onChange={(e) => onChangeAutoComplete({e, idx})}
+                                                        inputProps={{
+                                                            ...params.inputProps,
+                                                            style: {
+                                                                textAlign: 'left',
+                                                                padding: '8px 0'
+                                                            }
+                                                        }}
                                                     />
                                                 )}
                                             />
@@ -266,10 +281,16 @@ const GoodsDescription = ({
                                                 id={row.label}
                                                 label={row.label}
                                                 name={row.key}
-                                                value={item[row.key]}
+                                                value={localItems[idx][row.key] || ''}
                                                 variant="standard"
                                                 error={!itemsValidation[idx][row.key]}
                                                 onChange={(e) => onItemChange(e, idx)}
+                                                inputProps={{
+                                                    style: {
+                                                        textAlign: 'left',
+                                                        padding: '8px 0'
+                                                    }
+                                                }}
                                                 {...row.extraProps}
                                             />
                                         )}

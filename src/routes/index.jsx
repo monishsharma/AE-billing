@@ -4,12 +4,18 @@ import Invoice from "../components/invoice";
 import InvoiceStepper from "../components/invoice-stepper";
 import Vendors from "../pages/vendors";
 import AddVendor from "../pages/add-vendor";
+import Dashboard from "../pages/dashboard";
 
 const routes = [
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        index: true,
+        element: <Dashboard />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "invoice",
         element: <Invoice />,
@@ -42,7 +48,6 @@ const routes = [
       },
     ],
     errorElement: <ErrorPage />,
-
   },
 ];
 

@@ -1,22 +1,18 @@
 export const columns = [
     {
         label: "S no",
-
     },
     {
         label: "Invoice No",
-
     },
     {
         label: "Billed To",
     },
-
     {
         label: "Date",
     },
     {
         label: "Status",
-
     },
     {
         label: "Amount",
@@ -24,8 +20,6 @@ export const columns = [
     {
         label: "",
     }
-
-
 ]
 
 export const columns1 = [
@@ -34,40 +28,62 @@ export const columns1 = [
         headerName: 'Invoice No',
         description: 'This column has a value getter and is not sortable.',
         sortable: true,
-        width: 150,
+        flex: 1,
+        minWidth: 150,
         valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
-
-      },
-      {
+    },
+    {
         field: 'Billed To',
         headerName: 'Billed To',
         description: 'This column has a value getter and is not sortable.',
         sortable: false,
-        width: 350,
+        flex: 2,
+        minWidth: 200,
         valueGetter: (value, row) => `${row.buyerDetail.name}`,
-      },
-      {
+    },
+    {
         field: 'date',
         headerName: 'Date',
         description: 'This column has a value getter and is not sortable.',
         sortable: false,
-        width: 100,
-        valueGetter: (value, row) => `${row.invoiceDetail.invoiceDate}`,
-      },
-      {
+        flex: 1,
+        minWidth: 120,
+        valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("DD-MM-YYYY")}`,
+    },
+    {
         field: 'status',
         headerName: 'Status',
         description: 'This column has a value getter and is not sortable.',
         sortable: false,
-        width: 150,
-        valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-      },
-      {
+        flex: 1,
+        minWidth: 120,
+        renderCell: (value) => <Chip label={value.row.paid ? "Paid" : "Unpaid"} size="small" variant="Outlined" color={value.row.paid ? "primary" : "error"} />,
+    },
+    {
         field: 'Amount',
         headerName: 'Amount',
         description: 'This column has a value getter and is not sortable.',
         sortable: false,
-        width: 150,
+        flex: 1,
+        minWidth: 120,
         valueGetter: (value, row) => `${parseFloat(row.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      },
-  ];
+    },
+    {
+        field: 'Bill',
+        headerName: 'Bill',
+        description: 'This column has a value getter and is not sortable.',
+        sortable: false,
+        flex: 1,
+        minWidth: 100,
+        renderCell: (value) => (
+            <>
+                <IconButton onClick={(e) => handleDownload(e, value.row)} size="small">
+                    <FileCopyIcon />
+                </IconButton>
+                <IconButton onClick={(e) => handleDownload(e, value.row, true)} size="small">
+                    <DownloadIcon />
+                </IconButton>
+            </>
+        )
+    },
+];

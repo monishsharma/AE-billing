@@ -22,7 +22,6 @@ body {
   background-color: var(--blue) !important;
 }
 
-
 ol, ul {
   list-style: none;
   outline: none;
@@ -34,17 +33,39 @@ ol, ul {
   overflow: auto;
   height: 85vh;
 }
+
 /* ===================== Main ===================== */
 .main {
   position: absolute;
-  left: 300px;
+  left: 250px;
   background: var(--white);
   transition: 0.5s;
   height: 95vh;
   margin-top: 20px;
   border-radius: 25px;
   overflow: auto;
+  width: calc(100% - 250px);
 }
+
 .main.active {
   left: 80px;
+  width: calc(100% - 80px);
+}
+
+.bigmain {
+  width: calc(100% - 250px);
+}
+
+.smallmain {
+  width: calc(100% - 80px);
+}
+
+@media only screen and (max-width: 600px) {
+  .main {
+    width: calc(100% - 80px);
+  }
+
+  .main.active {
+    width: calc(100% - 80px);
+  }
 }

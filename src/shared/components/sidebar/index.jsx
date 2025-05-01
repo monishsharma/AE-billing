@@ -26,7 +26,14 @@ const SideBar = ({
                     <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span>
                 </Link>
                 <ul>
-
+                    <li className={pathname === "/" ? "activeLi" : ""} onClick={onClick}>
+                        <Link to="/">
+                            <span className="icon">
+                                <ion-icon name="home-outline"></ion-icon>
+                            </span>
+                            <span className="title">Dashboard</span>
+                        </Link>
+                    </li>
                     <li className={pathname.includes("/invoice") ? "activeLi" : ""} onClick={onClick}>
                         <Link to="/invoice">
                             <span className="icon">
