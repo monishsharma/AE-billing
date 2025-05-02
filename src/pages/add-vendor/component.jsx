@@ -5,6 +5,7 @@ import styles from "./style.module.css"
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import PageLoader from '../../components/page-loader';
 import { useNavigate, useParams } from 'react-router-dom';
+import {isMobileDevice} from "../../helpers/is-mobile-device";
 
 
 const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getVendorListConnect}) => {
@@ -279,7 +280,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                     autoComplete="off"
                 >
                     <Grid container spacing={2}>
-                        <Grid size={5}>
+                        <Grid  size={{md: 5, xs: 12}}>
                         <h6 className="fw-bold mt-4 mb-4">Vendor Detail</h6>
                             <Stack spacing={2}>
                                 {
@@ -302,14 +303,14 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                                 }
                             </Stack>
                         </Grid>
-                        <Grid size={7}>
+                        <Grid size={{md: 7, xs: 12}}>
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 className="fw-bold mt-4 mb-4">Product Rate</h6>
                                 </div>
-                                <div>
+                                {isProductRateRequired && <div>
                                     <Button onClick={addItem}>Add Item</Button>
-                                </div>
+                                </div>}
                             </div>
 
                             {
@@ -323,9 +324,17 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                                 isProductRateRequired &&
                                 <div className={styles.flexContainer}>
                                 <div className={styles.gridContainer}>
-                                    <span>Product Description</span>
-                                    <span>Description</span>
-                                    <span>Rate</span>
+                                    {
+                                        !isMobileDevice() ?
+                                        <>
+                                            <span>Product Description</span>
+                                            <span>Description</span>
+                                            <span>Rate</span>
+                                        </>
+                                        :
+                                        <span>Product Item Rate</span>
+                                    }
+
                                 </div>
                                 <div >
                                     {
@@ -352,7 +361,14 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                                                     ))
                                                 }
                                                 {rows .length > 1 && <span className='mt-3' onClick={() => deleteRow(index)}>
-                                                    <DeleteOutlinedIcon />
+                                                    {
+                                                        isMobileDevice()?
+                                                        <Button fullWidth color="error" variant="outlined"  onClick={addItem}>
+                                                            Delete
+                                                        </Button>
+                                                        :
+                                                        <DeleteOutlinedIcon color="error" />
+                                                    }
                                                 </span>}
                                             </div>
 

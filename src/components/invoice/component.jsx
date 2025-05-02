@@ -119,49 +119,29 @@ const Invoice = ({
         }
       };
 
-      const chekboxhandler = (e, value) => {
+      const chekboxhandler = async(e, value) => {
         e.stopPropagation();
-        setIsLoading(true)
-        const {id} = value;
-        getInvoiceListConnect({id})
-        .then(async(data) => {
-          const payload = {
-            ...data,
-            paid: e.target.checked
-          };
-          try {
-            await updateInvoiceConnect(id, payload);
-            setRunEffect(!runEffect);
-            toast.success(`${data.invoiceDetail.invoiceNO} ${e.target.checked ? "Marked Paid Succesfully" : "Marked Unpaid Succesfully"} `, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Bounce,
-            });
-          } catch {
-            toast.error(`Error while marking ${data.invoiceDetail.invoiceNO} Paid `, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Bounce,
-            });
-            setIsLoading(false);
-
-          }
-          setIsLoading(false);
-        })
-        .catch(() =>  {
-          toast.error(`Error`, {
+        setIsLoading(true);
+        const payload = {
+          ...value.row,
+          paid: e.target.checked
+        };
+        try {
+          await updateInvoiceConnect(value.row._id, payload);
+          setRunEffect(!runEffect);
+          toast[e.target.checked ? "success" : "error"](`${value.row.invoiceDetail.invoiceNO} ${e.target.checked ? "Marked Paid Succesfully" : "Marked Unpaid Succesfully"} `, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        } catch {
+          toast.error(`Error while marking ${value.row.invoiceDetail.invoiceNO} Paid `, {
             position: "bottom-right",
             autoClose: 3000,
             hideProgressBar: false,
@@ -173,7 +153,9 @@ const Invoice = ({
             transition: Bounce,
           });
           setIsLoading(false);
-        })
+
+        }
+
       }
 
       const columns1 = [
@@ -188,7 +170,7 @@ const Invoice = ({
             headerName: 'Invoice No',
             description: 'This column has a value getter and is not sortable.',
             sortable: true,
-            minWidth: 125,
+            minWidth: 150,
             valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
         },
         {
