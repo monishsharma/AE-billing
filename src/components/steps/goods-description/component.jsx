@@ -143,7 +143,12 @@ const GoodsDescription = ({
             }
         });
         // Restore cursor position after state update
-
+        setTimeout(() => {
+            const input = event.target;
+            if (input) {
+                input.setSelectionRange(selectionStart, selectionStart);
+            }
+        }, 0);
     };
 
     const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
@@ -177,7 +182,6 @@ const GoodsDescription = ({
         });
     };
 
-
     const deleteItem = (index) => {
         const updatedItems = [...items];
         updatedItems.splice(index, 1);
@@ -188,7 +192,6 @@ const GoodsDescription = ({
             }
         });
     }
-
 
     return (
         <>
@@ -292,7 +295,20 @@ const GoodsDescription = ({
                                                 value={item[row.key] || ''}
                                                 variant="standard"
                                                 error={!itemsValidation[idx][row.key]}
-                                                onChange={(e) => onItemChange(e, idx)}
+                                                onChange={(e) => {
+                                                    const updatedItems = [...localItems];
+                                                    updatedItems[idx][row.key] = e.target.value;
+                                                    setLocalItems(updatedItems);
+                                                }}
+                                                onBlur={() => {
+                                                    saveDataConnect({
+                                                    stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+                                                    data: {
+                                                        items: localItems,
+                                                    },
+                                                    });
+                                                }}
+                                                // onChange={(e) => onItemChange(e, idx)}
                                                 inputProps={{
                                                     style: {
                                                         textAlign: 'left',
