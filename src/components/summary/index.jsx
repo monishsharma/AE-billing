@@ -52,6 +52,7 @@ const Summary = ({
                                 value={taxableValue}
                                 variant="standard"
                                 onChange={onChange}
+                                disabled
                             />
                         </span>
                     </div>
@@ -65,6 +66,7 @@ const Summary = ({
                                     name={"CGST"}
                                     value={`${parseFloat(CGST) + parseFloat(SGST)}`}
                                     variant="standard"
+                                    disabled
                                 />
                             </span>
                         </div>
@@ -78,6 +80,7 @@ const Summary = ({
                                         name={"SGST"}
                                         value={SGST}
                                         variant="standard"
+                                        disabled
                                     />
                                 </span>
                             </div>
@@ -89,6 +92,7 @@ const Summary = ({
                                         name={"CGST"}
                                         value={CGST}
                                         variant="standard"
+                                        disabled
                                     />
                                 </span>
                             </div>
@@ -103,6 +107,7 @@ const Summary = ({
                                 name={"roundOff"}
                                 value={roundOff}
                                 variant="standard"
+                                disabled
                             />
                         </span>
                     </div>
@@ -115,6 +120,7 @@ const Summary = ({
                                 name={"Total"}
                                 value={Total}
                                 variant="standard"
+                                disabled
                             />
                         </span>
                     </div>

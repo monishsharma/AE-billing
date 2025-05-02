@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
-import { Paper,IconButton, Box, Chip, Typography } from "@mui/material";
+import { Paper,IconButton, Box, Chip, Typography, Checkbox } from "@mui/material";
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -18,28 +18,19 @@ import DatePicker from "react-datepicker";
 import moment from "moment/moment";
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { toast, Bounce } from 'react-toastify';
 
 const Invoice = ({
     invoiceForm,
     getInvoiceListConnect,
     getBillPdfConnect,
     generateCSVConnect,
-    resetReducerConnect
+    resetReducerConnect,
+    updateInvoiceConnect
 }) => {
     const navigate = useNavigate();
 
     const {_id = ""} = invoiceForm || {}
-
-    const getDateValue = () => {
-
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1; // January is 0, December is 11
-
-
-
-    return new Date(year, month);
-  }
 
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
@@ -47,6 +38,8 @@ const Invoice = ({
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [dateValue, setDateValue] = useState(new Date());
+    const [btnLoading, setBtnLoading] = useState(false);
+    const [runEffect, setRunEffect] = useState(false);
 
     const onClick = () => {
         if (_id){
@@ -68,7 +61,7 @@ const Invoice = ({
           setInvoices([]);
           setIsLoading(false);
         });
-    }, [value, paginationModel, dateValue]);
+    }, [value, paginationModel, dateValue, runEffect]);
 
     const handleChange = (event, newValue) => {
         setPaginationModel({
@@ -126,34 +119,92 @@ const Invoice = ({
         }
       };
 
+      const chekboxhandler = (e, value) => {
+        e.stopPropagation();
+        setIsLoading(true)
+        const {id} = value;
+        getInvoiceListConnect({id})
+        .then(async(data) => {
+          const payload = {
+            ...data,
+            paid: e.target.checked
+          };
+          try {
+            await updateInvoiceConnect(id, payload);
+            setRunEffect(!runEffect);
+            toast.success(`${data.invoiceDetail.invoiceNO} ${e.target.checked ? "Marked Paid Succesfully" : "Marked Unpaid Succesfully"} `, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+          } catch {
+            toast.error(`Error while marking ${data.invoiceDetail.invoiceNO} Paid `, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+            setIsLoading(false);
 
+          }
+          setIsLoading(false);
+        })
+        .catch(() =>  {
+          toast.error(`Error`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+          setIsLoading(false);
+        })
+      }
 
       const columns1 = [
+        {
+          field: "",
+          sortable: false,
+          minWidth: 100,
+          renderCell: (value) => <Checkbox id="" checked={value.row.paid}  onClick={(e) => chekboxhandler(e,value)} />,
+        },
         {
             field: 'Invoice No',
             headerName: 'Invoice No',
             description: 'This column has a value getter and is not sortable.',
             sortable: true,
-            flex: 1,
-            minWidth: 150,
+            minWidth: 125,
             valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
         },
         {
             field: 'Billed To',
             headerName: 'Billed To',
             description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            flex: 2,
             minWidth: 200,
+            sortable: false,
             valueGetter: (value, row) => `${row.buyerDetail.customer}`,
         },
         {
             field: 'date',
             headerName: 'Date',
             description: 'This column has a value getter and is not sortable.',
+            minWidth: 125,
             sortable: false,
-            flex: 1,
-            minWidth: 120,
             valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("DD-MM-YYYY")}`,
         },
         {
@@ -161,16 +212,14 @@ const Invoice = ({
             headerName: 'Status',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            flex: 1,
-            minWidth: 120,
-            renderCell: (value) => <Chip label={value.row.paid ? "Paid" : "Unpaid"} size="small" variant="Outlined" color={value.row.paid ? "primary" : "error"} />,
+            minWidth: 100,
+            renderCell: (value) => <Chip label={value.row.paid ? "Paid" : "Unpaid"} size="small" variant="outlined" color={value.row.paid ? "success" : "error"} />,
         },
         {
             field: 'Amount',
             headerName: 'Amount',
             description: 'This column has a value getter and is not sortable.',
             sortable: false,
-            flex: 1,
             minWidth: 120,
             valueGetter: (value, row) => `${parseFloat(row.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         },
@@ -196,6 +245,7 @@ const Invoice = ({
 
 
       const downloadCSV = async () => {
+        setBtnLoading(true);
         generateCSVConnect({ company: value, month: dateValue.getMonth() + 1, year: dateValue.getFullYear() })
           .then((csvText) => {
             const blob = new Blob([csvText], { type: 'text/csv' }); // Convert text to Blob
@@ -207,11 +257,14 @@ const Invoice = ({
             document.body.appendChild(a);
             a.click();
             a.remove();
+            setBtnLoading(false);
 
             window.URL.revokeObjectURL(url);
           })
           .catch((err) => {
             console.log(err);
+            setBtnLoading(false);
+
             Swal.fire({
               icon: "error",
               text: "Failed to generate CSV",
@@ -246,8 +299,8 @@ const Invoice = ({
                             customInput={<ExampleCustomInput />}
                         />
                     </div>
-                    <div className={`m-1 ${styles.end}`}>
-                        <Button onClick={downloadCSV} variant="contained" size="small">
+                    <div className={`m-1 ${styles.end}`} >
+                        <Button fullWidth onClick={downloadCSV} loading={btnLoading} variant="contained" size="small">
                             Export as CSV
                         </Button>
                     </div>
@@ -271,7 +324,7 @@ const Invoice = ({
                     p: {
                       xs: 1,  // 8px
                       sm: 2,  // 16px
-                      md: 3,  // 24px
+                      md: 1,  // 24px
                     },
                     gap: {
                       xs: 1,
@@ -366,9 +419,7 @@ const Invoice = ({
                         '& .MuiDataGrid-virtualScroller': {
                             minHeight: '200px'
                         },
-                        '& .MuiDataGrid-cell': {
-                            padding: '8px 16px'
-                        }
+
                     }}
                 />
             </Paper>
@@ -413,7 +464,7 @@ const Invoice = ({
                       p:{
                         xs: 0,
                         sm: 2,
-                        md: 3
+                        md: 0
                       }
                     }}>
                         {renderInvoices()}
@@ -422,7 +473,7 @@ const Invoice = ({
                       p:{
                         xs: 0,
                         sm: 2,
-                        md: 3
+                        md: 0
                       }
                     }}>
                         {renderInvoices()}

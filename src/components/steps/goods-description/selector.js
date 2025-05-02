@@ -1,5 +1,6 @@
 import { Select } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import {isMobileDevice} from "../../../helpers/is-mobile-device"
 
 // Define the INPUTS array with each field's configuration
 export const INPUTS = [
@@ -95,7 +96,7 @@ export const getTotalItems = (items) => {
 
 export const columns = [
     {
-        label: "S.No",
+        label: `${isMobileDevice() ? "Items" : "S.No"}`,
         class: ""
     },
     {

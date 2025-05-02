@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import { getVendorList } from './store/config/action';
 import { connect } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
+import { ToastContainer } from 'react-toastify';
 
 
 const  App = ({getVendorListConnect}) =>  {
@@ -44,6 +45,7 @@ const  App = ({getVendorListConnect}) =>  {
 
   return (
     <>
+      <ToastContainer />
       <Layout>
         <SideBar isActive={isActive} toggleNavigation={setIsActive} onClick={toggleNavigation}/>
         <div className={isActive ? "main active bigmain" : "main smallmain"}>

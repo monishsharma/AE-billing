@@ -11,6 +11,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import CustomSelect from "../../custom-select";
 import Summary from "../../summary";
 import { useParams } from "react-router-dom";
+import { isMobileDevice } from "../../../helpers/is-mobile-device";
 
 const GoodsDescription = ({
     index,
@@ -205,7 +206,7 @@ const GoodsDescription = ({
                     {INPUTS.map((input, index) => {
                         const Component = input.component;
                         return (
-                            <Grid key={index} item size={4}>
+                            <Grid key={index} item size={{xs:12, md: 4}}>
                                 {input.type === "select" ? (
                                     <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                         <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
@@ -259,6 +260,7 @@ const GoodsDescription = ({
                                                 freeSolo
                                                 id={row.key}
                                                 name={row.key}
+                                                fullWidth
                                                 label={row.key}
                                                 value={item[row.key]}
                                                 onChange={(e,newValue) => onChangeAutoComplete({e,newValue,idx})}
@@ -323,18 +325,27 @@ const GoodsDescription = ({
                                     </span>
                                 ))}
                                 {items .length > 1 && <span onClick={() => deleteItem(idx)}>
-                                    <DeleteOutlinedIcon />
+                                    {
+                                        isMobileDevice()?
+                                        <Button fullWidth color="error" variant="outlined"  onClick={addItem}>
+                                            Delete
+                                        </Button>
+                                        :
+                                        <DeleteOutlinedIcon color="error" />
+                                    }
+
                                 </span>}
                             </div>
                         ))}
                     </Items>
                 </div>
+                <Button  color="primary"  onClick={addItem}>
+                    Add More Item
+                </Button>
                 <div className="mt-4">
                     <Summary invoiceForm={invoiceForm} saveDataConnect={saveDataConnect}/>
                 </div>
-                <Button variant="contained" color="primary" fullWidth onClick={addItem}>
-                    Add More Item
-                </Button>
+
                 <StepperButton
                     index={index}
                     steps={steps}

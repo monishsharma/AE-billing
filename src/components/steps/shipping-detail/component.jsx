@@ -211,7 +211,7 @@ const ShippingDetails = ({
                 {dynamicInputs.map((input, index) => {
                     const Component = input.component;
                     return (
-                        <Grid key={index} item size={4}>
+                        <Grid key={index} item size={{xs:12, md: 4}}>
                             {
                                 <Component
                                     {...input.extraProps}

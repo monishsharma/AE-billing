@@ -33,3 +33,31 @@
     display: flex !important;
     align-items: center !important; */
 }
+
+@media screen and (max-width: 600px) {
+    span button {
+        margin:  0 auto;
+    }
+    .itemsContainer {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1rem;
+    }
+    .itemsContainer span {
+        display: flex;
+        -webkit-box-pack: justify;
+        justify-content: space-between;
+        width: 100%;
+        grid-column: span 2 !important;
+    }
+    .itemsContainer span:nth-child(2) {
+        grid-column: span 2 !important;
+
+    }
+     .itemsContainer span:nth-child(1) {
+        grid-column: span 2 !important;
+    }
+
+    .itemsContainer span:nth-child(5){
+        grid-column: span 2 !important;
+    }
+}

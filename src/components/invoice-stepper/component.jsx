@@ -111,7 +111,12 @@ export default function InvoiceStepper({
             <StepLabel>
               <Typography variant="h5">{step.label}</Typography>
             </StepLabel>
-            <StepContent>
+            <StepContent sx={{
+              p: {
+                xs: 0,
+                md: 1
+              }
+            }}>
               <step.component
                 index={index}
                 steps={steps}

@@ -72,6 +72,9 @@ ol, ul {
   .main.active {
     width: 100%;
   }
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
   .customToolbarBtn {
     justify-content: center;
   }
