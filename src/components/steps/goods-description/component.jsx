@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Box from '@mui/material/Box';
 import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
@@ -58,11 +58,26 @@ const GoodsDescription = ({
 
     const [totalItems, setTotalItems] = useState([]);
 
-    const [localItems, setLocalItems] = useState(items);
+    const [localItems, setLocalItems] = useState([]);
+
+    const inputRefs = useRef([]);
 
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
+
+    React.useEffect(() => {
+        const debounce = setTimeout(() => {
+            saveDataConnect({
+                stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+                data: {
+                    items: localItems,
+                }
+            });
+        }, 300); // Debounce time
+
+        return () => clearTimeout(debounce);
+    }, [localItems]);
 
     const onFieldChange = (event) => {
         const { value, name } = event.target;
@@ -131,25 +146,15 @@ const GoodsDescription = ({
     };
 
     const onItemChange = (event, index) => {
-        const { value, name, selectionStart } = event.target;
-        const copyOfItems = [...items];
-        copyOfItems[index] = {
-            ...copyOfItems[index],
-            [name]: value,
-        };
-        saveDataConnect({
-            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-            data: {
-                items: copyOfItems
-            }
+        const { value, name } = event.target;
+        setLocalItems((prev) => {
+            const updated = [...prev];
+            updated[index] = {
+                ...updated[index],
+                [name]: value,
+            };
+            return updated;
         });
-        // Restore cursor position after state update
-        setTimeout(() => {
-            const input = event.target;
-            if (input) {
-                input.setSelectionRange(selectionStart, selectionStart);
-            }
-        }, 0);
     };
 
     const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
@@ -251,7 +256,7 @@ const GoodsDescription = ({
                 </Grid>
                 <div className="mt-4">
                     <Items columns={columns}>
-                        {totalItems.map((item, idx) => (
+                        {localItems.map((item, idx) => (
                             <div className={styles.itemsContainer}  key={idx}>
                                 {initialState.map((row, index) => (
                                     <span key={index}>
@@ -266,7 +271,10 @@ const GoodsDescription = ({
                                                 onChange={(e,newValue) => onChangeAutoComplete({e,newValue,idx})}
                                                 options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}`) : []}
                                                 getOptionLabel={(option) => (option && option.toString().split("-").length > 1 ? option.split("-")[1] : `${(option)}` )}
-                                                renderOption={(props, option) => <li {...props} style={{fontSize: "12px"}}>{option.split("-")[0]}</li>}
+                                                renderOption={(props, option) => {
+                                                    const {key, ...restProps} = props;
+                                                    return <li key={`${key}_${props.id}`} {...restProps} style={{fontSize: "12px"}}>{option.split("-")[0]}</li>
+                                                }}
                                                 renderInput={(params) => (
                                                     <TextField
                                                         {...params}
@@ -293,32 +301,12 @@ const GoodsDescription = ({
                                                 fullWidth
                                                 id={row.label}
                                                 label={row.label}
+                                                inputRef={(el) => (inputRefs.current[idx] = el)}
                                                 name={row.key}
                                                 value={item[row.key] || ''}
                                                 variant="standard"
                                                 error={!itemsValidation[idx][row.key]}
-                                                onChange={(e) => {
-                                                    const updatedItems = [...localItems];
-                                                    updatedItems[idx][row.key] = e.target.value;
-                                                    setLocalItems(updatedItems);
-                                                    if (row.key === "qty") {
-                                                        saveDataConnect({
-                                                            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                                                            data: {
-                                                                items: updatedItems,
-                                                            },
-                                                        });
-                                                    }
-                                                }}
-                                                onBlur={() => {
-                                                    saveDataConnect({
-                                                    stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                                                    data: {
-                                                        items: localItems,
-                                                    },
-                                                    });
-                                                }}
-                                                // onChange={(e) => onItemChange(e, idx)}
+                                                onChange={(e) => onItemChange(e, idx)}
                                                 inputProps={{
                                                     style: {
                                                         textAlign: 'left',
@@ -347,9 +335,11 @@ const GoodsDescription = ({
                         ))}
                     </Items>
                 </div>
-                <Button  color="primary"  onClick={addItem}>
-                    Add More Item
-                </Button>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <Button color="primary"  onClick={addItem}>
+                        Add More Item
+                    </Button>
+                </Box>
                 <div className="mt-4">
                     <Summary invoiceForm={invoiceForm} saveDataConnect={saveDataConnect}/>
                 </div>

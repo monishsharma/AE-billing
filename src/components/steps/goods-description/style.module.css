@@ -34,7 +34,9 @@
     align-items: center !important; */
 }
 
-@media screen and (max-width: 600px) {
+
+
+@media screen and (max-width: 1024px) {
     span button {
         margin:  0 auto;
     }

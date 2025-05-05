@@ -5,11 +5,11 @@ export const roundOff = (num) => {
 }
 
 export const addPAckagingcharge = (total) => {
-    const decimalPart = (total * 100) % 100;
+  const decimal = total - Math.floor(total);
 
-    if (decimalPart === 0) {
-      return 0.00;
-    }
-
-    return (100 - decimalPart) / 100;
+  if (decimal >= 0.5) {
+    return Number((1 - decimal).toFixed(2));  // add to round up
+  } else {
+    return Number((-decimal).toFixed(2));     // subtract to round down
   }
+};

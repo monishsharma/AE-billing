@@ -226,7 +226,7 @@ const Dashboard = ({ getReportConnect }) => {
           </Grid>
           <Grid container size={{ md: 12 }} mt={4}>
             <Grid item size={{ md: 6 }}>
-              <Bar key={value + dateValue} options={options} data={data} />;
+              <Bar key={value + dateValue} options={options} data={data} height={200} />;
             </Grid>
             <Grid item size={{ md: 6 }}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
