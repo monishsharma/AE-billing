@@ -44,7 +44,7 @@ export default (api) => {
     };
 
     const getReport = ({company, month, year}) => {
-        return api.get(`/billing//get/invoice/report/${company}?month=${month}&year=${year}`);
+        return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
     };
 
 
