@@ -22,6 +22,7 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import { isMobileDevice } from "../../helpers/is-mobile-device";
 
 const Dashboard = ({ getReportConnect }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -225,10 +226,10 @@ const Dashboard = ({ getReportConnect }) => {
             />
           </Grid>
           <Grid container size={{ md: 12 }} mt={4}>
-            <Grid item size={{ md: 6 }}>
-              <Bar key={value + dateValue} options={options} data={data} height={200} />;
+            <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
+              <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice?350: 200} />;
             </Grid>
-            <Grid item size={{ md: 6 }}>
+            <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
                 <Pie data={pieData} options={pieOptions} />
               </Box>
