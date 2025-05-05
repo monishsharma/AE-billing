@@ -66,7 +66,7 @@ const Dashboard = ({
         <div className="d-flex align-items-center w-100">
               <Row className="w-100">
                 <Col sm={2}>
-                  <div className="mb-4 d-flex justify-content-start">
+                  <div className="mb-4 d-flex justify-content-start mt-4">
                     <DatePicker
                       selected={dateValue}
                       wrapperClassName="w-100"
