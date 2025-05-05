@@ -139,6 +139,24 @@ export const generateCSV = ({company, month, year}) => () => {
     })
 }
 
+export const getReport = ({company, month, year}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.getReport({company, month, year})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+
+
 
 export {
     setData,

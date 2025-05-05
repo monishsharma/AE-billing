@@ -43,8 +43,13 @@ export default (api) => {
         return api.get(`/billing/vendor/${id}`);
     };
 
+    const getReport = ({company, month, year}) => {
+        return api.get(`/billing//get/invoice/report/${company}?month=${month}&year=${year}`);
+    };
+
 
     return {
+        getReport,
         getConfig,
         getVendor,
         getBillPdf,

@@ -1,0 +1,12 @@
+.cardContainer {
+    width: 100%;
+    background-color: white;
+    height: 150px;
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid silver;
+}
+
+.percentage {
+    color: red;
+}
