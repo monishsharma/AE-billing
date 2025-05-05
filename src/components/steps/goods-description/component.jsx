@@ -297,20 +297,20 @@ const GoodsDescription = ({
                                                 value={item[row.key] || ''}
                                                 variant="standard"
                                                 error={!itemsValidation[idx][row.key]}
-                                                onChange={(e) => {
-                                                    const updatedItems = [...localItems];
-                                                    updatedItems[idx][row.key] = e.target.value;
-                                                    setLocalItems(updatedItems);
-                                                }}
-                                                onBlur={() => {
-                                                    saveDataConnect({
-                                                    stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                                                    data: {
-                                                        items: localItems,
-                                                    },
-                                                    });
-                                                }}
-                                                // onChange={(e) => onItemChange(e, idx)}
+                                                // onChange={(e) => {
+                                                //     const updatedItems = [...localItems];
+                                                //     updatedItems[idx][row.key] = e.target.value;
+                                                //     setLocalItems(updatedItems);
+                                                // }}
+                                                // onBlur={() => {
+                                                //     saveDataConnect({
+                                                //     stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+                                                //     data: {
+                                                //         items: localItems,
+                                                //     },
+                                                //     });
+                                                // }}
+                                                onChange={(e) => onItemChange(e, idx)}
                                                 inputProps={{
                                                     style: {
                                                         textAlign: 'left',
