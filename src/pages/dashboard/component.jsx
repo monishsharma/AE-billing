@@ -193,10 +193,22 @@ const Dashboard = ({
               <Tab label="Padma" value={COMPANY_TYPE.PADMA} />
             </TabList>
           </Box>
-          <TabPanel value={COMPANY_TYPE.ASHOK}>
+          <TabPanel sx={{
+            p:{
+              xs: 0,
+              sm: 2,
+              md: 0
+            }
+          }} value={COMPANY_TYPE.ASHOK}>
             {renderReport()}
           </TabPanel>
-          <TabPanel value={COMPANY_TYPE.PADMA}>
+          <TabPanel sx={{
+            p:{
+              xs: 0,
+              sm: 2,
+              md: 0
+            }
+          }} value={COMPANY_TYPE.PADMA}>
             {renderReport()}
           </TabPanel>
         </TabContext>
