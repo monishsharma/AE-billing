@@ -53,6 +53,11 @@ const Summary = ({
                                 variant="standard"
                                 onChange={onChange}
                                 disabled
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                      WebkitTextFillColor: "#000000",
+                                    },
+                                  }}
                             />
                         </span>
                     </div>
@@ -67,6 +72,11 @@ const Summary = ({
                                     value={`${parseFloat(CGST) + parseFloat(SGST)}`}
                                     variant="standard"
                                     disabled
+                                    sx={{
+                                        "& .MuiInputBase-input.Mui-disabled": {
+                                          WebkitTextFillColor: "#000000",
+                                        },
+                                      }}
                                 />
                             </span>
                         </div>
@@ -81,6 +91,11 @@ const Summary = ({
                                         value={SGST}
                                         variant="standard"
                                         disabled
+                                        sx={{
+                                            "& .MuiInputBase-input.Mui-disabled": {
+                                              WebkitTextFillColor: "#000000",
+                                            },
+                                          }}
                                     />
                                 </span>
                             </div>
@@ -93,6 +108,11 @@ const Summary = ({
                                         value={CGST}
                                         variant="standard"
                                         disabled
+                                        sx={{
+                                            "& .MuiInputBase-input.Mui-disabled": {
+                                              WebkitTextFillColor: "#000000",
+                                            },
+                                          }}
                                     />
                                 </span>
                             </div>
@@ -108,6 +128,11 @@ const Summary = ({
                                 value={roundOff}
                                 variant="standard"
                                 disabled
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                      WebkitTextFillColor: "#000000",
+                                    },
+                                  }}
                             />
                         </span>
                     </div>
@@ -121,6 +146,11 @@ const Summary = ({
                                 value={Total}
                                 variant="standard"
                                 disabled
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                      WebkitTextFillColor: "#000000",
+                                    },
+                                  }}
                             />
                         </span>
                     </div>
