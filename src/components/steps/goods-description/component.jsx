@@ -26,7 +26,7 @@ const GoodsDescription = ({
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
         [STEPPER_NAME.BUYER_DETAIL]: { customer },
-        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items },
+        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items,type = "" },
     } = invoiceForm;
 
     const {vendorsList = []} = config;
@@ -37,7 +37,6 @@ const GoodsDescription = ({
         return Object.keys(obj).find(key => obj[key] === value);
     };
 
-    const isUnqiueVendor = customer === VENDOR_NAME.RAJASTHAN_EXPLOSIVES_AND_CHEMICALS_LTD;
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
     const selectedVendor = list.filter(item => item.label === customer) || {};
     const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
@@ -45,13 +44,15 @@ const GoodsDescription = ({
     const invoiceFormDetail = {
         po: po || "",
         serial: serial || "",
-        HSN: HSN || ""
+        HSN: HSN || "",
+        type: type || ""
     };
 
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
         po: true,
         serial: true,
         HSN: true,
+        type: true
     });
 
     const [itemsValidation, setItemsValidation] = useState([]);
@@ -62,19 +63,23 @@ const GoodsDescription = ({
 
     const inputRefs = useRef([]);
 
+    const lastSavedItemsRef = React.useRef(localItems);
+
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
 
     React.useEffect(() => {
         const debounce = setTimeout(() => {
-            saveDataConnect({
-                stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                data: {
-                    items: localItems,
-                }
-            });
-        }, 300); // Debounce time
+            const isEqual = JSON.stringify(lastSavedItemsRef.current) === JSON.stringify(localItems);
+            if (!isEqual) {
+                saveDataConnect({
+                    stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+                    data: { items: localItems },
+                });
+                lastSavedItemsRef.current = localItems;
+            }
+        }, 300);
 
         return () => clearTimeout(debounce);
     }, [localItems]);
@@ -211,7 +216,7 @@ const GoodsDescription = ({
                     {INPUTS.map((input, index) => {
                         const Component = input.component;
                         return (
-                            <Grid key={index} item size={{xs:12, md: 4}}>
+                            <Grid key={index} item size={{xs:12, md: 3}}>
                                 {input.type === "select" ? (
                                     <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                         <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
@@ -223,12 +228,11 @@ const GoodsDescription = ({
                                             value={invoiceFormDetail[input.key]}
                                             onChange={onFieldChange}
                                         >
-                                           <MenuItem  value={85049010}>85049010</MenuItem>
-                                           <MenuItem  value={4407}>4407</MenuItem>
-                                           {
-                                                isUnqiueVendor &&
-                                                <MenuItem  value={6806}>6806</MenuItem>
-                                           }
+                                            {
+                                                input.options.map((opt) =>
+                                                    <MenuItem  value={opt.label}>{opt.label}</MenuItem>
+                                                )
+                                            }
                                         </Select>
                                         {!invoiceFormValidation[input.key] && (
                                             <p style={{ color: 'red', fontSize: '12px', margin: "3px 0 0 14px" }}>
@@ -323,7 +327,7 @@ const GoodsDescription = ({
                                 {items .length > 1 && <span onClick={() => deleteItem(idx)}>
                                     {
                                         isMobileDevice()?
-                                        <Button fullWidth color="error" variant="outlined"  onClick={addItem}>
+                                        <Button fullWidth color="error" variant="outlined"  onClick={deleteItem}>
                                             Delete
                                         </Button>
                                         :

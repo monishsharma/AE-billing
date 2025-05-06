@@ -26,7 +26,40 @@ export const INPUTS = [
         placeholder: "HSN Code",
         key: "HSN",
         type: "select",
-        component: TextField
+        component: TextField,
+        options: [
+            {
+                label: "85049010"
+            },
+            {
+                label: "4407"
+            },
+            {
+                label: "6806"
+            }
+        ]
+    },
+    {
+        id: "type",
+        name: "Material Type",
+        placeholder: "Material Type",
+        key: "type",
+        type: "select",
+        component: TextField,
+        options: [
+            {
+                label: "KGS"
+            },
+            {
+                label: "NOS"
+            },
+            {
+                label: "NOSB"
+            },
+            {
+                label: "SQFT"
+            }
+        ]
     }
 ];
 
@@ -102,6 +135,9 @@ export const columns = [
     {
         label: "Description",
         class: true
+    },
+    {
+        label: "type"
     },
     {
         label: "W.O/DRG",
