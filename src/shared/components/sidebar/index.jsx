@@ -4,6 +4,8 @@ import "./styles.css";
 import PropTypes from "prop-types";
 import { useLocation } from 'react-router-dom';
 import { isMobileDevice } from "../../../helpers/is-mobile-device";
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../../store/auth/action';
 
 const SideBar = ({
     isActive,
@@ -11,6 +13,7 @@ const SideBar = ({
 }) => {
     const location = useLocation();
     const { pathname } = location;
+    const dispatch = useDispatch();
 
     const onClick = () => {
         if (isMobileDevice()) {
@@ -18,6 +21,9 @@ const SideBar = ({
         }
     }
 
+    const handleLogout = () => {
+        dispatch(logoutUser());
+    }
 
     return (
         <React.Fragment>
@@ -50,10 +56,17 @@ const SideBar = ({
                             <span className="title">Vendors</span>
                         </Link>
                     </li>
+                    <li onClick={handleLogout}>
+                        <a style={{cursor: "pointer", color: "white"}}>
+                            <span className="icon">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                            </span>
+                            <span className="title">Logout</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </React.Fragment>
-
     );
 };
 

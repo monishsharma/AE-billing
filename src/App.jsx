@@ -6,15 +6,18 @@ import { isMobileDevice } from "./helpers/is-mobile-device";
 import { Outlet } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { getVendorList } from './store/config/action';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ToastContainer } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { checkAuthState } from './store/auth/action';
+import { Avatar, Typography } from '@mui/material';
 
-
-const  App = ({getVendorListConnect}) =>  {
-
+const App = ({getVendorListConnect}) =>  {
   const scrollableDivRef = useRef(null);
+  const { user } = useSelector((state) => state.auth);
   const [isActive, setIsActive] = useState(isMobileDevice() ? true : false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
@@ -28,10 +31,13 @@ const  App = ({getVendorListConnect}) =>  {
     };
   }, []);
 
+  useEffect(() => {
+    dispatch(checkAuthState());
+  }, [dispatch]);
 
-      useEffect(() => {
-          getVendorListConnect();
-      }, [getVendorListConnect]);
+  useEffect(() => {
+    getVendorListConnect();
+  }, [getVendorListConnect]);
 
   const toggleNavigation = () => {
     setIsActive(!isActive);
@@ -74,7 +80,6 @@ const mapStateToProps = ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   getVendorListConnect: getVendorList
 }, dispatch);
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 
