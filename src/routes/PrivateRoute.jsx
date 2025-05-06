@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { checkAuthState } from '../store/auth/action';
 import { CircularProgress, Box } from '@mui/material';
 
@@ -8,12 +8,17 @@ const PrivateRoute = () => {
     const dispatch = useDispatch();
     const { isAuthenticated, loading } = useSelector((state) => state.auth);
     const location = useLocation();
+    const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
-        dispatch(checkAuthState());
+        const checkAuth = async () => {
+            await dispatch(checkAuthState());
+            setIsChecking(false);
+        };
+        checkAuth();
     }, [dispatch]);
 
-    if (loading) {
+    if (isChecking || loading) {
         return (
             <Box
                 sx={{
@@ -21,7 +26,8 @@ const PrivateRoute = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '100vh',
-                    width: '100vw'
+                    width: '100vw',
+                    backgroundColor: 'white'
                 }}
             >
                 <CircularProgress />
