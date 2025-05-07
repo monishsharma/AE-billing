@@ -87,12 +87,11 @@ const ShippingDetails = ({
 
     const performValidation = () => {
         const updatedValidation = Object.keys(invoiceFormDetail).reduce((acc, key) => {
-            // Conditionally validate 'eway' only if Total > 50000
             if (isUnqiueVendor) {
                 acc[key]= true
                 return acc;
             }
-            if (key === "eway" && Total <= 50000) {
+            if (key === "eway") {
                 acc[key] = true; // skip validation
             }
 
