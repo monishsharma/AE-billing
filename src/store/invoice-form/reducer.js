@@ -40,8 +40,9 @@ const generateSummary = (items, state) => {
     const freight = state[STEPPER_NAME.GOODS_DESCRIPTION].freight;
     const totalValue = items.reduce((total, item) => total + (parseFloat(item.value) || 0), 0);
     const sgstAmount = ((totalValue + freight) * 9 ) / 100;
-    const roundOff = addPAckagingcharge(totalValue + freight + sgstAmount + sgstAmount );
-    const billAmount = totalValue + freight + sgstAmount + sgstAmount + roundOff;
+    const rawTotal = totalValue + sgstAmount + sgstAmount + freight;
+    const roundOff = addPAckagingcharge(rawTotal);
+    const billAmount = Math.round((rawTotal + roundOff) * 100) / 100;
     return {
         taxableValue: (totalValue + freight).toFixed(2),
         Total: billAmount.toFixed(2),
@@ -104,12 +105,14 @@ export const getComputedValue = (data, state) => {
         const totalItemsValue = items.reduce((total, item) => total + (parseFloat(item.value) || 0), 0);
         const totalTaxValue = parseFloat(totalItemsValue) + parseFloat(freightValue);
         const sgstAmount = (totalTaxValue * 9) / 100;
-        const roundOff = addPAckagingcharge(totalTaxValue + sgstAmount + sgstAmount );
+        const rawTotal = Number((totalTaxValue + sgstAmount + sgstAmount + freightValue).toFixed(2));
+        const roundOff = addPAckagingcharge(rawTotal);
+        const billAmount = Math.round((rawTotal + roundOff) * 100) / 100;
 
         return {
             freight: freightValue,
             taxableValue: totalTaxValue,
-            Total: (totalTaxValue + sgstAmount + sgstAmount + roundOff).toFixed(2),
+            Total: billAmount.toFixed(2),
             SGST: sgstAmount.toFixed(2),
             CGST: sgstAmount.toFixed(2),
             roundOff: roundOff.toFixed(2)
