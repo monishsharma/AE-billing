@@ -181,7 +181,7 @@ const GoodsDescription = ({
         copyOfItems[index] = {
             ...copyOfItems[index],
             ...(!invoiceId && {
-                description: description
+                description: description || items[index].description
             }),
             [selectedId || "rate"]: selectedValue || 0,
         };

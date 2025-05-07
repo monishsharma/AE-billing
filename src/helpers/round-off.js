@@ -4,12 +4,8 @@ export const roundOff = (num) => {
     return Math.round((parseFloat(num) + Number.EPSILON) * 100) / 100;
 }
 
-export const addPAckagingcharge = (total) => {
-  const decimal = total - Math.floor(total);
+export const addPAckagingcharge = (rawTotal) => {
+  const rounded = Math.round(rawTotal);
+  return +(rounded - rawTotal).toFixed(2);
 
-  if (decimal >= 0.5) {
-    return Number((1 - decimal).toFixed(2));  // add to round up
-  } else {
-    return Number((-decimal).toFixed(2));     // subtract to round down
-  }
 };
