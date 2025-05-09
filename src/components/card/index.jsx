@@ -23,7 +23,7 @@ const Card = ({
             <Box display="flex" alignItems="center" justifyContent="center">
                 {symbol && <CardIcon style={{ marginRight: 8 }} />} {/* add spacing if needed */}
                 <Typography variant="h5">
-                    {(count).toLocaleString('en-IN')}
+                    {parseInt(count).toLocaleString('en-IN')}
                 </Typography>
             </Box>
             <Avatar sx={{ width: 35, height: 35, background: "transparent", border: "1px solid black"  }}>

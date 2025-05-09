@@ -163,13 +163,13 @@ const Dashboard = ({ getReportConnect }) => {
   const handleDateChange = (selectedDate) => {
     setDateValue(selectedDate);
   };
-  console.log(reportStat?.monthlyTotals);
+
   const renderReport = () => {
     return (
       <>
         <div className="d-flex align-items-center w-100">
           <Row className="w-100">
-            <Col sm={2}>
+            <Col sm={12} md={6} lg={2}>
               <div className="mb-4 d-flex justify-content-start mt-4">
                 <DatePicker
                   selected={dateValue}

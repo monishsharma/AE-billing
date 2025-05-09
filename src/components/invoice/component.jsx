@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
-import { Paper,IconButton, Box, Chip, Typography, Checkbox } from "@mui/material";
+import { Paper, IconButton, Box, Chip, Typography, Checkbox, Modal, TextField } from "@mui/material";
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import PageLoader from "../page-loader";
 import DownloadIcon from '@mui/icons-material/Download';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import {  DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
 import DatePicker from "react-datepicker";
 import moment from "moment/moment";
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -29,9 +29,7 @@ const Invoice = ({
     updateInvoiceConnect
 }) => {
     const navigate = useNavigate();
-
-    const {_id = ""} = invoiceForm || {}
-
+    const { _id = "" } = invoiceForm || {}
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
     const [totalpage, setTotalpage] = useState(0);
@@ -40,6 +38,9 @@ const Invoice = ({
     const [dateValue, setDateValue] = useState(new Date());
     const [btnLoading, setBtnLoading] = useState(false);
     const [runEffect, setRunEffect] = useState(false);
+    const [openPaymentModal, setOpenPaymentModal] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [paymentAmount, setPaymentAmount] = useState('');
 
     const onClick = () => {
         if (_id){
@@ -47,7 +48,6 @@ const Invoice = ({
         }
         navigate("/new/invoice")
     }
-
 
     useEffect(() => {
       setIsLoading(true);
@@ -119,46 +119,124 @@ const Invoice = ({
         }
       };
 
-      const chekboxhandler = async(e, value) => {
-        e.stopPropagation();
-        setIsLoading(true);
-        const payload = {
-          ...value.row,
-          paid: e.target.checked
-        };
-        try {
-          await updateInvoiceConnect(value.row._id, payload);
-          setRunEffect(!runEffect);
-          toast[e.target.checked ? "success" : "error"](`${value.row.invoiceDetail.invoiceNO} ${e.target.checked ? "Marked Paid Succesfully" : "Marked Unpaid Succesfully"} `, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
-          });
-        } catch {
-          toast.error(`Error while marking ${value.row.invoiceDetail.invoiceNO} Paid `, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
-          });
-          setIsLoading(false);
+      const handleOpenPaymentModal = (invoice) => {
+        setSelectedInvoice(invoice);
+        setOpenPaymentModal(true);
+    };
 
+    const handleClosePaymentModal = () => {
+        setOpenPaymentModal(false);
+        setSelectedInvoice(null);
+        setPaymentAmount('');
+    };
+
+    const handlePaymentSubmit = async () => {
+        if (!paymentAmount || isNaN(paymentAmount) || parseFloat(paymentAmount) <= 0) {
+            toast.error('Please enter a valid payment amount', {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+            });
+            return;
         }
 
-      }
+        setIsLoading(true);
+        const payload = {
+            ...selectedInvoice,
+            paid: true,
+            paymentAmount: parseFloat(paymentAmount),
+            duePayment: parseFloat(selectedInvoice.goodsDescription.Total) - parseFloat(paymentAmount)
+        };
 
-      const columns1 = [
+        try {
+            await updateInvoiceConnect(selectedInvoice._id, payload);
+            setRunEffect(!runEffect);
+            toast.success(`${selectedInvoice.invoiceDetail.invoiceNO} Marked Paid Successfully`, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+            });
+            handleClosePaymentModal();
+        } catch (error) {
+            toast.error(`Error while marking ${selectedInvoice.invoiceDetail.invoiceNO} Paid`, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const chekboxhandler = async (e, value) => {
+        e.stopPropagation();
+        if (e.target.checked) {
+            handleOpenPaymentModal(value.row);
+        } else {
+            setIsLoading(true);
+            const payload = {
+                ...value.row,
+                paid: false,
+                paymentAmount: 0
+            };
+            try {
+                await updateInvoiceConnect(value.row._id, payload);
+                setRunEffect(!runEffect);
+                toast.error(`${value.row.invoiceDetail.invoiceNO} Marked Unpaid Successfully`, {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                });
+            } catch {
+                toast.error(`Error while marking ${value.row.invoiceDetail.invoiceNO} Unpaid`, {
+                    position: "bottom-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                });
+                setIsLoading(false);
+            }
+        }
+    };
+
+    const getDuePayment = (value) => {
+        if (value.row.paymentAmount){
+            return value.row.duePayment;
+        }
+
+        return value.row.goodsDescription.Total;
+    }
+
+    const columns1 = [
         {
           field: "",
           sortable: false,
@@ -204,6 +282,45 @@ const Invoice = ({
             sortable: false,
             minWidth: 120,
             valueGetter: (value, row) => `${parseFloat(row.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        },
+        {
+            field: 'Amount Paid',
+            headerName: 'Paid Amount',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            minWidth: 120,
+            renderCell: (value) => <Typography
+                    variant="body2"
+                    color={value.row.paymentAmount ? "green" : "red"}
+                    sx={{
+                        height: "100%",
+                        display:"flex",
+                        alignItems: "center"
+                    }}
+                >
+
+                    {parseFloat(value.row.paymentAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>,
+        },
+        {
+            field: 'Amount Due',
+            headerName: 'Amount Due',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            minWidth: 120,
+            renderCell: (value) => <Typography
+                    variant="body2"
+                    color="red"
+                    sx={{
+                        height: "100%",
+                        display:"flex",
+                        alignItems: "center"
+                    }}
+                >
+
+                    {parseFloat(getDuePayment(value)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </Typography>,
+
         },
         {
             field: 'Bill',
@@ -462,6 +579,48 @@ const Invoice = ({
                     </TabPanel>
                 </TabContext>
             </div>
+
+            <Modal
+                open={openPaymentModal}
+                onClose={handleClosePaymentModal}
+                aria-labelledby="payment-modal-title"
+                aria-describedby="payment-modal-description"
+            >
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                }}>
+                    <Typography id="payment-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+                        Enter Payment Amount
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        label="Payment Amount"
+                        type="number"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        sx={{ mb: 3 }}
+                        InputProps={{
+                            startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>,
+                        }}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button onClick={handleClosePaymentModal} variant="outlined">
+                            Cancel
+                        </Button>
+                        <Button onClick={handlePaymentSubmit} variant="contained" disabled={isLoading}>
+                            {isLoading ? 'Saving...' : 'Save'}
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
         </React.Fragment>
     );
 };
