@@ -104,6 +104,7 @@ const Dashboard = ({ getReportConnect }) => {
     return {label, amount};
   };
 
+
   const pieData = {
     labels: getLabel().label,
     datasets: [
@@ -224,6 +225,7 @@ const Dashboard = ({ getReportConnect }) => {
               // growth={true}
               showPercentage={false}
             />
+
           </Grid>
           <Grid container size={{ md: 12 }} mt={4}>
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
@@ -231,7 +233,10 @@ const Dashboard = ({ getReportConnect }) => {
             </Grid>
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
-                <Pie data={pieData} options={pieOptions} />
+                {
+                  value === COMPANY_TYPE.PADMA &&
+                  <Pie data={pieData} options={pieOptions} />
+                }
               </Box>
             </Grid>
           </Grid>
