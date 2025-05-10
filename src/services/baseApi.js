@@ -3,7 +3,7 @@ import axios from "axios";
 /* Create axios instance */
 const api = axios.create({
     // baseURL: "http://localhost:5050",
-    baseURL: "https://ashok-enterprises-api.onrender.com",
+    baseURL: "https://ashok-enterprises.onrender.com",
     headers: {
         "Content-Type": "application/json",
         'Access-Control-Allow-Origin': '*',
