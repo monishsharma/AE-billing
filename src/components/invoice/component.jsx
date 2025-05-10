@@ -230,10 +230,10 @@ const Invoice = ({
 
     const getDuePayment = (value) => {
         if (value.row.paymentAmount){
-            return value.row.duePayment;
+            return {amount: value.row.duePayment, color: value.row.duePayment ? "red" : "green"};
         }
 
-        return value.row.goodsDescription.Total;
+        return {amount: value.row.goodsDescription.Total, color: "red"};
     }
 
     const columns1 = [
@@ -310,7 +310,7 @@ const Invoice = ({
             minWidth: 120,
             renderCell: (value) => <Typography
                     variant="body2"
-                    color="red"
+                    color={getDuePayment(value).color}
                     sx={{
                         height: "100%",
                         display:"flex",
@@ -318,7 +318,7 @@ const Invoice = ({
                     }}
                 >
 
-                    {parseFloat(getDuePayment(value)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {parseFloat(getDuePayment(value).amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </Typography>,
 
         },
