@@ -180,9 +180,9 @@ const GoodsDescription = ({
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
-            ...(!invoiceId && {
-                description: description || items[index].description
-            }),
+            // ...(!invoiceId && {
+                description: items[index].description || description,
+            // }),
             [selectedId || "rate"]: selectedValue || 0,
         };
         saveDataConnect({

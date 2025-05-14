@@ -137,9 +137,6 @@ export const columns = [
         class: true
     },
     {
-        label: "type"
-    },
-    {
         label: "W.O/DRG",
         class: ""
     },
