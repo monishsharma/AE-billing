@@ -105,13 +105,13 @@ export const getComputedValue = (data, state) => {
         const totalItemsValue = items.reduce((total, item) => total + (parseFloat(item.value) || 0), 0);
         const totalTaxValue = parseFloat(totalItemsValue) + parseFloat(freightValue);
         const sgstAmount = (totalTaxValue * 9) / 100;
-        const rawTotal = Number((totalTaxValue + sgstAmount + sgstAmount + freightValue).toFixed(2));
+        const rawTotal = Number((totalTaxValue + sgstAmount + sgstAmount).toFixed(2));
         const roundOff = addPAckagingcharge(rawTotal);
         const billAmount = Math.round((rawTotal + roundOff) * 100) / 100;
 
         return {
             freight: freightValue,
-            taxableValue: totalTaxValue,
+            taxableValue: totalTaxValue.toFixed(2),
             Total: billAmount.toFixed(2),
             SGST: sgstAmount.toFixed(2),
             CGST: sgstAmount.toFixed(2),

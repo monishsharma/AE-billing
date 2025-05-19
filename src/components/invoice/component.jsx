@@ -244,6 +244,23 @@ const Invoice = ({
           renderCell: (value) => <Checkbox id="" checked={value.row.paid}  onClick={(e) => chekboxhandler(e,value)} />,
         },
         {
+            field: 'Bill',
+            headerName: 'Bill',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false,
+            minWidth: 100,
+            renderCell: (value) => (
+                <>
+                    <IconButton onClick={(e) => handleDownload(e, value.row)} size="small">
+                        <FileCopyIcon />
+                    </IconButton>
+                    <IconButton onClick={(e) => handleDownload(e, value.row, true)} size="small">
+                        <DownloadIcon />
+                    </IconButton>
+                </>
+            )
+        },
+        {
             field: 'Invoice No',
             headerName: 'Invoice No',
             description: 'This column has a value getter and is not sortable.',
@@ -258,6 +275,14 @@ const Invoice = ({
             minWidth: 200,
             sortable: false,
             valueGetter: (value, row) => `${row.buyerDetail.customer}`,
+        },
+        {
+            field: 'Description',
+            headerName: 'Description',
+            description: 'This column has a value getter and is not sortable.',
+            minWidth: 150,
+            sortable: false,
+            valueGetter: (value, row) => `${row.goodsDescription.items[0].type || "-"}`,
         },
         {
             field: 'date',
@@ -322,24 +347,7 @@ const Invoice = ({
                 </Typography>,
 
         },
-        {
-            field: 'Bill',
-            headerName: 'Bill',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            flex: 1,
-            minWidth: 100,
-            renderCell: (value) => (
-                <>
-                    <IconButton onClick={(e) => handleDownload(e, value.row)} size="small">
-                        <FileCopyIcon />
-                    </IconButton>
-                    <IconButton onClick={(e) => handleDownload(e, value.row, true)} size="small">
-                        <DownloadIcon />
-                    </IconButton>
-                </>
-            )
-        },
+
     ];
 
 
