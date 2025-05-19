@@ -266,7 +266,28 @@ const Invoice = ({
             description: 'This column has a value getter and is not sortable.',
             sortable: true,
             minWidth: 150,
-            valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
+            // valueGetter: (value, row) => `${row.invoiceDetail.invoiceNO}`,
+            renderCell: (value) => (
+                <Typography
+                    variant="body2"
+                    color="primary"
+                    sx={{
+                        height: "100%",
+                        display:"flex",
+                        alignItems: "center"
+                    }}
+                >
+                    {value.row.invoiceDetail.invoiceNO}
+                </Typography>
+            )
+        },
+        {
+            field: 'Description',
+            headerName: 'Description',
+            description: 'This column has a value getter and is not sortable.',
+            minWidth: 250,
+            sortable: false,
+            valueGetter: (value, row) => `${row.goodsDescription.items[0].description || "-"}`,
         },
         {
             field: 'Billed To',
@@ -276,14 +297,7 @@ const Invoice = ({
             sortable: false,
             valueGetter: (value, row) => `${row.buyerDetail.customer}`,
         },
-        {
-            field: 'Description',
-            headerName: 'Description',
-            description: 'This column has a value getter and is not sortable.',
-            minWidth: 150,
-            sortable: false,
-            valueGetter: (value, row) => `${row.goodsDescription.items[0].type || "-"}`,
-        },
+
         {
             field: 'date',
             headerName: 'Date',
