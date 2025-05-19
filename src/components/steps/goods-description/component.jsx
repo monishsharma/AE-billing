@@ -169,11 +169,11 @@ const GoodsDescription = ({
         // Split the value properly to handle long descriptions
         const parts = finalValue.split("-");
         let description = "";
-        let type = "";
+        let type = "-";
         if (parts.length > 2) {
             // Join all parts after the second one to get the full description
             description = parts.slice(2).join("-").trim();
-            type = parts[0];
+            type = parts[0] || "-";
         }
 
         const selectedId = id.split("-")[0];
@@ -184,7 +184,9 @@ const GoodsDescription = ({
             ...copyOfItems[index],
             // ...(!invoiceId && {
                 description: items[index].description || description,
-                type: items[index].type || type,
+                ...(type && {
+                    type: items[index].type || type,
+                }),
             // }),
             [selectedId || "rate"]: selectedValue || 0,
         };
