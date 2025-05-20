@@ -122,6 +122,7 @@ const Invoice = ({
       const handleOpenPaymentModal = (invoice) => {
         setSelectedInvoice(invoice);
         setOpenPaymentModal(true);
+        setPaymentAmount(invoice.goodsDescription.Total);
     };
 
     const handleClosePaymentModal = () => {
