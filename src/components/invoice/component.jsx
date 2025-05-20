@@ -240,7 +240,7 @@ const Invoice = ({
         {
           field: "",
           sortable: false,
-          minWidth: 100,
+          width: 40,
           renderCell: (value) => <Checkbox id="" checked={value.row.paid}  onClick={(e) => chekboxhandler(e,value)} />,
         },
         {
@@ -270,7 +270,7 @@ const Invoice = ({
             renderCell: (value) => (
                 <Typography
                     variant="body2"
-                    color="primary"
+                    color={moment(value.row.invoiceDetail.invoiceDate).isSame(moment(), 'day') ? "secondary" : "black"}
                     sx={{
                         height: "100%",
                         display:"flex",
@@ -304,7 +304,7 @@ const Invoice = ({
             description: 'This column has a value getter and is not sortable.',
             minWidth: 125,
             sortable: false,
-            valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("DD-MM-YYYY")}`,
+            valueGetter: (value, row) => `${moment(row.invoiceDetail.invoiceDate).format("LL")}`,
         },
         {
             field: 'status',
