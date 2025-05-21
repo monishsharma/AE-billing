@@ -27,6 +27,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
     const [newVendorList, setNewVendorList] = useState({
         name: "",
         address: "",
+        city: "",
         GSTIN: "",
         PAN: "",
         materialCode: "",
@@ -38,6 +39,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
     const [newVendorListValidation, setNewVendorListValidation] = useState({
         name: true,
         address: true,
+        city: true,
         GSTIN: true,
         PAN: true
     });
@@ -51,6 +53,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             name: "",
             address: "",
             GSTIN: "",
+            city: "",
             PAN: "",
             materialCode: "",
             vendorCode: ""
@@ -59,6 +62,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
         setNewVendorListValidation({
             name: true,
             address: true,
+            city: "",
             GSTIN: true,
             PAN: true,
             vendorCode: true
@@ -209,7 +213,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             Object.values(validationObj).every(Boolean)
         );
         if (isInvoiceValid && isItemsValid) {
-            // setIsLoading(true);
+            setIsLoading(true);
             const {code, state} = getStateInfo(newVendorList.GSTIN)
             const payload = {
                 ...newVendorList,

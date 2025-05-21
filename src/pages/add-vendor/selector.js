@@ -20,6 +20,14 @@ export const INPUTS = [
         component: TextField
     },
     {
+        id: "city",
+        name: "Distict/City",
+        placeholder: "Distict/City",
+        type: "textField",
+        key: "city",
+        component: TextField
+    },
+    {
         id: "label",
         name: "Label",
         placeholder: "Label",

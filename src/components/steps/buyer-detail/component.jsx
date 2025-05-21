@@ -65,6 +65,7 @@ const BuyerDetail = ({
                 name,
                 type,
                 state,
+                city,
                 materialCode,
             } = selectedCustomer;
             saveDataConnect({
@@ -79,6 +80,7 @@ const BuyerDetail = ({
                     name,
                     type,
                     state,
+                    city,
                     materialCode
                 }
             })
@@ -126,6 +128,7 @@ const BuyerDetail = ({
                     name,
                     type,
                     state,
+                    city,
                     materialCode
                 } = selectedCustomer;
             saveDataConnect({
@@ -139,6 +142,7 @@ const BuyerDetail = ({
                     PAN,
                     name,
                     type,
+                    city,
                     state,
                     materialCode
 
