@@ -23,7 +23,9 @@ export default (api) => {
     };
 
     const generateCSV = ({company, month, year}) => {
-        return api.get(`/billing/generate-csv?company=${company}&month=${month}&year=${year}`)
+        return api.get(`/billing/generate-csv?company=${company}&month=${month}&year=${year}`, {
+            responseType: 'blob',
+        })
     };
 
     const updateVendorList = (payload) => {

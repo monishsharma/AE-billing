@@ -127,7 +127,7 @@ export const generateCSV = ({company, month, year}) => () => {
     return new Promise((resolve, reject) => {
         BillingService.generateCSV({company, month, year})
         .then((res) => {
-            resolve(res.data);
+            resolve(res);
         })
         .catch((err) => {
             reject(err);

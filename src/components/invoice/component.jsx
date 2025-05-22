@@ -411,13 +411,22 @@ const Invoice = ({
       const downloadCSV = async () => {
         setBtnLoading(true);
         generateCSVConnect({ company: value, month: dateValue.getMonth() + 1, year: dateValue.getFullYear() })
-          .then((csvText) => {
-            const blob = new Blob([csvText], { type: 'text/csv' }); // Convert text to Blob
+          .then(({data, headers}) => {
+            const blob = new Blob([data], { type: 'text/csv' }); // Convert text to Blob
             const url = window.URL.createObjectURL(blob);
+            const contentDisposition = headers.get('Content-Disposition');
+
+            let filename = `${value} SALES .csv`; // Fallback
+            if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match && match[1]) {
+                filename = match[1];
+            }
+            }
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${value} SALES APR 2025.csv`; // Customize filename here
+            a.download = `${filename}`; // Customize filename here
             document.body.appendChild(a);
             a.click();
             a.remove();
