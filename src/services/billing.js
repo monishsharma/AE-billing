@@ -30,13 +30,19 @@ export default (api) => {
         return api.post(`/billing/update/vendor/list`, payload)
     };
 
-    const getBillPdf = (payload) => {
-        return api.get(`/billing/generate-pdf/${payload.id}/${payload.downloadOriginal}`, {
-          responseType: 'blob',
-          headers: {
-            Accept: 'application/pdf',
-          },
-        });
+    const getBillPdf = (payload, config = {}) => {
+        return api.get(
+          `/billing/generate-pdf/${payload.id}/${payload.downloadOriginal}`,
+          {
+            responseType: 'blob',
+            headers: {
+              Accept: 'application/pdf',
+              ...(config.headers || {}),
+            },
+            onDownloadProgress: config.onDownloadProgress,
+            ...config,
+          }
+        );
       };
 
     const getVendor = (id) => {

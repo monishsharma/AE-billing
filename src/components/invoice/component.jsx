@@ -85,13 +85,49 @@ const Invoice = ({
           id: row._id
         };
 
+        let toastId = null;
+
+
+        toast.info("Preparing download...", {
+            autoClose: false,
+            closeButton: false,
+            progress: 0,
+            theme: "dark",
+            transition: Bounce,
+            toastId: "download-toast"
+          });
+
         try {
-          setIsLoading(true);
+        //   setIsLoading(true);
           const pdfResponse = await getBillPdfConnect(payload, {
             responseType: "blob",
             headers: {
               Accept: "application/pdf",
             },
+            onDownloadProgress: (progressEvent) => {
+                if (progressEvent.lengthComputable) {
+                  const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+
+                  // Show or update the toast
+                  if (!toastId) {
+                    toastId = toast.info(`Downloading... ${percent}%`, {
+                      progress: percent / 100,
+                      autoClose: false,
+                      closeButton: false,
+                      theme: "dark",
+                      transition: Bounce,
+                      toastId: "download-toast", // consistent ID to update the same toast
+                    });
+                  } else {
+                    toast.update("download-toast", {
+                      render: `Downloading... ${percent}%`,
+                      progress: percent / 100,
+                      theme: "dark",
+                      transition: Bounce,
+                    });
+                  }
+                }
+              },
           });
 
           const contentDisposition = pdfResponse.headers["content-disposition"];
@@ -108,7 +144,13 @@ const Invoice = ({
           link.click();
           document.body.removeChild(link);
 
-          setIsLoading(false);
+        //   setIsLoading(false);
+        toast.update("download-toast", {
+            render: "Download complete!",
+            type: "success",
+            autoClose: 2000,
+            progress: undefined,
+          });
         } catch (pdfErr) {
           console.error("PDF generation error", pdfErr);
           Swal.fire({

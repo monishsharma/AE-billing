@@ -73,9 +73,9 @@ export const postInvoice = (payload) => () => {
     })
 }
 
-export const getBillPdf = (payload) => () => {
+export const getBillPdf = (payload, config = {}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.getBillPdf(payload)
+        BillingService.getBillPdf(payload,config)
         .then((res) => {
             resolve(res);
         })
