@@ -6,6 +6,9 @@ export const columns = [
         label: "Invoice No",
     },
     {
+        label: "Description",
+    },
+    {
         label: "Billed To",
     },
     {
@@ -18,8 +21,11 @@ export const columns = [
         label: "Amount",
     },
     {
-        label: "",
-    }
+        label: "Amount Paid",
+    },
+    {
+        label: "Amount Due",
+    },
 ]
 
 export const columns1 = [

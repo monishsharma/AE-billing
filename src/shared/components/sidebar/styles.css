@@ -17,7 +17,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  margin-top: 100px;
+  margin-top: 250px;
   padding: 0;
 }
 
@@ -70,16 +70,10 @@
 }
 
 .companyTitle {
-  position: relative;
-  display: block;
-  padding: 20px 0;
   color: white;
-  height: 60px;
-  line-height: 60px;
-  font-size: 25px;
-  text-align: center;
-  white-space: nowrap;
-  font-weight: 600;
+  width: 100%;
+  margin-top:10px;
+  /* margin: 5px 20px; */
 }
 
 .title {

@@ -385,7 +385,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                         </Grid>
                     </Grid>
                     <div className='mt-4'>
-                        <Button variant="contained" onClick={() => saveVendor()}>
+                        <Button variant="contained" onClick={() => saveVendor()} className='customBtn'>
                             Save Changes
                         </Button>
                     </div>

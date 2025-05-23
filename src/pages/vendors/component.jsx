@@ -55,7 +55,7 @@ const Vendors = ({ config }) => {
     <div className="mt-4">
       <h2 className="fw-bold">Vendors List</h2>
       <div className="mt-4">
-        <Button variant="contained" onClick={addVendor}>
+        <Button variant="contained" onClick={addVendor} className="customBtn">
           Add Vendor
         </Button>
       </div>

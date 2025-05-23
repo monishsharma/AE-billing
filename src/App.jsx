@@ -65,7 +65,7 @@ const App = ({getVendorListConnect}) =>  {
             ref={scrollableDivRef}
             onScroll={handleScroll}
           >
-            <Outlet context={{ref: scrollableDivRef}} />
+            <Outlet context={{ref: scrollableDivRef, isActive}}  />
           </div>
         </div>
       </Layout>

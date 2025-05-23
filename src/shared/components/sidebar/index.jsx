@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { isMobileDevice } from "../../../helpers/is-mobile-device";
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../../store/auth/action';
+import AE from "../../../assets/logo.png"
 
 const SideBar = ({
     isActive,
@@ -29,7 +30,8 @@ const SideBar = ({
         <React.Fragment>
             <div className={isActive ? "navigation active" : "navigation"}>
                 <Link to="/" style={{textDecoration: "none"}}>
-                    <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span>
+                    <img src={AE} alt="logo" className="companyTitle" />
+                    {/* <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span> */}
                 </Link>
                 <ul>
                     <li className={pathname === "/" ? "activeLi" : ""} onClick={onClick}>
