@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Invoice from "./component.jsx";
-import { getInvoiceList, saveApiData, resetReducer, getBillPdf, generateCSV, updateInvoice } from "../../store/invoice-form/action.js";
+import { getInvoiceList, saveApiData, resetReducer, getBillPdf, generateCSV, updateInvoice, searchInvoice } from "../../store/invoice-form/action.js";
 
 const mapStateToProps = ({
     invoiceForm
@@ -15,7 +15,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     resetReducerConnect: resetReducer,
     getBillPdfConnect: getBillPdf,
     generateCSVConnect: generateCSV,
-    updateInvoiceConnect:updateInvoice
+    updateInvoiceConnect:updateInvoice,
+    searchInvoiceConnect:searchInvoice
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invoice);

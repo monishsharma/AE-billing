@@ -1,8 +1,10 @@
 import "./table.css";
 import { useState, useEffect, forwardRef } from "react";
 import PropTypes from "prop-types";
+import { Box, Skeleton } from "@mui/material";
 
 const Table = forwardRef(({
+    isQueryRunning,
     cols,
     data = [],
     bordered,
@@ -34,7 +36,24 @@ const Table = forwardRef(({
 
     return (
         <div className="table-responsive" ref={ref}>
-            <table className={`table ${bordered ? 'table-bordered' : 'table-borderless'} ${hoverable && 'table-hover'} ${striped && 'table-striped'} ${isDark && 'table-dark'} ${isClickable && 'pointer-cursor'}`}>
+            {
+                isQueryRunning ?
+                <Box sx={{ width: "95%", margin: "60px auto" }}>
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                    <Skeleton animation="pulse" />
+                </Box>
+                :
+                <>
+                    <table className={`table ${bordered ? 'table-bordered' : 'table-borderless'} ${hoverable && 'table-hover'} ${striped && 'table-striped'} ${isDark && 'table-dark'} ${isClickable && 'pointer-cursor'}`}>
                 <thead>
                     <tr>
                         {cols.map((headerItem, index) => (
@@ -60,6 +79,8 @@ const Table = forwardRef(({
                     ))}
                 </tbody>
             </table>
+                </>
+            }
             {!data.length && <p className="text-danger text-center">No Data Found</p>}
         </div>
     );

@@ -156,6 +156,24 @@ export const getReport = ({company, month, year}) => () => {
 }
 
 
+const searchInvoice = ({company, searchTerm}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.searchInvoice({company, searchTerm})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+
+
 
 
 export {
@@ -163,6 +181,7 @@ export {
     saveData,
     saveApiData,
     resetReducer,
+    searchInvoice,
     setCurrentStep
 }
 

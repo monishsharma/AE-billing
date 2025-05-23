@@ -55,6 +55,9 @@ export default (api) => {
         return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
     };
 
+    const searchInvoice = ({company, searchTerm}) => {
+        return api.get(`/billing/search/invoice?searchTerm=${searchTerm}&company=${company}`);
+    }
 
     return {
         getReport,
@@ -66,6 +69,7 @@ export default (api) => {
         getVendorList,
         getInvoiceList,
         updateInvoice,
+        searchInvoice,
         updateVendorList
     };
 };

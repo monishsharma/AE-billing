@@ -1,11 +1,10 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import {
     Paper,
     Box,
-    Chip,
     Typography,
     Modal,
     TextField,
@@ -25,6 +24,7 @@ import { useOutletContext } from "react-router-dom";
 import { tableConstants } from "./tableConstant";
 import Pagination from "../pagination";
 import { isMobileDevice } from "../../helpers/is-mobile-device";
+import { debounce } from "../../helpers/debounce";
 
 const Invoice = ({
     invoiceForm,
@@ -33,6 +33,7 @@ const Invoice = ({
     generateCSVConnect,
     resetReducerConnect,
     updateInvoiceConnect,
+    searchInvoiceConnect
 }) => {
     const navigate = useNavigate();
     const {isActive} = useOutletContext();
@@ -51,6 +52,8 @@ const Invoice = ({
     const [openPaymentModal, setOpenPaymentModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [paymentAmount, setPaymentAmount] = useState("");
+    const [searchValue, setSearchValue] = useState("");
+    const [isQueryRunning, setIsQueryRunning] = useState(false);
 
     const onClick = () => {
         if (_id) {
@@ -71,27 +74,35 @@ const Invoice = ({
             theme: "colored",
             transition: Bounce,
             ...rest,
-        });
+    });
 
-    useEffect(() => {
+    const fetchInvoices = () => {
         setIsLoading(true);
         getInvoiceListConnect({
-            company: value,
-            page: paginationModel.page + 1,
-            limit: paginationModel.pageSize,
-            month: dateValue.getMonth() + 1,
-            year: dateValue.getFullYear(),
-        }) // page +1 because frontend is 0-based
-            .then((res) => {
-                setInvoices(res.data);
-                setTotalpage(Number(res.totalItems)); // must be total documents, not pages
-                setIsLoading(false);
-            })
-            .catch(() => {
-                setInvoices([]);
-                setIsLoading(false);
-            });
-    }, [value, paginationModel, dateValue, runEffect]);
+          company: value,
+          page: paginationModel.page + 1,
+          limit: paginationModel.pageSize,
+          month: dateValue.getMonth() + 1,
+          year: dateValue.getFullYear(),
+        })
+          .then((res) => {
+            setInvoices(res.data);
+            setTotalpage(Number(res.totalItems));
+          })
+          .catch(() => {
+            setInvoices([]);
+            setTotalpage(0);
+          })
+          .finally(() => {
+            setIsLoading(false);
+            setIsQueryRunning(false);
+          });
+      };
+
+      useEffect(() => {
+          fetchInvoices();
+      }, [value, paginationModel, dateValue, runEffect]);
+
 
     const handleChange = (event, newValue) => {
         setPaginationModel({
@@ -352,6 +363,35 @@ const Invoice = ({
         return true;
     }
 
+    const debouncedSearch = useMemo(() =>
+        debounce((searchTerm) => {
+            setIsQueryRunning(true);
+          if (searchTerm.length > 0) {
+            searchInvoiceConnect({ company: value, searchTerm })
+              .then((res) => {
+                setInvoices(res.data);
+                setTotalpage(Number(res.totalItems));
+                setIsQueryRunning(false);
+
+              })
+              .catch(() => {
+                setInvoices([]);
+                setTotalpage(0);
+                setIsQueryRunning(false);
+
+              });
+          } else {
+            fetchInvoices();
+          }
+        }, 500), [value, paginationModel, dateValue]
+      );
+
+      const handleInputChange = (e) => {
+        const val = e.target.value;
+        setSearchValue(val);
+        debouncedSearch(val);
+      };
+
     const renderInvoices = () => (
         <>
             <Paper sx={{ width: "100%", overflow: "hidden", height: "100vh" }}>
@@ -360,6 +400,7 @@ const Invoice = ({
                         data={invoices}
                         isClickable={true}
                         hoverable={true}
+                        isQueryRunning={isQueryRunning}
                         onClick={handleRowClick}
                         cols={tableConstants({
                             chekboxhandler,
@@ -459,6 +500,37 @@ const Invoice = ({
                         </Button>
                     </Box>
                 </Box>
+            </Box>
+
+            <Box className="d-flex" sx={{
+                mt: 2,
+            }}>
+                <TextField
+                    label="Search Invoice"
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => handleInputChange(e)}
+                    value={searchValue}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '20px', // 👈 Rounded corners
+                        },
+                        width: {
+                            xs: "100%",
+                            sm: "auto",
+                        },
+                    }}
+                />
+                {/* <Button
+                    variant="contained"
+                    className="customBtn"
+                    size="medium"
+                    sx={{
+                        marginLeft: 2,
+                        width: "325px",
+                    }}
+
+                >Filter</Button> */}
             </Box>
 
             <div className="mt-2">
