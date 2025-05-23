@@ -155,7 +155,7 @@ const Dashboard = ({ getReportConnect }) => {
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div className="d-grid ">
-      <Button onClick={onClick} variant="contained" size="small" ref={ref}>
+      <Button onClick={onClick} variant="contained" size="small" ref={ref} className="customBtn">
         {value}
       </Button>
     </div>
@@ -255,7 +255,12 @@ const Dashboard = ({ getReportConnect }) => {
       <div className="mt-2">
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="dashboard tabs">
+            <TabList onChange={handleChange} aria-label="dashboard tabs" textColor="black"
+                            sx={{
+                                "& .MuiTabs-indicator": {
+                                    backgroundColor: "#000", // set your custom color
+                                },
+                            }}>
               <Tab label="Ashok" value={COMPANY_TYPE.ASHOK} />
               <Tab label="Padma" value={COMPANY_TYPE.PADMA} />
             </TabList>
