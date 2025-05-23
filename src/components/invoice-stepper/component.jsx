@@ -105,7 +105,13 @@ export default function InvoiceStepper({
 
   return (
     <Box>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper activeStep={activeStep} orientation="vertical"
+        sx={{
+          '& .MuiStepIcon-root': {
+            color: 'black', // Change color for active step
+          }
+        }}
+      >
         {steps.map((step, index) => (
           <Step key={step.label}>
             <StepLabel>

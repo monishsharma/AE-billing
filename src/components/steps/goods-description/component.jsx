@@ -340,7 +340,7 @@ const GoodsDescription = ({
                     </Items>
                 </div>
                 <Box display="flex" justifyContent="center" alignItems="center">
-                    <Button color="primary"  onClick={addItem}>
+                    <Button color="primary"  onClick={addItem} className="outlinedCustomBtn">
                         Add More Item
                     </Button>
                 </Box>

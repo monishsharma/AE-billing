@@ -78,6 +78,7 @@ const Invoice = ({
 
     const fetchInvoices = () => {
         setIsLoading(true);
+        setSearchValue("")
         getInvoiceListConnect({
           company: value,
           page: paginationModel.page + 1,
@@ -100,7 +101,9 @@ const Invoice = ({
       };
 
       useEffect(() => {
-          fetchInvoices();
+        if(!searchValue) {
+              fetchInvoices();
+        }
       }, [value, paginationModel, dateValue, runEffect]);
 
 
@@ -109,6 +112,7 @@ const Invoice = ({
             page: 0,
             pageSize: 10,
         });
+        setSearchValue("");
         setValue(newValue);
     };
 
@@ -372,15 +376,21 @@ const Invoice = ({
                 setInvoices(res.data);
                 setTotalpage(Number(res.totalItems));
                 setIsQueryRunning(false);
+                setPaginationModel({
+                    page: 0,
+                    pageSize: 10,
+                });
 
               })
               .catch(() => {
                 setInvoices([]);
                 setTotalpage(0);
+                setSearchValue("");
                 setIsQueryRunning(false);
 
               });
           } else {
+            setSearchValue("");
             fetchInvoices();
           }
         }, 500), [value, paginationModel, dateValue]
@@ -417,7 +427,7 @@ const Invoice = ({
 
     return (
         <React.Fragment>
-            {paginationCheck() && <Pagination paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
+            {paginationCheck() && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
             <div className={`mt-3`}>
                 <h2 className="fw-bold">Invoice</h2>
             </div>
