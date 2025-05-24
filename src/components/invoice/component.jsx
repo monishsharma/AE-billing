@@ -100,9 +100,33 @@ const Invoice = ({
           });
       };
 
+      const fetchSearchInvoices = (searchTerm) => {
+        setIsQueryRunning(true);
+        searchInvoiceConnect({ company: value, searchTerm, page : paginationModel.page + 1})
+              .then((res) => {
+                setInvoices(res.data);
+                setTotalpage(Number(res.totalItems));
+                setIsQueryRunning(false);
+                // setPaginationModel((prev) => {
+                // const newModel = { ...paginationModel };
+                // return JSON.stringify(prev) === JSON.stringify(newModel) ? prev : newModel;
+            // });
+
+              })
+              .catch(() => {
+                setInvoices([]);
+                setTotalpage(0);
+                setSearchValue("");
+                setIsQueryRunning(false);
+
+              });
+      }
+
       useEffect(() => {
-        if(!searchValue) {
-              fetchInvoices();
+        if (searchValue.length > 0) {
+            fetchSearchInvoices(searchValue);
+        } else {
+            fetchInvoices();
         }
       }, [value, paginationModel, dateValue, runEffect]);
 
@@ -371,24 +395,7 @@ const Invoice = ({
         debounce((searchTerm) => {
             setIsQueryRunning(true);
           if (searchTerm.length > 0) {
-            searchInvoiceConnect({ company: value, searchTerm })
-              .then((res) => {
-                setInvoices(res.data);
-                setTotalpage(Number(res.totalItems));
-                setIsQueryRunning(false);
-                setPaginationModel({
-                    page: 0,
-                    pageSize: 10,
-                });
-
-              })
-              .catch(() => {
-                setInvoices([]);
-                setTotalpage(0);
-                setSearchValue("");
-                setIsQueryRunning(false);
-
-              });
+            fetchSearchInvoices(searchTerm);
           } else {
             setSearchValue("");
             fetchInvoices();
@@ -399,7 +406,14 @@ const Invoice = ({
       const handleInputChange = (e) => {
         const val = e.target.value;
         setSearchValue(val);
-        debouncedSearch(val);
+        if (val.length === 0) {
+            setPaginationModel({
+                page: 0,
+                pageSize: 10,
+            });
+        } else {
+            debouncedSearch(val);
+        }
       };
 
     const renderInvoices = () => (
@@ -424,10 +438,10 @@ const Invoice = ({
     );
 
     if (isLoading) return <PageLoader />;
-
+    console.log(totalpage)
     return (
         <React.Fragment>
-            {paginationCheck() && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
+            {paginationCheck() && parseInt(totalpage) > 10 && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
             <div className={`mt-3`}>
                 <h2 className="fw-bold">Invoice</h2>
             </div>
