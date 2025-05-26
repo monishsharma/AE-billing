@@ -55,8 +55,8 @@ export default (api) => {
         return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
     };
 
-    const searchInvoice = ({company, searchTerm}) => {
-        return api.get(`/billing/search/invoice?searchTerm=${searchTerm}&company=${company}`);
+    const searchInvoice = ({company, searchTerm,page}) => {
+        return api.get(`/billing/search/invoice?searchTerm=${searchTerm}&company=${company}&page=${page}`);
     }
 
     return {
