@@ -108,8 +108,11 @@ export default function InvoiceStepper({
       <Stepper activeStep={activeStep} orientation="vertical"
         sx={{
           '& .MuiStepIcon-root': {
-            color: 'black', // Change color for active step
-          }
+            color: 'gray', // Change color for active step
+          },
+          '& .MuiStepIcon-root.Mui-active': {
+          color: 'black', // Color for the active step
+        },
         }}
       >
         {steps.map((step, index) => (

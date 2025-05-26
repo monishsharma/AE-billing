@@ -54,7 +54,7 @@ const BuyerDetail = ({
     });
 
     React.useEffect(() => {
-        if (OPTIONS.length === 1) {
+        if (OPTIONS && selectedCompany === COMPANY_TYPE.ASHOK) {
             const selectedCustomer = OPTIONS[0];
             const {
                 address,
