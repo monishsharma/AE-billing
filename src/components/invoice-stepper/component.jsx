@@ -95,7 +95,6 @@ export default function InvoiceStepper({
     })
   };
 
-
   const handleReset = () => {
     setActiveStep(0);
     getConfigConnect();
