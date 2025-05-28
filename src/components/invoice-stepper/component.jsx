@@ -112,6 +112,9 @@ export default function InvoiceStepper({
           '& .MuiStepIcon-root.Mui-active': {
           color: 'black', // Color for the active step
         },
+         '& .MuiStepIcon-root.Mui-completed': {
+          color: 'black', // Color for the active step
+        },
         }}
       >
         {steps.map((step, index) => (

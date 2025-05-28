@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControlLabel, Grid, Stack, TextField } from '@mui/material'
+import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import React, { useState } from 'react';
 import {createInitialValue, createInitialValueValidation, getStateInfo, INPUTS, intialState} from "./selector";
 import styles from "./style.module.css"
@@ -22,7 +22,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
 
     const [isProductRateRequired, setIsProductRateRequired] = useState(true);
 
-    const validForValidation = ["name", "address", "GSTIN", "PAN", "vendorCode"]
+    const validForValidation = ["name", "address", "GSTIN", "PAN", "vendorCode", "type"];
 
     const [newVendorList, setNewVendorList] = useState({
         name: "",
@@ -32,7 +32,8 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
         PAN: "",
         materialCode: "",
         vendorCode: "",
-        label: ""
+        label: "",
+        type: ""
     });
 
 
@@ -41,7 +42,8 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
         address: true,
         city: true,
         GSTIN: true,
-        PAN: true
+        PAN: true,
+        type: true
     });
 
     const [rows, setRows] = useState([createInitialValue()]);
@@ -56,7 +58,8 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             city: "",
             PAN: "",
             materialCode: "",
-            vendorCode: ""
+            vendorCode: "",
+            type: ""
         });
 
         setNewVendorListValidation({
@@ -65,7 +68,8 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             city: "",
             GSTIN: true,
             PAN: true,
-            vendorCode: true
+            vendorCode: true,
+            type: true
         });
 
         setRows([createInitialValue()]);
@@ -205,6 +209,19 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
         setRows(updatedRows)
     }
 
+    const onSelectFieldChange = (event) => {
+        const {name, value} = event.target;
+        setNewVendorList({
+            ...newVendorList,
+            [name]: value
+        });
+        setNewVendorListValidation({
+            ...newVendorListValidation,
+            [name]: !!value
+        });
+
+    }
+
     const saveVendor = async() => {
         let vendorListCopy = [...vendorsList];
         const isInvoiceValid = performValidation();
@@ -222,7 +239,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                 isProductRateRequired,
                 value: newVendorList.name.toUpperCase().split(" ").join("_"),
                 placeholder: newVendorList.name.toUpperCase(),
-                type: code == 23 ? "ASHOK":"PADMA",
+                type: newVendorList.type,
                 ...(isProductRateRequired && {
                     supplyRate: [...rows],
                 }),
@@ -252,7 +269,6 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                     ...payload
                 }
             }
-
             updateVendorListConnect(vendorListCopy)
             .then(async() => {
                 await getVendorListConnect();
@@ -287,10 +303,32 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                         <Grid  size={{md: 5, xs: 12}}>
                         <h6 className="fw-bold mt-4 mb-4">Vendor Detail</h6>
                             <Stack spacing={2}>
+
                                 {
                                     INPUTS.map((input, index) => {
                                         const Component = input.component;
                                         return (
+                                            input.type === "select" ?
+                                            <FormControl fullWidth error={!newVendorList[input.key]}>
+                                                <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
+                                                <Select
+                                                    labelId={`${input.id}-label`}
+                                                    id={input.id}
+                                                    name={input.id}
+                                                    label={input.placeholder}
+                                                    value={newVendorList[input.key]}
+                                                    onChange={onSelectFieldChange}
+                                                >
+                                                    {
+                                                        Object.keys(input.options).map((option, idx) => (
+                                                            <MenuItem key={idx} value={option}>
+                                                                {option}
+                                                            </MenuItem>
+                                                        )
+                                                    )}
+                                                </Select>
+                                            </FormControl>
+                                            :
                                             <Component
                                                 key={index}
                                                 {...input.extraProps}

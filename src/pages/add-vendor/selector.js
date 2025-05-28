@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField';
 import { Select } from '@mui/material';
+import { COMPANY_TYPE } from '../../constants/app-constant';
 
 // Define the INPUTS array with each field's configuration
 export const INPUTS = [
@@ -34,6 +35,15 @@ export const INPUTS = [
         type: "textField",
         key: "label",
         component: TextField
+    },
+    {
+        id: "type",
+        name: "Vendor Type",
+        placeholder: "Vendor Type",
+        type: "select",
+        key: "type",
+        component: Select,
+        options: COMPANY_TYPE
     },
     {
         id: "GSTIN",
