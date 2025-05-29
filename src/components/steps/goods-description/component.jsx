@@ -294,7 +294,7 @@ const GoodsDescription = ({
                                                             ...params.inputProps,
                                                             style: {
                                                                 textAlign: 'left',
-                                                                padding: '8px 0'
+                                                                // padding: '8px 0'
                                                             }
                                                         }}
                                                     />
@@ -314,7 +314,7 @@ const GoodsDescription = ({
                                                 inputProps={{
                                                     style: {
                                                         textAlign: 'left',
-                                                        padding: '8px 0',
+                                                        // padding: '8px 0',
                                                         whiteSpace: 'pre-wrap',
                                                         wordBreak: 'break-word'
                                                     }
@@ -331,7 +331,7 @@ const GoodsDescription = ({
                                             Delete
                                         </Button>
                                         :
-                                        <DeleteOutlinedIcon color="error" />
+                                        <DeleteOutlinedIcon sx={{height: "100%"}} color="error" />
                                     }
 
                                 </span>}
@@ -339,11 +339,15 @@ const GoodsDescription = ({
                         ))}
                     </Items>
                 </div>
-                <Box display="flex" justifyContent="center" alignItems="center">
-                    <Button color="primary"  onClick={addItem} className="outlinedCustomBtn">
-                        Add More Item
-                    </Button>
-                </Box>
+                {
+                    items.length <= 9 && (
+                        <Box display="flex" justifyContent="center" alignItems="center">
+                            <Button color="primary"  onClick={addItem} className="outlinedCustomBtn">
+                                Add More Item
+                            </Button>
+                        </Box>
+                    )
+                }
                 <div className="mt-4">
                     <Summary invoiceForm={invoiceForm} saveDataConnect={saveDataConnect}/>
                 </div>

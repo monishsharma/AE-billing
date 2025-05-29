@@ -14,9 +14,11 @@ const Summary = ({
             isInterState
         },
         [STEPPER_NAME.GOODS_DESCRIPTION]: {
-            Total, SGST, CGST, freight, roundOff = 0, taxableValue
+            Total, SGST, CGST, freight, roundOff = 0, taxableValue, items = []
         }
     } = invoiceForm;
+
+    const totalQTY = items.reduce((total, item) => total + (parseFloat(item.qty) || 0), 0);
 
     const onChange = ({target: {value}}) => {
         saveDataConnect({
@@ -31,6 +33,24 @@ const Summary = ({
         <>
             <div className={styles.summaryContainer}>
                 <div className={`${styles.summaryContainer} ${styles.summaryWrapper}`}>
+                     <div>
+                        <span>Total Qty</span>
+                        <span>
+                            <TextField
+                                fullWidth
+                                name={"qty"}
+                                value={totalQTY.toFixed(2)}
+                                disabled
+                                variant="standard"
+                                onChange={onChange}
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                      WebkitTextFillColor: "#000000",
+                                    },
+                                  }}
+                            />
+                        </span>
+                    </div>
                     <div>
                         <span>Freight</span>
                         <span>

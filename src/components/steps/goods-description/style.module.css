@@ -63,3 +63,7 @@
         grid-column: span 2 !important;
     }
 }
+
+svg:hover {
+    cursor: pointer;
+}
