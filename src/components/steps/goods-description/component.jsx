@@ -12,6 +12,8 @@ import CustomSelect from "../../custom-select";
 import Summary from "../../summary";
 import { useParams } from "react-router-dom";
 import { isMobileDevice } from "../../../helpers/is-mobile-device";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+
 
 const GoodsDescription = ({
     index,
@@ -204,6 +206,18 @@ const GoodsDescription = ({
         });
     }
 
+    const copyItem = (index) => {
+        const updatedItems = [...items];
+        const newItem = { ...updatedItems[index] };
+        updatedItems.push(newItem);
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                items: updatedItems
+            }
+        });
+    }
+
     return (
         <>
             <Box
@@ -324,17 +338,18 @@ const GoodsDescription = ({
                                         )}
                                     </span>
                                 ))}
-                                {items .length > 1 && <span onClick={() => deleteItem(idx)}>
-                                    {
-                                        isMobileDevice()?
-                                        <Button fullWidth color="error" variant="outlined"  onClick={deleteItem}>
+                                {
+                                    isMobileDevice()?
+                                    <Button fullWidth color="error" variant="outlined"  onClick={() => deleteItem(idx)}>
                                             Delete
-                                        </Button>
-                                        :
-                                        <DeleteOutlinedIcon sx={{height: "100%"}} color="error" />
-                                    }
+                                    </Button>
+                                    :
+                                    <Box display="flex" justifyContent="space-around" alignItems="center" width="100%" height="100%">
+                                        <FileCopyIcon onClick={() => copyItem(idx)} sx={{height: "100%"}} color="primary" />
+                                        {items.length > 1 && <DeleteOutlinedIcon onClick={() => deleteItem(idx)} sx={{height: "100%"}} color="error" />}
+                                    </Box>
+                                }
 
-                                </span>}
                             </div>
                         ))}
                     </Items>
