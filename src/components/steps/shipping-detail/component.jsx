@@ -123,7 +123,9 @@ const ShippingDetails = ({
 
           const payload = {
             ...rest,
-            paid: false
+            ...(!id && {
+                paid: false
+            })
           };
           const action = id ? () => updateInvoiceConnect(id, payload) : () => postInvoiceConnect(payload);
 
