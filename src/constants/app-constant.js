@@ -17,7 +17,7 @@ export const VENDOR_NAME = {
 export const COMPANY  = {
     [COMPANY_TYPE.ASHOK]: {
         name: "Ashok Enterprises",
-        GSTIN: "23AQGPS4032C1Z3",
+        GSTIN: "23AQGPS4032C1ZA",
         PAN: "AQGPS4032C",
         value: COMPANY_TYPE.ASHOK,
         address: "Goyal Compound Industrial Area Hazira, Gwalior, Madhya Pradesh, India - 474004",
