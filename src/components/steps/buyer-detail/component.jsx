@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {INPUTS} from "./selector";
+import {INPUTS, orderTypeOptions} from "./selector";
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -27,7 +27,8 @@ const BuyerDetail = ({
         buyerDetail: {
             customer,
             vendorCode,
-            materialCode
+            materialCode,
+            orderType
         }
     } = invoiceForm;
 
@@ -44,17 +45,19 @@ const BuyerDetail = ({
     const invoiceFormDetail = {
         customer: customer || "",
         vendorCode: vendorCode || "",
-        materialCode: materialCode || ""
+        materialCode: materialCode || "",
+        orderType: orderType || ""
     };
 
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
         customer: true,
         vendorCode: true,
-        materialCode: true
+        materialCode: true,
+        orderType: true
     });
 
     React.useEffect(() => {
-        if (OPTIONS && selectedCompany === COMPANY_TYPE.ASHOK) {
+        if (OPTIONS.length && selectedCompany === COMPANY_TYPE.ASHOK) {
             const selectedCustomer = OPTIONS[0];
             const {
                 address,
@@ -66,6 +69,7 @@ const BuyerDetail = ({
                 type,
                 state,
                 city,
+                orderType = "",
                 materialCode,
             } = selectedCustomer;
             saveDataConnect({
@@ -81,6 +85,7 @@ const BuyerDetail = ({
                     type,
                     state,
                     city,
+                    orderType,
                     materialCode
                 }
             })
@@ -129,7 +134,8 @@ const BuyerDetail = ({
                     type,
                     state,
                     city,
-                    materialCode
+                    materialCode,
+                    orderType = ""
                 } = selectedCustomer;
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
@@ -144,8 +150,18 @@ const BuyerDetail = ({
                     type,
                     city,
                     state,
+                    orderType,
                     materialCode
 
+                }
+            })
+        } else if (name === "orderType") {
+            const selectedOption = orderTypeOptions.find(input => input.label === value);
+            saveDataConnect({
+                stepName: STEPPER_NAME.BUYER_DETAIL,
+                data: {
+                    [name]: value,
+                    materialCode: selectedOption ? selectedOption.vCode : ""
                 }
             })
         } else {
@@ -179,7 +195,7 @@ const BuyerDetail = ({
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
                     return (
-                        <Grid key={index} item size={{xs:12, md: 4}}>
+                        <Grid key={index} item size={{xs:12, md: 3}}>
                             {input.type === "select" ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
@@ -191,9 +207,18 @@ const BuyerDetail = ({
                                         value={invoiceFormDetail[input.key]}
                                         onChange={onFieldChange}
                                     >
-                                         {OPTIONS.map((option, idx) => (
-                                            <MenuItem key={idx} value={option.label}>{option.label}</MenuItem>
-                                        ))}
+                                        {
+                                            input.name === "customer" &&
+                                            OPTIONS.map((option, idx) => (
+                                                <MenuItem key={idx} value={option.label}>{option.label}</MenuItem>
+                                            ))
+                                        }
+                                        {
+                                            input.name === "orderType" &&
+                                            input.extraProps.options.map((option, idx) => (
+                                                <MenuItem key={idx} value={option.label}>{option.label}</MenuItem>
+                                            ))
+                                        }
                                     </Select>
                                     {!invoiceFormValidation[input.key] && (
                                         <p style={{ color: 'red', fontSize: '12px', margin: "3px 0 0 14px" }}>
