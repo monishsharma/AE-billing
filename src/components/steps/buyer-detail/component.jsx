@@ -69,7 +69,6 @@ const BuyerDetail = ({
                 type,
                 state,
                 city,
-                orderType = "",
                 materialCode,
             } = selectedCustomer;
             saveDataConnect({
@@ -85,8 +84,8 @@ const BuyerDetail = ({
                     type,
                     state,
                     city,
-                    orderType,
-                    materialCode
+                    orderType: orderType || invoiceFormDetail.orderType || "",
+                    materialCode: materialCode || invoiceFormDetail.materialCode || ""
                 }
             })
         }
