@@ -202,7 +202,7 @@ const BuyerDetail = ({
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
                     return (
-                        checkRenderStatus(input) && <Grid key={index} item size={{xs:12, md: selectedCompany === COMPANY_TYPE.ASHOK ? 3 : 3}}>
+                        checkRenderStatus(input) && <Grid key={index} item size={{xs:12, md: selectedCompany === COMPANY_TYPE.ASHOK ? 3 : 4}}>
                             {input.type === "select"  ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
