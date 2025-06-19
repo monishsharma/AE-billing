@@ -46,19 +46,24 @@ const BuyerDetail = ({
         customer: customer || "",
         vendorCode: vendorCode || "",
         materialCode: materialCode || "",
-        orderType: orderType || ""
+        ...(selectedCompany === COMPANY_TYPE.ASHOK && {
+            orderType: orderType || ""
+        }),
     };
 
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
         customer: true,
         vendorCode: true,
         materialCode: true,
-        orderType: true
     });
 
     React.useEffect(() => {
         if (OPTIONS.length && selectedCompany === COMPANY_TYPE.ASHOK) {
             const selectedCustomer = OPTIONS[0];
+            setInvoiceFormValidation({
+                ...invoiceFormValidation,
+                orderType: true,
+            })
             const {
                 address,
                 isInterState,
