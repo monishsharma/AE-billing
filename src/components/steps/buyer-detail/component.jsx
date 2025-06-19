@@ -178,7 +178,15 @@ const BuyerDetail = ({
         });
     };
 
-
+    const checkRenderStatus = (type) => {
+        if (selectedCompany === COMPANY_TYPE.PADMA) {
+            if ( type.name === "orderType") {
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
 
     return (
         <>
@@ -194,8 +202,8 @@ const BuyerDetail = ({
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
                     return (
-                        <Grid key={index} item size={{xs:12, md: 3}}>
-                            {input.type === "select" ? (
+                        checkRenderStatus(input) && <Grid key={index} item size={{xs:12, md: selectedCompany === COMPANY_TYPE.ASHOK ? 3 : 3}}>
+                            {input.type === "select"  ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
                                     <Select
@@ -225,7 +233,7 @@ const BuyerDetail = ({
                                         </p>
                                     )}
                                 </FormControl>
-                            ) : (
+                            ) : ( input.type === "textField" ) && (
                                 <Component
                                     {...input.extraProps}
                                     name={input.id}
