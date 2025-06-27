@@ -36,7 +36,10 @@ export const INPUTS = [
             },
             {
                 label: "6806"
-            }
+            },
+            {
+                label: "32089029"
+            }       
         ]
     },
     {
@@ -56,6 +59,7 @@ export const INPUTS = [
             {
                 label: "SQFT"
             }
+        
         ]
     }
 ];

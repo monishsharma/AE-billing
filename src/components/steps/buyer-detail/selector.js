@@ -32,7 +32,7 @@ export const INPUTS = [
         key: "vendorCode",
         component: TextField,
         extraProps: {
-            disabled: true
+            disabled: false
         }
     },
     {
