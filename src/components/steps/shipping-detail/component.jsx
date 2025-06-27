@@ -186,7 +186,7 @@ const ShippingDetails = ({
         saveDataConnect({
             stepName: STEPPER_NAME.SHIPMENT_DETAIL,
             data: {
-                [name]: value
+                [name]: value.toUpperCase()
             }
         })
 

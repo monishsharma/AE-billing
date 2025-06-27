@@ -172,7 +172,7 @@ const BuyerDetail = ({
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
-                    [name]: value
+                    [name]: value.toUpperCase(),
                 }
             })
         }

@@ -91,7 +91,7 @@ const GoodsDescription = ({
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
             data: {
-                [name]: value
+                [name]: value.toUpperCase(),
             }
         })
         setInvoiceFormValidation(prev => ({
@@ -338,6 +338,7 @@ const GoodsDescription = ({
                                         )}
                                     </span>
                                 ))}
+
                                 {
                                     isMobileDevice()?
                                     <Button fullWidth color="error" variant="outlined"  onClick={() => deleteItem(idx)}>
@@ -345,7 +346,7 @@ const GoodsDescription = ({
                                     </Button>
                                     :
                                     <Box display="flex" justifyContent="space-around" alignItems="center" width="100%" height="100%">
-                                        <FileCopyIcon onClick={() => copyItem(idx)} sx={{height: "100%"}} color="primary" />
+                                        {items.length <= 9 && <FileCopyIcon onClick={() => copyItem(idx)} sx={{height: "100%"}} color="primary" />}
                                         {items.length > 1 && <DeleteOutlinedIcon onClick={() => deleteItem(idx)} sx={{height: "100%"}} color="error" />}
                                     </Box>
                                 }

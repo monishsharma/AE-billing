@@ -48,7 +48,7 @@ export default function InvoiceStepper({
     saveApiDataConnect
 }) {
 
-  const {currentStep} = invoiceForm;
+  const {currentStep, invoiceDetail, buyerDetail, goodsDescription} = invoiceForm;
 
       const { id } = useParams();
 
@@ -100,6 +100,18 @@ export default function InvoiceStepper({
     getConfigConnect();
   };
 
+  const getSubtitle = (stepName) => {
+    if (stepName === STEPPER_NAME.INVOICE_DETAILS) {
+      return `${invoiceDetail.company} - ${invoiceDetail.invoiceNO}`;
+    }
+    if (stepName === STEPPER_NAME.BUYER_DETAIL) {
+      return `${buyerDetail.customer}`;
+    }
+    if (stepName === STEPPER_NAME.GOODS_DESCRIPTION) {
+      return `PO - ${goodsDescription.po}`;
+    }
+  }
+
   if (isLoading) return <PageLoader />
 
   return (
@@ -121,6 +133,9 @@ export default function InvoiceStepper({
           <Step key={step.label}>
             <StepLabel>
               <Typography variant="h5">{step.label}</Typography>
+              <Typography variant="subtitle2" color="textSecondary">
+                {getSubtitle(step.stepName)}
+              </Typography>
             </StepLabel>
             <StepContent sx={{
               p: {

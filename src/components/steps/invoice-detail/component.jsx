@@ -93,7 +93,7 @@ export default function InvoiceDetail({
         saveDataConnect({
             stepName: STEPPER_NAME.INVOICE_DETAILS,
             data: {
-                [name]: value,
+                [name]: value.toUpperCase(),
                 ...(name === "company" && {
                     ...otherData
                 })

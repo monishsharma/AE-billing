@@ -54,9 +54,6 @@ export const INPUTS = [
                 label: "NOS"
             },
             {
-                label: "NOSB"
-            },
-            {
                 label: "SQFT"
             }
         ]
