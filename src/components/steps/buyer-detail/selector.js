@@ -8,6 +8,7 @@ export const orderTypeOptions = [
                 { value: "Roller", label: "Roller", vCode: "280000052" },
                 { value: "Frame", label: "Frame", vCode: "283051012" },
                 { value: "Bakelite", label: "Bakelite", vCode: "320007177" },
+                { value: "Other", label: "Other", vCode: "" },
 ]
 export const INPUTS = [
     {
