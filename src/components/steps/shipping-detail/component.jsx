@@ -206,7 +206,6 @@ const ShippingDetails = ({
                 '& > :not(style)': { m: 1, width: '100%' },
             }}
             noValidate
-            autoComplete="off"
         >
             <Grid container spacing={2}>
                 {dynamicInputs.map((input, index) => {
@@ -224,6 +223,7 @@ const ShippingDetails = ({
                                     error={!invoiceFormValidation[input.key]}
                                     helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
                                     fullWidth
+                                    autoComplete={input.name}
                                 />
                             }
                         </Grid>
