@@ -123,9 +123,9 @@ export const updateInvoice = (id, payload) => () => {
 }
 
 
-export const generateCSV = ({company, month, year}) => () => {
+export const generateCSV = ({company, month, year, forGST}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.generateCSV({company, month, year})
+        BillingService.generateCSV({company, month, year, forGST})
         .then((res) => {
             resolve(res);
         })

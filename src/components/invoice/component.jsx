@@ -324,10 +324,11 @@ const Invoice = ({
         return { amount: value.goodsDescription.Total, color: "red" };
     };
 
-    const downloadCSV = async () => {
+    const downloadCSV = async (forGST = false) => {
         setBtnLoading(true);
         generateCSVConnect({
             company: value,
+            forGST,
             month: dateValue.getMonth() + 1,
             year: dateValue.getFullYear(),
         })
@@ -438,7 +439,7 @@ const Invoice = ({
     );
 
     if (isLoading) return <PageLoader />;
-    console.log(totalpage)
+
     return (
         <React.Fragment>
             {paginationCheck() && parseInt(totalpage) > 10 && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
@@ -478,8 +479,13 @@ const Invoice = ({
                 >
                     Create Invoice
                 </Button>
-                <Box className={`d-flex align-items-center ${styles.end}`}
+                <Box
                     sx={{
+                        display: "flex",
+                        flexDirection: {
+                            xs: "column",
+                            sm: "row",
+                        },
                         width: {
                             xs: "100%",
                             sm: "auto",
@@ -504,24 +510,53 @@ const Invoice = ({
                             customInput={<ExampleCustomInput />}
                         />
                     </Box>
-                    <Box className={`m-1`} sx={{
-                        width: {
-                            xs: "100%",
-                            sm: "auto",
-                        }
-                    }}  >
-                        <Button
-                            fullWidth
-                            onClick={downloadCSV}
-                            loading={btnLoading}
-                            variant="outlined"
-                            size="medium"
-                            className="outlinedCustomBtn"
-                        >
-                            <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                Export as CSV
-                            </span>
-                        </Button>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            width: {
+                                xs: "100%",
+                                sm: "auto",
+                            }
+                        }}
+                    >
+                            <Box className={`m-1`} sx={{
+                            width: {
+                                xs: "100%",
+                                sm: "auto",
+                            }
+                        }}  >
+                            <Button
+                                fullWidth
+                                onClick={downloadCSV}
+                                loading={btnLoading}
+                                variant="outlined"
+                                size="medium"
+                                className="outlinedCustomBtn"
+                            >
+                                <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
+                                    {value} Sales
+                                </span>
+                            </Button>
+                        </Box>
+                        <Box className={`m-1`} sx={{
+                            width: {
+                                xs: "100%",
+                                sm: "auto",
+                            }
+                        }}  >
+                            <Button
+                                fullWidth
+                                onClick={() => downloadCSV(true)}
+                                loading={btnLoading}
+                                variant="outlined"
+                                size="medium"
+                                className="outlinedCustomBtn"
+                            >
+                                <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
+                                    {value} GST
+                                </span>
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
             </Box>

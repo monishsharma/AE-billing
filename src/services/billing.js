@@ -22,8 +22,8 @@ export default (api) => {
         return api.patch(`/billing/update/invoice/${id}`, payload)
     };
 
-    const generateCSV = ({company, month, year}) => {
-        return api.get(`/billing/generate-csv?company=${company}&month=${month}&year=${year}`, {
+    const generateCSV = ({company, month, year, forGST}) => {
+        return api.get(`/billing/generate-csv?company=${company}&month=${month}&year=${year}&GST=${forGST}`, {
             responseType: 'blob',
         })
     };
