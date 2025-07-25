@@ -527,7 +527,7 @@ const Invoice = ({
                         }}  >
                             <Button
                                 fullWidth
-                                onClick={downloadCSV}
+                                onClick={() => downloadCSV(false)}
                                 loading={btnLoading}
                                 variant="outlined"
                                 size="medium"
