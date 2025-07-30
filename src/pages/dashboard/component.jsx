@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import { Col, Row } from "react-bootstrap";
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import PageLoader from "../../components/page-loader";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,12 +24,17 @@ import {
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { isMobileDevice } from "../../helpers/is-mobile-device";
+import { tableConstants } from "./tableConstant";
+import Table from "../../components/table";
+import Swal from "sweetalert2";
 
-const Dashboard = ({ getReportConnect }) => {
+const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
   const [reportStat, setReportStat] = useState({});
+      const [btnLoading, setBtnLoading] = useState(false);
+
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
 
   ChartJS.register(
@@ -165,24 +171,59 @@ const Dashboard = ({ getReportConnect }) => {
     setDateValue(selectedDate);
   };
 
+  const goToInvoiceDetail = (e, row) => {
+        e.stopPropagation(); // prevent triggering row click
+        resetReducerConnect();
+        window.open(`/edit/invoice/${row._id}`, '_blank');
+  }
+
+  const exportCSV = () => {
+    setBtnLoading(true);
+    generateCSVConnect({
+      company: value,
+      month: dateValue.getMonth() + 1,
+      year: dateValue.getFullYear(),
+      forUnpaid: true,
+    })
+      .then(({ data, headers }) => {
+        const blob = new Blob([data], { type: "text/csv" }); // Convert text to Blob
+        const url = window.URL.createObjectURL(blob);
+        const contentDisposition = headers.get("Content-Disposition");
+
+        let filename = `${value} UNPAID INVOICES .csv`; // Fallback
+        if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match && match[1]) {
+                filename = match[1];
+            }
+        }
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}`; // Customize filename here
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setBtnLoading(false);
+
+        window.URL.revokeObjectURL(url);
+    })
+    .catch((err) => {
+        console.log(err);
+        setBtnLoading(false);
+
+        Swal.fire({
+            icon: "error",
+            text: "Failed to generate CSV",
+        });
+    });
+  }
+
   const renderReport = () => {
     return (
       <>
         <div className="d-flex align-items-center w-100">
-          <Row className="w-100">
-            <Col sm={12} md={6} lg={2}>
-              <div className="mb-4 d-flex justify-content-start mt-4">
-                <DatePicker
-                  selected={dateValue}
-                  wrapperClassName="w-100"
-                  showMonthYearPicker
-                  onChange={handleDateChange}
-                  dateFormat="MMMM, YYYY"
-                  customInput={<ExampleCustomInput />}
-                />
-              </div>
-            </Col>
-          </Row>
+
         </div>
         <Grid container spacing={2}>
           <Grid item size={{ md: 3, xs: 12 }}>
@@ -228,8 +269,50 @@ const Dashboard = ({ getReportConnect }) => {
 
           </Grid>
           <Grid container size={{ md: 12 }} mt={4}>
+            {
+              value === COMPANY_TYPE.ASHOK &&
+              <Grid item size={{ md: 6, }} sx={{width: "100%"}}>
+                <Paper sx={{ width: "100%",  padding: 2, overflow: "auto", height: {
+                  xs: "auto",
+                  sm: "auto",
+                  md: 445,
+                } }}>
+                  <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
+                    <Grid item size={{ md: 6 }} sx={{alignItems: "center"}}>
+                      <Typography  variant="h6" color="red" className="fw-bold ">{`${reportStat?.unpaidInvoices?.length} Unpaid Invoices`}</Typography>
+                    </Grid>
+                    {!!(reportStat?.unpaidInvoices?.length)
+                    &&
+                    <Grid item size={{ md: 6 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
+                      <Button
+                        onClick={exportCSV}
+                        loading={btnLoading}
+                        variant="outlined"
+                        size="medium"
+                        className="outlinedCustomBtn"
+                      >
+                           <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
+                                    Export
+                                </span>
+                      </Button>
+                    </Grid>}
+
+                  </Grid>
+                  <div className="customTable" style={{marginTop: "20px"}}>
+                    <Table
+                        bordered={true}
+                        data={reportStat?.unpaidInvoices || []}
+                        hoverable={true}
+                        cols={tableConstants()}
+                        isClickable={true}
+                        onClick={goToInvoiceDetail}
+                    />
+                  </div>
+                </Paper>
+              </Grid>
+            }
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
-              <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />;
+              <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />
             </Grid>
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
@@ -249,8 +332,22 @@ const Dashboard = ({ getReportConnect }) => {
 
   return (
     <>
-      <div className={`mt-3`}>
-        <h2 className="fw-bold">Dashboard</h2>
+      <div>
+        <Row className="w-100 mt-4" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            <Col><h2 className="fw-bold">Dashboard</h2></Col>
+            <Col sm={12} md={6} lg={2}>
+              <div className="d-flex ">
+                <DatePicker
+                  selected={dateValue}
+                  wrapperClassName="w-100"
+                  showMonthYearPicker
+                  onChange={handleDateChange}
+                  dateFormat="MMMM, YYYY"
+                  customInput={<ExampleCustomInput />}
+                />
+              </div>
+            </Col>
+          </Row>
       </div>
       <div className="mt-2">
         <TabContext value={value}>
@@ -270,8 +367,9 @@ const Dashboard = ({ getReportConnect }) => {
               p: {
                 xs: 0,
                 sm: 2,
-                md: 0,
+                md: 0
               },
+              mt: 2
             }}
             value={COMPANY_TYPE.ASHOK}
           >
