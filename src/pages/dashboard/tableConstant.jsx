@@ -8,6 +8,9 @@ export const tableConstants = () => {
         {
             field: 'Invoice No',
             headerName: 'Invoice No',
+            style: {
+                minWidth: 125,
+            },
             render: (rowData) => (
                 <Typography
                     variant="body2"
@@ -25,11 +28,17 @@ export const tableConstants = () => {
         {
             field: 'date',
             headerName: 'Date',
+            style: {
+                minWidth: 125,
+            },
             render: (rowData) => `${moment(rowData.invoiceDetail.invoiceDate).format("LL")}`,
         },
         {
             field: 'Amount Due',
             headerName: 'Amount',
+            style: {
+                minWidth: 120,
+            },
             render: (rowData) => `${parseFloat(rowData.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         },
     ]

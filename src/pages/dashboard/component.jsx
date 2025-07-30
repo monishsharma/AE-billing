@@ -271,8 +271,8 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
           <Grid container size={{ md: 12 }} mt={4}>
             {
               value === COMPANY_TYPE.ASHOK &&
-              <Grid item size={{ md: 6, }} sx={{width: "100%"}}>
-                <Paper sx={{ width: "100%",  padding: 2, overflow: "auto", height: {
+              <Grid item size={{ md: 6 }} >
+                <Paper sx={{ height: {
                   xs: "auto",
                   sm: "auto",
                   md: 445,
@@ -298,7 +298,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
                     </Grid>}
 
                   </Grid>
-                  <div className="customTable" style={{marginTop: "20px"}}>
+                  <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
                     <Table
                         bordered={true}
                         data={reportStat?.unpaidInvoices || []}
