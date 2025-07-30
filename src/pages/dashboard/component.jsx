@@ -275,8 +275,8 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
                 <Paper sx={{ height: {
                   xs: "auto",
                   sm: "auto",
-                  md: 445,
-                } }}>
+                  md: 400,
+                }, overflow: "auto" }}>
                   <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
                     <Grid item size={{ md: 6 }} sx={{alignItems: "center"}}>
                       <Typography  variant="h6" color="red" className="fw-bold ">{`${reportStat?.unpaidInvoices?.length} Unpaid Invoices`}</Typography>
