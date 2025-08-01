@@ -54,11 +54,12 @@ const BuyerDetail = ({
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
         customer: true,
         vendorCode: true,
+        orderType: true,
         materialCode: true,
     });
 
     React.useEffect(() => {
-        if (OPTIONS.length && selectedCompany === COMPANY_TYPE.ASHOK) {
+        if (OPTIONS.length === 1 && selectedCompany === COMPANY_TYPE.ASHOK) {
             const selectedCustomer = OPTIONS[0];
             setInvoiceFormValidation({
                 ...invoiceFormValidation,

@@ -13,6 +13,9 @@ import Summary from "../../summary";
 import { useParams } from "react-router-dom";
 import { isMobileDevice } from "../../../helpers/is-mobile-device";
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import CustomAutocomplete from "../../../shared/components/autocomplete";
+import { toast, Bounce } from "react-toastify";
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 const GoodsDescription = ({
@@ -22,7 +25,10 @@ const GoodsDescription = ({
     handleNext,
     handleBack,
     invoiceForm,
-    saveDataConnect
+    saveDataConnect,
+    postHsnCodeConnect,
+    deleteHsnCodeConnect,
+    getHsnCodeListConnect
 }) => {
 
     const {
@@ -31,9 +37,23 @@ const GoodsDescription = ({
         [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items,type = "" },
     } = invoiceForm;
 
-    const {vendorsList = []} = config;
+    const {vendorsList = [], hsn: HSNLIst = []} = config;
 
     const { id: invoiceId } = useParams();
+
+    const showToast = ({ type, text, ...rest }) =>
+            toast[type](text, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+                ...rest,
+    });
 
     const getValueByKey = (obj, value) => {
         return Object.keys(obj).find(key => obj[key] === value);
@@ -87,7 +107,7 @@ const GoodsDescription = ({
     }, [localItems]);
 
     const onFieldChange = (event) => {
-        const { value, name } = event.target;
+        const { value = "", name = "" } = event.target;
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
             data: {
@@ -99,6 +119,73 @@ const GoodsDescription = ({
             [name]: !!value
         }));
     };
+
+const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
+    // Detect if this is from onInputChange (3 args) or onChange (2 args)
+    let value;
+
+    // If 3rd argument exists, this is onInputChange
+    if (typeof reasonOrUndefined === 'string') {
+        value = valueOrInput; // it's a string typed in
+    } else {
+        // It's from onChange
+        const newValue = valueOrInput;
+        if (newValue && typeof newValue === 'object' && newValue.label) {
+            value = newValue.label;
+        } else {
+            value = newValue; // may be string if user entered manually
+        }
+    }
+
+    // Now safe to use `value`
+    saveDataConnect({
+        stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+        data: {
+            HSN: value,
+        }
+    });
+
+    setInvoiceFormValidation(prev => ({
+        ...prev,
+        HSN: !!value
+    }));
+};
+
+
+    const onBlur = (event) => {
+        const { value = ""} = event.target;
+        const index = HSNLIst.findIndex(item => item.label === value);
+        const payload = {
+            label: value
+        }
+        if (index === -1 && value) {
+            postHsnCodeConnect(payload)
+            .then(async(res) => {
+                await getHsnCodeListConnect()
+                showToast({
+                    type: "success",
+                    text: `HSN ${value} Added`,
+                });
+            })
+            .catch((err) => {
+                console.error("Error saving HSN code:", err);
+            });
+        }
+    }
+
+    const deleteHSN = (item) => {
+        deleteHsnCodeConnect({
+            hsnId: item._id
+        })
+        .then(async() => {
+            await getHsnCodeListConnect()
+                showToast({
+                    type: "info",
+                    text: `HSN ${item.label} Deleted`,
+                });
+        })
+        .catch((err) => console.error("Error deleting HSN code:", err))
+    }
 
     React.useEffect(() => {
         setTotalItems(items);
@@ -231,7 +318,8 @@ const GoodsDescription = ({
                         const Component = input.component;
                         return (
                             <Grid key={index} item size={{xs:12, md: 3}}>
-                                {input.type === "select" ? (
+                                {
+                                    input.type === "select" &&
                                     <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                         <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
                                         <Select
@@ -254,19 +342,50 @@ const GoodsDescription = ({
                                             </p>
                                         )}
                                     </FormControl>
-                                ) : (
-                                    <Component
-                                            {...input.extraProps}
+                                }
+                                {
+                                    input.type === "autocomplete" &&
+                                            <CustomAutocomplete
+                                            freeSolo
+                                            id={input.id}
                                             name={input.id}
-                                            label={input.placeholder}
-                                            variant="outlined"
-                                            onChange={onFieldChange}
+                                            disableClearable={false}
                                             value={invoiceFormDetail[input.key]}
+                                            onChange={(e, value) => onAutocompleteChange(e, value)}
+                                            onInputChange={(e, value, reason) => onAutocompleteChange(e, value, reason)}
+                                            options={HSNLIst || []}
+                                            textFieldLabel={input.placeholder}
+                                            onBlur={onBlur}
                                             error={!invoiceFormValidation[input.key]}
-                                            helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
-                                            fullWidth
+                                            renderOption={(props, option) => (
+                                                <li {...props}>
+                                                    <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                                                        <span>{option.label}</span>
+                                                        <ClearIcon
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // ⛔ prevent option selection
+                                                                deleteHSN(option)
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                </li>
+                                            )}
                                         />
-                            )}
+                                }
+                                {
+                                    input.type === "textField" &&
+                                    <Component
+                                        {...input.extraProps}
+                                        name={input.id}
+                                        label={input.placeholder}
+                                        variant="outlined"
+                                        onChange={onFieldChange}
+                                        value={invoiceFormDetail[input.key]}
+                                        error={!invoiceFormValidation[input.key]}
+                                        helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
+                                        fullWidth
+                                    />
+                                }
 
                             </Grid>
                         );

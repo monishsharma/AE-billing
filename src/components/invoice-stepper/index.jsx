@@ -2,6 +2,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import InvoiceStepper from "./component.jsx";
 import { setData, setCurrentStep, saveData, getConfig, getInvoiceList, saveApiData } from "../../store/invoice-form/action.js";
+import { getHsnCodeList } from "../../store/config/action.js";
 
 const mapStateToProps = ({
     invoiceForm
@@ -13,7 +14,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     getConfigConnect: getConfig,
     setCurrentStepConnect: setCurrentStep,
     getInvoiceListConnect: getInvoiceList,
-    saveApiDataConnect: saveApiData
+    saveApiDataConnect: saveApiData,
+    getHsnCodeListConnect: getHsnCodeList
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(InvoiceStepper);

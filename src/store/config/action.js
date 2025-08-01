@@ -9,6 +9,11 @@ const setData = ({data}) => ({
     data
 });
 
+const saveHSNList = ({data}) => ({
+    type: Types.SAVE_HSN_LIST,
+    data
+});
+
 
 export const getVendorList = () => (dispatch) => {
     return new Promise((resolve, reject) => {
@@ -55,6 +60,55 @@ export const getVendor = (id) => (dispatch) => {
         })
         .catch((err) => {
             dispatch(setData({data: []}));
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const getHsnCodeList = () => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        BillingService.getHsnCodeList()
+        .then((res) => {
+            dispatch(saveHSNList({data: res.data}));
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const postHsnCode = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.postHsnCode(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const deleteHsnCode = ({hsnId}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.deleteHsnCode({hsnId})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
             reject(err);
             Swal.fire({
                 icon: "error",

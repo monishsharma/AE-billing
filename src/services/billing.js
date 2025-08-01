@@ -32,6 +32,18 @@ export default (api) => {
         return api.post(`/billing/update/vendor/list`, payload)
     };
 
+    const getHsnCodeList = () => {
+        return api.get(`/billing/hsn-codes`)
+    };
+
+    const postHsnCode = (payload) => {
+        return api.post(`/billing/hsn-codes`, payload)
+    };
+
+    const deleteHsnCode = ({hsnId}) => {
+        return api.delete(`/billing/hsn-codes/${hsnId}`)
+    };
+
     const getBillPdf = (payload, config = {}) => {
         return api.get(
           `/billing/generate-pdf/${payload.id}/${payload.downloadOriginal}`,
@@ -67,9 +79,12 @@ export default (api) => {
         postInvoice,
         generateCSV,
         getVendorList,
+        deleteHsnCode,
         getInvoiceList,
         updateInvoice,
         searchInvoice,
+        getHsnCodeList,
+        postHsnCode,
         updateVendorList
     };
 };

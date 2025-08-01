@@ -25,7 +25,7 @@ export const INPUTS = [
         name: "HSN Code",
         placeholder: "HSN Code",
         key: "HSN",
-        type: "select",
+        type: "autocomplete",
         component: TextField,
         options: [
             {
@@ -39,7 +39,7 @@ export const INPUTS = [
             },
             {
                 label: "32089029"
-            }       
+            }
         ]
     },
     {
@@ -59,7 +59,7 @@ export const INPUTS = [
             {
                 label: "SQFT"
             }
-        
+
         ]
     }
 ];

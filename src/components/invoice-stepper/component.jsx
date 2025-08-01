@@ -45,7 +45,8 @@ export default function InvoiceStepper({
     getConfigConnect,
     setCurrentStepConnect,
     getInvoiceListConnect,
-    saveApiDataConnect
+    saveApiDataConnect,
+    getHsnCodeListConnect
 }) {
 
   const {currentStep, invoiceDetail, buyerDetail, goodsDescription} = invoiceForm;
@@ -56,8 +57,9 @@ export default function InvoiceStepper({
   const [isLoading, setIsLoading] = React.useState(false)
 
   React.useEffect(() => {
-    getConfigConnect()
-  }, [getConfigConnect])
+    getConfigConnect();
+    getHsnCodeListConnect();
+  }, [getConfigConnect, getHsnCodeListConnect])
 
   React.useEffect(() => {
     if (id) {
