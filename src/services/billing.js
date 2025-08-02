@@ -67,6 +67,10 @@ export default (api) => {
         return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
     };
 
+    const getUnpaidInvoices = ({ month, year}) => {
+        return api.get(`/billing/invoice/list/unpaid?month=${month}&year=${year}`);
+    };
+
     const searchInvoice = ({company, searchTerm,page}) => {
         return api.get(`/billing/search/invoice?searchTerm=${searchTerm}&company=${company}&page=${page}`);
     }
@@ -85,6 +89,7 @@ export default (api) => {
         searchInvoice,
         getHsnCodeList,
         postHsnCode,
+        getUnpaidInvoices,
         updateVendorList
     };
 };

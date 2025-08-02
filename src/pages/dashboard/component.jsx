@@ -28,12 +28,17 @@ import { tableConstants } from "./tableConstant";
 import Table from "../../components/table";
 import Swal from "sweetalert2";
 
-const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }) => {
+const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
+  const [unpaidInvoiceDateValue, setUnpaidInvoiceDateValue] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+  });
   const [reportStat, setReportStat] = useState({});
-      const [btnLoading, setBtnLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [unpaidInvoices, setUnpaidInvoices] = useState([]);
 
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
 
@@ -153,15 +158,34 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
         setIsLoading(false);
         setReportStat({});
       });
+
   }, [value, dateValue]);
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    getUnpaidInvoicesConnect({
+      month: unpaidInvoiceDateValue.getMonth() + 1,
+      year: unpaidInvoiceDateValue.getFullYear(),
+    })
+      .then((res) => {
+        setUnpaidInvoices(res);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setUnpaidInvoices([])
+        setIsLoading(false);
+      });
+
+  }, [unpaidInvoiceDateValue]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+  const ExampleCustomInput = forwardRef(({ value, onClick, className = "customBtn", size }, ref) => (
     <div className="d-grid ">
-      <Button onClick={onClick} variant="contained" size="small" ref={ref} className="customBtn">
+      <Button onClick={onClick} variant="contained" size={size} ref={ref} className={className}>
         {value}
       </Button>
     </div>
@@ -170,6 +194,10 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
   const handleDateChange = (selectedDate) => {
     setDateValue(selectedDate);
   };
+
+  const handleUnpaidInvoiceDateChange = (selectedDate) => {
+    setUnpaidInvoiceDateValue(selectedDate);
+  }
 
   const goToInvoiceDetail = (e, row) => {
         e.stopPropagation(); // prevent triggering row click
@@ -181,8 +209,8 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
     setBtnLoading(true);
     generateCSVConnect({
       company: value,
-      month: dateValue.getMonth() + 1,
-      year: dateValue.getFullYear(),
+      month: unpaidInvoiceDateValue.getMonth() + 1,
+      year: unpaidInvoiceDateValue.getFullYear(),
       forUnpaid: true,
     })
       .then(({ data, headers }) => {
@@ -278,30 +306,42 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
                   md: 400,
                 }, overflow: "auto" }}>
                   <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
-                    <Grid item size={{ md: 6 }} sx={{alignItems: "center"}}>
-                      <Typography  variant="h6" color="red" className="fw-bold ">{`${reportStat?.unpaidInvoices?.length} Unpaid Invoices`}</Typography>
+                    <Grid item size={{ md: 4 }} sx={{alignItems: "center"}}>
+                      <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices?.length} Unpaid Invoices`}</Typography>
                     </Grid>
-                    {!!(reportStat?.unpaidInvoices?.length)
+                    {!!(unpaidInvoices?.length)
                     &&
-                    <Grid item size={{ md: 6 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
-                      <Button
-                        onClick={exportCSV}
-                        loading={btnLoading}
-                        variant="outlined"
-                        size="medium"
-                        className="outlinedCustomBtn"
-                      >
-                           <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                    Export
-                                </span>
-                      </Button>
+                    <Grid item size={{ md:8 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
+                      <Grid>
+                        <Button
+                          onClick={exportCSV}
+                          loading={btnLoading}
+                          size="small"
+                          variant="contained"
+                          className="outlinedCustomBtn"
+                        >
+                            <span style={{ visibility: btnLoading ? "hidden" : "visible", fontWeight: "bold" }}>
+                                      Export
+                                  </span>
+                        </Button>
+                      </Grid>
+                      <Grid sx={{marginLeft: "10px"}}>
+                        <DatePicker
+                          selected={unpaidInvoiceDateValue}
+                          wrapperClassName="w-100"
+                          showMonthYearPicker
+                          onChange={handleUnpaidInvoiceDateChange}
+                          dateFormat="MMMM, YYYY"
+                          customInput={<ExampleCustomInput className="outlinedCustomBtn" size="small" />}
+                        />
+                      </Grid>
                     </Grid>}
 
                   </Grid>
                   <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
                     <Table
                         bordered={true}
-                        data={reportStat?.unpaidInvoices || []}
+                        data={unpaidInvoices || []}
                         hoverable={true}
                         cols={tableConstants()}
                         isClickable={true}
@@ -343,7 +383,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect }
                   showMonthYearPicker
                   onChange={handleDateChange}
                   dateFormat="MMMM, YYYY"
-                  customInput={<ExampleCustomInput />}
+                  customInput={<ExampleCustomInput className="customBtn" />}
                 />
               </div>
             </Col>
