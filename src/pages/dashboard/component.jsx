@@ -39,6 +39,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
   const [reportStat, setReportStat] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
+  const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(false);
 
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
 
@@ -163,18 +164,18 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
 
 
   useEffect(() => {
-    setIsLoading(true);
+    setUnpaidInvoicesLoading(true);
     getUnpaidInvoicesConnect({
       month: unpaidInvoiceDateValue.getMonth() + 1,
       year: unpaidInvoiceDateValue.getFullYear(),
     })
       .then((res) => {
         setUnpaidInvoices(res);
-        setIsLoading(false);
+        setUnpaidInvoicesLoading(false);
       })
       .catch(() => {
         setUnpaidInvoices([])
-        setIsLoading(false);
+        setUnpaidInvoicesLoading(false);
       });
 
   }, [unpaidInvoiceDateValue]);
@@ -309,10 +310,9 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
                     <Grid item size={{ md: 4 }} sx={{alignItems: "center"}}>
                       <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices?.length} Unpaid Invoices`}</Typography>
                     </Grid>
-                    {!!(unpaidInvoices?.length)
-                    &&
+
                     <Grid item size={{ md:8 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
-                      <Grid>
+                      {!!(unpaidInvoices?.length) && <Grid>
                         <Button
                           onClick={exportCSV}
                           loading={btnLoading}
@@ -324,7 +324,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
                                       Export
                                   </span>
                         </Button>
-                      </Grid>
+                      </Grid>}
                       <Grid sx={{marginLeft: "10px"}}>
                         <DatePicker
                           selected={unpaidInvoiceDateValue}
@@ -335,7 +335,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
                           customInput={<ExampleCustomInput className="outlinedCustomBtn" size="small" />}
                         />
                       </Grid>
-                    </Grid>}
+                    </Grid>
 
                   </Grid>
                   <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
@@ -368,7 +368,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     );
   };
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading || unpaidInvoicesLoading) return <PageLoader />;
 
   return (
     <>
