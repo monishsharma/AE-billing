@@ -29,7 +29,7 @@ import Table from "../../components/table";
 import Swal from "sweetalert2";
 
 const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
   const [unpaidInvoiceDateValue, setUnpaidInvoiceDateValue] = useState(() => {
@@ -39,7 +39,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
   const [reportStat, setReportStat] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
-  const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(false);
+  const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(true);
 
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
 
@@ -339,12 +339,14 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
 
                   </Grid>
                   <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
+
                     <Table
                         bordered={true}
                         data={unpaidInvoices || []}
                         hoverable={true}
                         cols={tableConstants()}
                         isClickable={true}
+                        isQueryRunning={unpaidInvoicesLoading}
                         onClick={goToInvoiceDetail}
                     />
                   </div>
@@ -368,7 +370,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     );
   };
 
-  if (isLoading || unpaidInvoicesLoading) return <PageLoader />;
+  if (isLoading) return <PageLoader />;
 
   return (
     <>
