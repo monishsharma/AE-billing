@@ -94,7 +94,7 @@ export const tableConstants = ({
             field: 'date',
             headerName: 'Date',
             style: {
-                minWidth: 150,
+                minWidth: 175,
             },
             render: (rowData) => `${moment(rowData.invoiceDetail.invoiceDate).format("LL")}`,
         },
