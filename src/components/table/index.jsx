@@ -13,7 +13,8 @@ const Table = forwardRef(({
     isDark,
     isClickable,
     onClick = () => {},
-    canSearch = false
+    canSearch = false,
+    emptyTableErrorMsg = ""
 }, ref) => {
     const [search, setSearch] = useState("");
     const [searchData, setSearchData] = useState(data || []);
@@ -81,7 +82,7 @@ const Table = forwardRef(({
             </table>
                 </>
             }
-            {!data.length && <p className="text-danger text-center">No Data Found</p>}
+            {!data.length && <p className="text-danger text-center">{emptyTableErrorMsg || "No Data Found"}</p>}
         </div>
     );
 });
