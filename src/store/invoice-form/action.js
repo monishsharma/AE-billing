@@ -188,6 +188,22 @@ const searchInvoice = ({company, searchTerm, page}) => () => {
     })
 }
 
+const uploadPaymentFile = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.uploadPaymentFile(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 
 
 
@@ -198,7 +214,8 @@ export {
     saveApiData,
     resetReducer,
     searchInvoice,
-    setCurrentStep
+    setCurrentStep,
+    uploadPaymentFile
 }
 
 

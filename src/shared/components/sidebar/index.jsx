@@ -50,6 +50,14 @@ const SideBar = ({
                             <span className="title">Invoice</span>
                         </Link>
                     </li>
+                    <li className={pathname.includes("/payment") ? "activeLi" : ""} onClick={onClick}>
+                        <Link to="/payment">
+                            <span className="icon">
+                                <ion-icon name="wallet-outline"></ion-icon>
+                            </span>
+                            <span className="title">Payment</span>
+                        </Link>
+                    </li>
                     <li className={pathname.includes("/vendor") ? "activeLi" : ""} onClick={onClick}>
                         <Link to="/vendors">
                             <span className="icon">
