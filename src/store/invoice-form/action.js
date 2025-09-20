@@ -204,6 +204,22 @@ const uploadPaymentFile = (payload) => () => {
     })
 }
 
+const getPaymentInfo = ({month, year}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.getPaymentInfo({month, year})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 
 
 
@@ -215,6 +231,7 @@ export {
     resetReducer,
     searchInvoice,
     setCurrentStep,
+    getPaymentInfo,
     uploadPaymentFile
 }
 

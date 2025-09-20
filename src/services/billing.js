@@ -79,6 +79,10 @@ export default (api) => {
      return api.post(`/billing/update/payment`, payload);
     };
 
+    const getPaymentInfo = ({ month, year}) => {
+        return api.get(`/billing/payment-details?month=${month}&year=${year}`);
+    };
+
     return {
         getReport,
         getConfig,
@@ -93,6 +97,7 @@ export default (api) => {
         searchInvoice,
         getHsnCodeList,
         postHsnCode,
+        getPaymentInfo,
         getUnpaidInvoices,
         updateVendorList,
         uploadPaymentFile

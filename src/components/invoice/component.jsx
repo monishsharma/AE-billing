@@ -287,6 +287,14 @@ const Invoice = ({
 
     const chekboxhandler = async (e, row) => {
         e.stopPropagation();
+        if (row.bulkUpload) {
+            Swal.fire({
+                icon: "error",
+                title: "Action Not Allowed",
+                text: `Cannot change status of invoice ${row.invoiceDetail.invoiceNO} because it was bulk uploaded.`,
+            });
+            return;
+        }
         if (e.target.checked) {
             handleOpenPaymentModal(row);
         } else {
@@ -368,6 +376,10 @@ const Invoice = ({
 
     const handleDateChange = (selectedDate) => {
         setDateValue(selectedDate);
+        setPaginationModel({
+            page: 0,
+            pageSize: 10
+        })
     };
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -675,13 +687,14 @@ const Invoice = ({
                         }}
                     />
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                        <Button onClick={handleClosePaymentModal} variant="outlined">
+                        <Button onClick={handleClosePaymentModal} variant="outlined" className="outlinedCustomBtn">
                             Cancel
                         </Button>
                         <Button
                             onClick={handlePaymentSubmit}
                             variant="contained"
                             disabled={isLoading}
+                            className="customBtn"
                         >
                             {isLoading ? "Saving..." : "Save"}
                         </Button>
