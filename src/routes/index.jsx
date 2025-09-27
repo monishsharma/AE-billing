@@ -10,6 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import NotFound from "../components/not-found";
 import { Navigate } from "react-router-dom";
+import Payment from "../pages/payment";
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
             element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
+          {
+            path: "payment",
+            element: <Payment />,
+            errorElement: <ErrorPage />,
+          }
         ],
         errorElement: <ErrorPage />,
       },
