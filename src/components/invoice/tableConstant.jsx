@@ -13,7 +13,7 @@ export const tableConstants = ({
     [
         {
             field: "",
-            render: (rowData) => <Checkbox id="" checked={rowData.paid}  onClick={(e) => chekboxhandler(e,rowData)} />,
+            render: (rowData) => <Checkbox id="" checked={rowData.paid}   onClick={(e) => chekboxhandler(e,rowData)} />,
         },
         {
             field: 'Bill',
@@ -114,45 +114,6 @@ export const tableConstants = ({
                 minWidth: 120,
             },
             render: (rowData) => `${parseFloat(rowData.goodsDescription.Total).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        },
-        {
-            field: 'Amount Paid',
-            headerName: 'Paid Amount',
-            style: {
-                minWidth: 120,
-            },
-            render: (rowData) => <Typography
-                    variant="body2"
-                    color={rowData?.paymentAmount ? "green" : "red"}
-                    sx={{
-                        height: "100%",
-                        display:"flex",
-                        alignItems: "center"
-                    }}
-                >
-
-                    {parseFloat(rowData?.paymentAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Typography>,
-        },
-        {
-            field: 'Amount Due',
-            headerName: 'Amount Due',
-            style: {
-                minWidth: 120,
-            },
-            render: (rowData) => <Typography
-                    variant="body2"
-                    color={getDuePayment(rowData).color}
-                    sx={{
-                        height: "100%",
-                        display:"flex",
-                        alignItems: "center"
-                    }}
-                >
-
-                    {parseFloat(getDuePayment(rowData).amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Typography>,
-
         },
     ]
   )

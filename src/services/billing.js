@@ -75,6 +75,14 @@ export default (api) => {
         return api.get(`/billing/search/invoice?searchTerm=${searchTerm}&company=${company}&page=${page}`);
     }
 
+    const uploadPaymentFile = (payload) => {
+     return api.post(`/billing/update/payment`, payload);
+    };
+
+    const getPaymentInfo = ({ month, year}) => {
+        return api.get(`/billing/payment-details?month=${month}&year=${year}`);
+    };
+
     return {
         getReport,
         getConfig,
@@ -89,7 +97,9 @@ export default (api) => {
         searchInvoice,
         getHsnCodeList,
         postHsnCode,
+        getPaymentInfo,
         getUnpaidInvoices,
-        updateVendorList
+        updateVendorList,
+        uploadPaymentFile
     };
 };

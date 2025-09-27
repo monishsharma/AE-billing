@@ -32,16 +32,14 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
-  const [unpaidInvoiceDateValue, setUnpaidInvoiceDateValue] = useState(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-  });
   const [reportStat, setReportStat] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
   const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(true);
 
+  const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
+  const yearlyData = reportStat?.yearlyTotals || Array(12).fill(0);
 
   ChartJS.register(
     CategoryScale,
@@ -109,8 +107,9 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     let label = [];
     let amount = [];
     if (reportStat && reportStat.customerTotals) {
-      Object.keys(reportStat.customerTotals).map((key) => label.push(key));
-      Object.keys(reportStat.customerTotals).map((key) => amount.push(reportStat.customerTotals[key].total));
+    const itemKey = isCompanyAshok ? reportStat.ashokSalesType : reportStat.customerTotals
+      Object.keys(itemKey).map((key) => label.push(key));
+      Object.keys(itemKey).map((key) => amount.push(itemKey[key].total));
     }
 
     return {label, amount};
@@ -121,7 +120,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     labels: getLabel().label,
     datasets: [
       {
-        label: "Sales to company",
+        label: isCompanyAshok ?  "Sales Type " : "Sales to company",
         data: getLabel().amount,
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
@@ -166,8 +165,8 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
   useEffect(() => {
     setUnpaidInvoicesLoading(true);
     getUnpaidInvoicesConnect({
-      month: unpaidInvoiceDateValue.getMonth() + 1,
-      year: unpaidInvoiceDateValue.getFullYear(),
+      month: dateValue.getMonth() + 1,
+      year: dateValue.getFullYear(),
     })
       .then((res) => {
         setUnpaidInvoices(res);
@@ -178,7 +177,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
         setUnpaidInvoicesLoading(false);
       });
 
-  }, [unpaidInvoiceDateValue]);
+  }, [dateValue]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -196,9 +195,6 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     setDateValue(selectedDate);
   };
 
-  const handleUnpaidInvoiceDateChange = (selectedDate) => {
-    setUnpaidInvoiceDateValue(selectedDate);
-  }
 
   const goToInvoiceDetail = (e, row) => {
         e.stopPropagation(); // prevent triggering row click
@@ -210,8 +206,8 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
     setBtnLoading(true);
     generateCSVConnect({
       company: value,
-      month: unpaidInvoiceDateValue.getMonth() + 1,
-      year: unpaidInvoiceDateValue.getFullYear(),
+      month: dateValue.getMonth() + 1,
+      year: dateValue.getFullYear(),
       forUnpaid: true,
     })
       .then(({ data, headers }) => {
@@ -325,16 +321,6 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
                                   </span>
                         </Button>
                       </Grid>}
-                      <Grid sx={{marginLeft: "10px"}}>
-                        <DatePicker
-                          selected={unpaidInvoiceDateValue}
-                          wrapperClassName="w-100"
-                          showMonthYearPicker
-                          onChange={handleUnpaidInvoiceDateChange}
-                          dateFormat="MMMM, YYYY"
-                          customInput={<ExampleCustomInput className="outlinedCustomBtn" size="small" />}
-                        />
-                      </Grid>
                     </Grid>
 
                   </Grid>
@@ -348,6 +334,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
                         isClickable={true}
                         isQueryRunning={unpaidInvoicesLoading}
                         onClick={goToInvoiceDetail}
+                        emptyTableErrorMsg={"No Unpaid Invoice Found"}
                     />
                   </div>
                 </Paper>
@@ -358,10 +345,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
             </Grid>
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
-                {
-                  value === COMPANY_TYPE.PADMA &&
                   <Pie data={pieData} options={pieOptions} />
-                }
               </Box>
             </Grid>
           </Grid>
