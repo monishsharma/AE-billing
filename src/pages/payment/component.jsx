@@ -40,6 +40,7 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import AccessDenied from "../../components/access-denied";
 
 
 const VisuallyHiddenInput = styled("input")({
@@ -49,6 +50,7 @@ const VisuallyHiddenInput = styled("input")({
 
 
 export default function Payment({
+  auth,
   getReportConnect,
   uploadPaymentFileConnect,
   getPaymentInfoConnect
@@ -85,6 +87,8 @@ export default function Payment({
   const [accordionOpen, setAccordionOpen] = React.useState(true);
   const [tabValue, setTabValue] = React.useState("summary_0"); // keep tab state per accordion
   const [totalSales, setTotalSales] = React.useState(0);
+
+  const {user: {isAdmin} = {}} = auth || {};
 
   const handleDateChange = (selectedDate) => {
     setDateValue(selectedDate);
@@ -195,6 +199,10 @@ export default function Payment({
       </div>
     )
   );
+
+  if (!isAdmin) {
+    return <AccessDenied />
+  }
 
   if (isLoading) return <PageLoader />;
 

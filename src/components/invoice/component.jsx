@@ -287,14 +287,14 @@ const Invoice = ({
 
     const chekboxhandler = async (e, row) => {
         e.stopPropagation();
-        // if (row.bulkUpload) {
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Action Not Allowed",
-        //         text: `Cannot change status of invoice ${row.invoiceDetail.invoiceNO} because it was bulk uploaded.`,
-        //     });
-        //     return;
-        // }
+        if (row.bulkUpload) {
+            Swal.fire({
+                icon: "error",
+                title: "Action Not Allowed",
+                text: `Cannot change status of invoice ${row.invoiceDetail.invoiceNO} because it was bulk uploaded.`,
+            });
+            return;
+        }
         if (e.target.checked) {
             handleOpenPaymentModal(row);
         } else {
@@ -468,7 +468,7 @@ const Invoice = ({
                         sm: "row",
                     },
                     width: {
-                        xs: "100%"
+                        xs: "100%",
                     },
                     mt: 2,
                     alignItems: "center",

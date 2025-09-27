@@ -27,8 +27,9 @@ import { isMobileDevice } from "../../helpers/is-mobile-device";
 import { tableConstants } from "./tableConstant";
 import Table from "../../components/table";
 import Swal from "sweetalert2";
+import AccessDenied from "../../components/access-denied";
 
-const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
+const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
@@ -36,7 +37,7 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
   const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(true);
-
+  const { user: {isAdmin} = {} } = auth;
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
   const yearlyData = reportStat?.yearlyTotals || Array(12).fill(0);
@@ -353,6 +354,10 @@ const Dashboard = ({ getReportConnect, resetReducerConnect, generateCSVConnect, 
       </>
     );
   };
+
+   if (!isAdmin) {
+    return <AccessDenied />
+  }
 
   if (isLoading) return <PageLoader />;
 

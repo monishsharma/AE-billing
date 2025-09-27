@@ -4,8 +4,10 @@ import Dashboard from "./component.jsx";
 import { generateCSV, getInvoiceList, getReport, getUnpaidInvoices, resetReducer} from "../../store/invoice-form/action.js";
 
 const mapStateToProps = ({
+    auth,
     invoiceForm
 }) => ({
+    auth,
     invoiceForm
 });
 
