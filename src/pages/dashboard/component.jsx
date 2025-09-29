@@ -371,7 +371,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
       <div>
         <Row className="w-100 mt-4" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <Col><h2 className="fw-bold">Dashboard</h2></Col>
-            <Col sm={12} md={6} lg={2}>
+            <Col sm={12} md={6} lg={3}>
               <div className="d-flex ">
                 <DatePicker
                   selected={dateValue}
