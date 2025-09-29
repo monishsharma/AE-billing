@@ -67,8 +67,8 @@ export default (api) => {
         return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
     };
 
-    const getUnpaidInvoices = ({ month, year}) => {
-        return api.get(`/billing/invoice/list/unpaid?month=${month}&year=${year}`);
+    const getUnpaidInvoices = ({ month, year, company}) => {
+        return api.get(`/billing/invoice/list/unpaid?month=${month}&year=${year}&company=${company}`);
     };
 
     const searchInvoice = ({company, searchTerm,page}) => {

@@ -166,6 +166,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   useEffect(() => {
     setUnpaidInvoicesLoading(true);
     getUnpaidInvoicesConnect({
+      company: value,
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
     })
@@ -178,7 +179,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setUnpaidInvoicesLoading(false);
       });
 
-  }, [dateValue]);
+  }, [value,dateValue]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -245,6 +246,51 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
     });
   }
 
+  const renderUnpaidInvoices = () => {
+    return (
+      <Paper sx={{ height: {
+                  xs: "auto",
+                  sm: "auto",
+                  md: 400,
+                }, overflow: "auto" }}>
+                  <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
+                    <Grid item size={{ md: 4 }} sx={{alignItems: "center"}}>
+                      <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices?.length} Unpaid Invoices`}</Typography>
+                    </Grid>
+
+                    <Grid item size={{ md:8 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
+                      {!!(unpaidInvoices?.length) && <Grid>
+                        <Button
+                          onClick={exportCSV}
+                          loading={btnLoading}
+                          size="small"
+                          variant="contained"
+                          className="outlinedCustomBtn"
+                        >
+                            <span style={{ visibility: btnLoading ? "hidden" : "visible", fontWeight: "bold" }}>
+                                      Export
+                                  </span>
+                        </Button>
+                      </Grid>}
+                    </Grid>
+
+                  </Grid>
+                  <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
+                    <Table
+                        bordered={true}
+                        data={unpaidInvoices || []}
+                        hoverable={true}
+                        cols={tableConstants()}
+                        isClickable={true}
+                        isQueryRunning={unpaidInvoicesLoading}
+                        onClick={goToInvoiceDetail}
+                        emptyTableErrorMsg={"No Unpaid Invoice Found"}
+                    />
+                  </div>
+                </Paper>
+    )
+  }
+
   const renderReport = () => {
     return (
       <>
@@ -296,55 +342,14 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
           </Grid>
           <Grid container size={{ md: 12 }} mt={4}>
             {
-              value === COMPANY_TYPE.ASHOK &&
               <Grid item size={{ md: 6 }} >
-                <Paper sx={{ height: {
-                  xs: "auto",
-                  sm: "auto",
-                  md: 400,
-                }, overflow: "auto" }}>
-                  <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
-                    <Grid item size={{ md: 4 }} sx={{alignItems: "center"}}>
-                      <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices?.length} Unpaid Invoices`}</Typography>
-                    </Grid>
-
-                    <Grid item size={{ md:8 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
-                      {!!(unpaidInvoices?.length) && <Grid>
-                        <Button
-                          onClick={exportCSV}
-                          loading={btnLoading}
-                          size="small"
-                          variant="contained"
-                          className="outlinedCustomBtn"
-                        >
-                            <span style={{ visibility: btnLoading ? "hidden" : "visible", fontWeight: "bold" }}>
-                                      Export
-                                  </span>
-                        </Button>
-                      </Grid>}
-                    </Grid>
-
-                  </Grid>
-                  <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
-
-                    <Table
-                        bordered={true}
-                        data={unpaidInvoices || []}
-                        hoverable={true}
-                        cols={tableConstants()}
-                        isClickable={true}
-                        isQueryRunning={unpaidInvoicesLoading}
-                        onClick={goToInvoiceDetail}
-                        emptyTableErrorMsg={"No Unpaid Invoice Found"}
-                    />
-                  </div>
-                </Paper>
+                {renderUnpaidInvoices()}
               </Grid>
             }
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />
             </Grid>
-            <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
+            <Grid item size={{ md: 12 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
                   <Pie data={pieData} options={pieOptions} />
               </Box>

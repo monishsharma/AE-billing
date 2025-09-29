@@ -139,9 +139,9 @@ export const generateCSV = ({company, month, year, forGST, forUnpaid}) => () => 
     })
 }
 
-export const getUnpaidInvoices = ({month, year}) => () => {
+export const getUnpaidInvoices = ({month, year, company}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.getUnpaidInvoices({month, year})
+        BillingService.getUnpaidInvoices({month, year, company})
         .then((res) => {
             resolve(res.data);
         })
