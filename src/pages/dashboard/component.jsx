@@ -349,11 +349,11 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />
             </Grid>
-            <Grid item size={{ md: 12 }} sx={{width: "100%"}}>
+            {value === COMPANY_TYPE.PADMA && <Grid item size={{ md: 12 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
                   <Pie data={pieData} options={pieOptions} />
               </Box>
-            </Grid>
+            </Grid>}
           </Grid>
         </Grid>
       </>
