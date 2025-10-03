@@ -36,7 +36,8 @@ const Invoice = ({
     searchInvoiceConnect
 }) => {
     const navigate = useNavigate();
-    const {isActive} = useOutletContext();
+    const {isActive, ref} = useOutletContext();
+    const scroll = localStorage.getItem("scroll");
     const { _id = "" } = invoiceForm || {};
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
@@ -54,6 +55,12 @@ const Invoice = ({
     const [paymentAmount, setPaymentAmount] = useState("");
     const [searchValue, setSearchValue] = useState("");
     const [isQueryRunning, setIsQueryRunning] = useState(false);
+
+    useEffect(() => {
+        if(!isLoading&& invoices.length) {
+        ref.current.scrollTop = scroll;
+        }
+    }, [isLoading, invoices])
 
     const onClick = () => {
         if (_id) {
@@ -75,7 +82,6 @@ const Invoice = ({
             transition: Bounce,
             ...rest,
     });
-
     const fetchInvoices = () => {
         setIsLoading(true);
         setSearchValue("")
@@ -431,7 +437,7 @@ const Invoice = ({
 
     const renderInvoices = () => (
         <>
-            <Paper sx={{ width: "100%", overflow: "hidden", height: "100vh" }}>
+            <Paper sx={{ width: "100%", overflow: "hidden", height: "auto" }}>
                 <div className="customTable">
                     <Table
                         data={invoices}

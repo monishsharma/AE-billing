@@ -22,7 +22,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding:  10px;
   z-index: 99999;
 }
 
@@ -45,7 +44,5 @@
   .smallmain {
     width: 100%;
   }
-  .topbar {
-    padding: 10px;
-  }
+
 }
