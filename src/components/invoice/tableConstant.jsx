@@ -89,7 +89,14 @@ export const tableConstants = ({
             },
             render: (rowData) => `${rowData.buyerDetail.customer}`,
         },
-
+        {
+            field: 'P.O. No',
+            headerName: 'P.O. No',
+            style: {
+                minWidth: 150,
+            },
+            render: (rowData) => `${rowData.goodsDescription.po}`,
+        },
         {
             field: 'date',
             headerName: 'Date',
