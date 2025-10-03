@@ -49,7 +49,7 @@ export default function InvoiceStepper({
     getHsnCodeListConnect
 }) {
 
-  const {currentStep, invoiceDetail, buyerDetail, goodsDescription} = invoiceForm;
+  const {currentStep, invoiceDetail, buyerDetail, goodsDescription, shippingDetail} = invoiceForm;
 
       const { id } = useParams();
 
@@ -114,6 +114,36 @@ export default function InvoiceStepper({
     }
   }
 
+  const isStepCompleted = (step) => {
+
+    switch (step.stepName) {
+      case STEPPER_NAME.INVOICE_DETAILS:
+        return Boolean(invoiceDetail?.invoiceNO);
+      case STEPPER_NAME.BUYER_DETAIL:
+        return Boolean(buyerDetail?.materialCode);
+      case STEPPER_NAME.GOODS_DESCRIPTION:
+        return Boolean(goodsDescription?.po);
+      case STEPPER_NAME.SHIPMENT_DETAIL:
+        return Boolean(shippingDetail?.vehicleNo);
+      default:
+        return false;
+    }
+  };
+
+  const jumpToStep = (stepIndex) => {
+    // allow jump only if all previous steps are completed
+    const canJump = steps.slice(0, stepIndex).every((s, i) => isStepCompleted(s, i));
+
+    if (canJump) {
+      setActiveStep(stepIndex);
+      setCurrentStepConnect({ step: stepIndex });
+    } else {
+      console.warn("You can't jump ahead, previous steps incomplete");
+    }
+  };
+
+
+
   if (isLoading) return <PageLoader />
 
   return (
@@ -132,8 +162,8 @@ export default function InvoiceStepper({
         }}
       >
         {steps.map((step, index) => (
-          <Step key={step.label}>
-            <StepLabel>
+          <Step completed={isStepCompleted(step)} key={step.label}  sx={{cursor: 'pointer'}}>
+            <StepLabel onClick={() => jumpToStep(index)}>
               <Typography variant="h5">{step.label}</Typography>
               <Typography variant="subtitle2" color="textSecondary">
                 {getSubtitle(step.stepName)}
