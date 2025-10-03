@@ -131,10 +131,10 @@ export default function InvoiceStepper({
   };
 
   const jumpToStep = (stepIndex) => {
-    // allow jump only if all previous steps are completed
+
     const canJump = steps.slice(0, stepIndex).every((s, i) => isStepCompleted(s, i));
 
-    if (canJump) {
+    if (canJump && id) {
       setActiveStep(stepIndex);
       setCurrentStepConnect({ step: stepIndex });
     } else {
