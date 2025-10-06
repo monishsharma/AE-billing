@@ -25,6 +25,8 @@ import { tableConstants } from "./tableConstant";
 import Pagination from "../pagination";
 import { isMobileDevice } from "../../helpers/is-mobile-device";
 import { debounce } from "../../helpers/debounce";
+import { DataGrid } from "@mui/x-data-grid";
+import {  getColumns } from "./selector";
 
 const Invoice = ({
     invoiceForm,
@@ -45,7 +47,7 @@ const Invoice = ({
     const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
-        pageSize: 10,
+        pageSize: 20,
     });
     const [dateValue, setDateValue] = useState(new Date());
     const [btnLoading, setBtnLoading] = useState(false);
@@ -69,7 +71,7 @@ const Invoice = ({
         navigate("/new/invoice");
     };
 
-    const showToast = ({ type, text, ...rest }) =>
+    const showToast = React.useCallback(({ type, text, ...rest }) =>
         toast[type](text, {
             position: "bottom-right",
             autoClose: 3000,
@@ -81,7 +83,7 @@ const Invoice = ({
             theme: "colored",
             transition: Bounce,
             ...rest,
-    });
+    }), []);
     const fetchInvoices = () => {
         setIsLoading(true);
         setSearchValue("")
@@ -146,13 +148,13 @@ const Invoice = ({
         setValue(newValue);
     };
 
-    const handleRowClick = async (e, row) => {
-        e.stopPropagation(); // prevent triggering row click
+    const handleRowClick = async ({row}) => {
+        // e.stopPropagation(); // prevent triggering row click
         resetReducerConnect();
         navigate(`/edit/invoice/${row._id}`);
     };
 
-    const handleDownload = async (e, row, downloadOriginal = false) => {
+    const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
         e.stopPropagation(); // prevent triggering row click
 
         const payload = {
@@ -236,13 +238,13 @@ const Invoice = ({
             });
             setIsLoading(false);
         }
-    };
+    }, [getBillPdfConnect, showToast, setIsLoading]);
 
-    const handleOpenPaymentModal = (invoice) => {
+    const handleOpenPaymentModal = React.useCallback((invoice) => {
         setSelectedInvoice(invoice);
         setOpenPaymentModal(true);
         setPaymentAmount(invoice.goodsDescription.Total);
-    };
+    }, []);
 
     const handleClosePaymentModal = () => {
         setOpenPaymentModal(false);
@@ -291,7 +293,7 @@ const Invoice = ({
         }
     };
 
-    const chekboxhandler = async (e, row) => {
+    const chekboxhandler = React.useCallback(async (e, row) => {
         e.stopPropagation();
         if (row.bulkUpload) {
             Swal.fire({
@@ -312,7 +314,7 @@ const Invoice = ({
             };
             try {
                 await updateInvoiceConnect(row._id, payload);
-                setRunEffect(!runEffect);
+                setRunEffect((prev) => !prev);
                 showToast({
                     type: "error",
                     text: `${row.invoiceDetail.invoiceNO} Marked Unpaid Successfully`,
@@ -325,7 +327,7 @@ const Invoice = ({
                 setIsLoading(false);
             }
         }
-    };
+    }, [updateInvoiceConnect, showToast, handleOpenPaymentModal]);
 
     const getDuePayment = (value) => {
         if (value.paymentAmount) {
@@ -435,10 +437,12 @@ const Invoice = ({
         }
       };
 
+      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler }), [handleDownload, chekboxhandler]);
+
     const renderInvoices = () => (
         <>
-            <Paper sx={{ width: "100%", overflow: "hidden", height: "auto" }}>
-                <div className="customTable">
+            <Paper sx={{ width: "100%", overflow: "hidden", height: "55vh" }}>
+                {/* <div className="customTable">
                     <Table
                         data={invoices}
                         isClickable={true}
@@ -451,16 +455,41 @@ const Invoice = ({
                             getDuePayment,
                         })}
                     />
-                </div>
+                </div> */}
+                <DataGrid
+                    rows={invoices}
+                    getRowId={(row) => row._id}
+                    columns={columns}
+                    disableColumnMenu={true}
+                    onRowClick={handleRowClick}
+                    loading={isLoading || isQueryRunning}
+                    disableRowSelectionOnClick
+                    disableColumnResize
+
+                     sx={{
+                        '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
+                        outline: 'none !important',
+                        },
+                        cursor: 'pointer',
+                     }}
+                    initialState={
+                        {
+                            pagination: {
+                                paginationModel,
+                            },
+                        }
+                    }
+                    // showToolbar
+                />
             </Paper>
         </>
     );
 
-    if (isLoading) return <PageLoader />;
+    // if (isLoading) return <PageLoader />;
 
     return (
         <React.Fragment>
-            {paginationCheck() && parseInt(totalpage) > 10 && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />}
+            {/* {paginationCheck() && parseInt(totalpage) > 10 && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />} */}
             <div className={`mt-3`}>
                 <h2 className="fw-bold">Invoice</h2>
             </div>
@@ -598,16 +627,6 @@ const Invoice = ({
                         },
                     }}
                 />
-                {/* <Button
-                    variant="contained"
-                    className="customBtn"
-                    size="medium"
-                    sx={{
-                        marginLeft: 2,
-                        width: "325px",
-                    }}
-
-                >Filter</Button> */}
             </Box>
 
             <div className="mt-2">
