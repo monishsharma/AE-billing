@@ -57,8 +57,12 @@ export default function InvoiceStepper({
   const [isLoading, setIsLoading] = React.useState(false)
 
   React.useEffect(() => {
-    getConfigConnect();
-    getHsnCodeListConnect();
+    async function fetchConfigData() {
+    await getConfigConnect();
+    await getHsnCodeListConnect();
+  }
+    fetchConfigData();
+
   }, [getConfigConnect, getHsnCodeListConnect])
 
   React.useEffect(() => {

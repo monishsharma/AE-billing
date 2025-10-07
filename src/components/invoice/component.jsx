@@ -457,7 +457,7 @@ const Invoice = ({
                     />
                 </div> */}
                 <DataGrid
-                    rows={invoices}
+                    rows={isLoading || isQueryRunning ? [] : invoices}
                     getRowId={(row) => row._id}
                     columns={columns}
                     disableColumnMenu={true}
