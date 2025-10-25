@@ -6,6 +6,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Card from "../../components/card";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import ScaleIcon from '@mui/icons-material/Scale';
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import DatePicker from "react-datepicker";
 import { Col, Row } from "react-bootstrap";
@@ -73,7 +74,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
       },
       title: {
         display: true,
-        text: "Customer Breakdown",
+        text: isCompanyAshok ? "Sales Type" : "Customer Breakdown",
       },
     },
   };
@@ -308,6 +309,15 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
               growth={reportStat?.invoiceAmountChange?.growth}
             />
           </Grid>
+          {isCompanyAshok && <Grid item size={{ md: 3, xs: 12 }}>
+            <Card
+              symbol={true}
+              count={reportStat?.ashokSalesType["Frame"]?.qty}
+              title={"Total Tons"}
+              CardIcon={ScaleIcon}
+              showPercentage={false}
+            />
+          </Grid>}
           <Grid item size={{ md: 3, xs: 12 }}>
             <Card
               count={reportStat?.totalItems}
@@ -349,7 +359,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
             <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
               <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />
             </Grid>
-            {value === COMPANY_TYPE.PADMA && <Grid item size={{ md: 12 }} sx={{width: "100%"}}>
+            {<Grid item size={{ md: 12 }} sx={{width: "100%"}}>
               <Box sx={{ maxWidth: 400, margin: "auto" }}>
                   <Pie data={pieData} options={pieOptions} />
               </Box>
