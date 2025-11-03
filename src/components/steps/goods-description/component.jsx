@@ -269,6 +269,7 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
+            itemType: inputValue ? "manual" : parts[0],
             // ...(!invoiceId && {
                 description,
             // }),
