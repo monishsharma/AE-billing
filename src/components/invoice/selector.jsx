@@ -51,7 +51,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
               color="primary"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDownload(e, params.row);
+                handleDownload(e, params.row, true);
               }}
               size="small"
             >
