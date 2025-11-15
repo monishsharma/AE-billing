@@ -3,6 +3,11 @@ export const COMPANY_TYPE = {
     PADMA: "PADMA",
 }
 
+export const DASHBOARD_TAB_TYPE = {
+    MONTHLY: "MONTHLY",
+    YEARLY: "YEARLY",
+}
+
 export const VENDOR_NAME = {
     CROMPTON: "Crompton Greaves",
     ATLANTA_AANAND: "ATLANTA_AANAND",
@@ -271,11 +276,13 @@ export const COMPANY  = {
     }
 }
 
+export const CG_URL = "https://itapps.cgglobal.com/CGSCM/report/frmInvoiceChallan.aspx?ASN="
 
 export const STEPPER_NAME = {
     INVOICE_DETAILS: "invoiceDetail",
     BUYER_DETAIL: "buyerDetail",
     GOODS_DESCRIPTION: "goodsDescription",
-    SHIPMENT_DETAIL: "shippingDetail"
+    SHIPMENT_DETAIL: "shippingDetail",
+    GENERATE_ASN: "GENERATE_ASN"
 }
 
