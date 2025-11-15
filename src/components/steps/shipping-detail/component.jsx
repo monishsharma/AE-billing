@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import {INPUTS} from "./selector";
 import Box from '@mui/material/Box';
-import { Grid, TextField } from '@mui/material';
+import { Grid, TextField, Typography } from '@mui/material';
 import StepperButton from '../stepper-button';
-import { COMPANY, STEPPER_NAME } from "../../../constants/app-constant";
+import { CG_URL, COMPANY, STEPPER_NAME } from "../../../constants/app-constant";
 import {VENDOR_NAME} from "../../../constants/app-constant";
 import PageLoader from "../../../components/page-loader";
 import Swal from 'sweetalert2'
@@ -20,6 +20,7 @@ const ShippingDetails = ({
     invoiceForm,
     saveDataConnect,
     getBillPdfConnect,
+    generateASNConnect,
     resetReducerConnect,
     postInvoiceConnect,
     updateInvoiceConnect
@@ -31,7 +32,8 @@ const ShippingDetails = ({
         placeholder: "ASN",
         type: "textField",
         key: "asn",
-        component: TextField
+        component: TextField,
+        description: true
     };
 
     const navigate = useNavigate();
@@ -49,6 +51,7 @@ const ShippingDetails = ({
             customer
         },
         [STEPPER_NAME.GOODS_DESCRIPTION]: {
+            po,
             Total
         }
     } = invoiceForm;
@@ -196,6 +199,81 @@ const ShippingDetails = ({
         });
     };
 
+    const downloadASN = (asnNumber) => {
+        window.open(`${CG_URL}${asnNumber}`, '_blank')
+        Swal.close();
+    }
+
+    const generateASNHandler = () => {
+
+        if (parseFloat(Total) > 50000 && (!eway || eway.trim() === "")) {
+            Swal.fire({
+                icon: "error",
+                title: "Eway Bill Missing",
+                text: `Eway bill is mandatory for invoice value above 50,000. Current value: ${Total}`,
+            })
+            return;
+        }
+
+        if (asn) {
+            Swal.fire({
+                icon: "error",
+                title: "ASN Already Generated",
+                text: `ASN Already Generated, ASN NO - ${asn}`,
+            })
+            return;
+        }
+
+        setIsLoading(true);
+
+        generateASNConnect({invoiceId: id, poNumber: po})
+        .then((response) => {
+            const asnNumber = response?.generatedASN?.[0]?.ASN || response.invoiceUpdated;
+            const isAsnGenerated = response?.generatedASN?.[0]?.ASNID;
+            if (!isAsnGenerated) {
+                Swal.fire({
+                    icon: "error",
+                    title: "ASN Generation Failed",
+                    text: `Failed to generate ASN`,
+                })
+                return;
+            };
+            saveDataConnect({
+                stepName: STEPPER_NAME.SHIPMENT_DETAIL,
+                data: {
+                    "asn": asnNumber
+                }
+            });
+            setIsLoading(false);
+            Swal.fire({
+                icon: "success",
+                title: "ASN Generated Successfully",
+                html: `
+                    <p>ASN NO - ${asnNumber}</p>
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
+                        <button id="okBtn" class="swal2-confirm swal2-styled">OK</button>
+                        <button id="downloadBtn" class="swal2-confirm swal2-styled">Download ASN</button>
+                    </div>
+                `,
+                showConfirmButton: false,   // we are using our own OK button
+                didOpen: () => {
+                    document.getElementById("okBtn").onclick = () => Swal.close();
+                    document.getElementById("downloadBtn").onclick = () => downloadASN(asnNumber);
+                }
+            });
+
+        })
+        .catch((err) => {
+            setIsLoading(false);
+             Swal.fire({
+                icon: "error",
+                title: "ASN Generation Failed",
+                text: err.error,
+            })
+        })
+
+    }
+
     if (isLoading) return <PageLoader />
 
     return (
@@ -226,6 +304,21 @@ const ShippingDetails = ({
                                     autoComplete={input.name}
                                 />
                             }
+                            {
+                                input.description && !asn &&
+                                <Typography
+                                    variant="subtitle1"
+                                    color="primary"
+                                    sx={{
+                                        fontSize: "14px",
+                                        marginLeft: "5px",
+                                    }}
+                                    onClick={generateASNHandler}
+                                >
+                                    Generate ASN
+                                </Typography>
+                            }
+
                         </Grid>
                     );
                 })}

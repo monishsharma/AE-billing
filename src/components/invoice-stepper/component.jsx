@@ -55,6 +55,23 @@ export default function InvoiceStepper({
 
   const [activeStep, setActiveStep] = React.useState(currentStep);
   const [isLoading, setIsLoading] = React.useState(false)
+  const stepRefs = React.useRef([]);
+
+
+  React.useEffect(() => {
+    // Delay scroll to allow expand animation to finish
+    const timeout = setTimeout(() => {
+      const el = stepRefs.current[activeStep];
+      if (el) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500); // adjust 300–500ms for smoother sync with MUI animation
+
+    return () => clearTimeout(timeout);
+  }, [activeStep]);
 
   React.useEffect(() => {
     async function fetchConfigData() {
@@ -166,30 +183,33 @@ export default function InvoiceStepper({
         }}
       >
         {steps.map((step, index) => (
-          <Step completed={isStepCompleted(step)} key={step.label}  sx={{cursor: 'pointer'}}>
-            <StepLabel onClick={() => jumpToStep(index)}>
-              <Typography variant="h5">{step.label}</Typography>
-              <Typography variant="subtitle2" color="textSecondary">
-                {getSubtitle(step.stepName)}
-              </Typography>
-            </StepLabel>
-            <StepContent sx={{
-              p: {
-                xs: 0,
-                md: 1
-              }
-            }}>
-              <step.component
-                index={index}
-                steps={steps}
-                handleNext={handleNext}
-                invoiceForm={invoiceForm}
-                handleBack={handleBack}
-                saveDataConnect={saveDataConnect}
-              />
+          //
+            <Step ref={(el) => (stepRefs.current[index] = el)} completed={isStepCompleted(step)} key={step.label}  sx={{cursor: 'pointer'}}>
+              <StepLabel onClick={() => jumpToStep(index)}>
+                <Typography variant="h5">{step.label}</Typography>
+                <Typography variant="subtitle2" color="textSecondary">
+                  {getSubtitle(step.stepName)}
+                </Typography>
+              </StepLabel>
+              <StepContent sx={{
+                p: {
+                  xs: 0,
+                  md: 1
+                }
+              }}
 
-            </StepContent>
-          </Step>
+              >
+                <step.component
+                  index={index}
+                  steps={steps}
+                  handleNext={handleNext}
+                  invoiceForm={invoiceForm}
+                  handleBack={handleBack}
+                  saveDataConnect={saveDataConnect}
+                />
+
+              </StepContent>
+            </Step>
         ))}
       </Stepper>
       {activeStep === steps.length && (

@@ -1,11 +1,16 @@
 // columns.js
 import React from "react";
-import { IconButton, Chip, Checkbox, Typography } from "@mui/material";
+import { IconButton, Chip, Checkbox, Typography, Button } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import DownloadIcon from "@mui/icons-material/Download";
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import moment from "moment";
+import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
 
-export const getColumns = ({ handleDownload, chekboxhandler }) => [
+
+export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
+  const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
+  return [
   {
     field: "",
     width: 10,
@@ -27,30 +32,59 @@ export const getColumns = ({ handleDownload, chekboxhandler }) => [
       </strong>
     ),
     sortable: false,
-    minWidth: 100,
-    renderCell: (params) => (
-      <>
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDownload(e, params.row);
-          }}
-          size="small"
-        >
-          <FileCopyIcon />
-        </IconButton>
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDownload(e, params.row, true);
-          }}
-          size="small"
-        >
-          <DownloadIcon />
-        </IconButton>
-      </>
-    ),
+    width: 90,
+    renderCell: (params) => {
+      return (
+        (
+          <>
+            <IconButton
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload(e, params.row);
+              }}
+              size="small"
+            >
+              <FileCopyIcon />
+            </IconButton>
+            <IconButton
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload(e, params.row);
+              }}
+              size="small"
+            >
+              <ReceiptIcon />
+            </IconButton>
+          </>
+        )
+      )
+    },
   },
+  ...(isCompanyAshok ? [
+    {
+      field: "ASN",
+      renderHeader: () => {
+        return <strong>ASN</strong>;
+      },
+      sortable: false,
+      width: 60,
+      renderCell: (params) => {
+        const asnNumber = params?.row?.shippingDetail.asn || "";
+        return (
+          asnNumber && <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
+                e.stopPropagation();
+                window.open(`${CG_URL}${asnNumber}`, '_blank')
+              }}>
+            <DownloadIcon />
+          </IconButton>
+        );
+      },
+
+    },
+
+  ] : []),
   {
     field: "invoiceNo",
     renderHeader: () => (
@@ -108,17 +142,15 @@ export const getColumns = ({ handleDownload, chekboxhandler }) => [
       );
     },
   },
+  ...(!isCompanyAshok ? [
   {
     field: "Billed To",
-    renderHeader: () => (
-      <strong>
-        Billed To
-      </strong>
-    ),
+    renderHeader: () => <strong>Billed To</strong>,
     minWidth: 150,
     sortable: false,
     valueGetter: (params, row) => `${row?.buyerDetail.customer}`,
-  },
+  }
+] : []),
   {
     field: "P.O. No",
     renderHeader: () => (
@@ -157,7 +189,7 @@ export const getColumns = ({ handleDownload, chekboxhandler }) => [
   },
   {
     field: "status",
-    minWidth: 120,
+    minWidth: 100,
     sortable: false,
     renderHeader: () => (
       <strong>
@@ -190,4 +222,5 @@ export const getColumns = ({ handleDownload, chekboxhandler }) => [
       }),
   },
   // Example action column for marking paid:
-];
+]
+};

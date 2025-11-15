@@ -437,7 +437,8 @@ const Invoice = ({
         }
       };
 
-      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler }), [handleDownload, chekboxhandler]);
+
+      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value }), [handleDownload, chekboxhandler, value]);
 
     const renderInvoices = () => (
         <>
@@ -554,6 +555,7 @@ const Invoice = ({
                             showMonthYearPicker={true}
                             dateFormat="MMMM, YYYY"
                             onChange={handleDateChange}
+                            withPortal
                             customInput={<ExampleCustomInput />}
                         />
                     </Box>
