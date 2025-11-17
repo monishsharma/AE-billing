@@ -1,47 +1,60 @@
 import React from 'react';
 import styles from "./style.module.css";
-import { Avatar, Box, Typography } from '@mui/material';
+import Card from '@mui/material/Card';
+import { Avatar, Box, CardContent, colors, Typography } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import priceFormatter from '../../helpers/price-formatter';
 
 
-const Card = ({
+const CardContainer = ({
+    text = "",
     count = 0,
     title,
     CardIcon,
     percentage,
     symbol = false,
     showPercentage = true,
-    growth
+    growth,
+    style
 }) => {
 
     const Icon = growth ? TrendingUpIcon : TrendingDownIcon;
 
   return (
-    <div className={styles.cardContainer}>
-        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-            <Box display="flex" alignItems="center" justifyContent="center">
-                {symbol && <CardIcon style={{ marginRight: 8 }} />} {/* add spacing if needed */}
-                <Typography variant="h5">
-                    {parseInt(count).toLocaleString('en-IN')}
+    <>
+        <Card style={{...style}} sx={{ boxShadow: "none", borderRadius: "8px", backgroundColor: "#f8f9fc" }}>
+            <CardContent>
+                <Typography variant="h6" sx={{  fontWeight: "500", margin: "0px 0px 24px" }}>
+                    {title}
                 </Typography>
-            </Box>
-            <Avatar sx={{ width: 35, height: 35, background: "transparent", border: "1px solid black"  }}>
-                <CardIcon  sx={{color: "Black"}} />
-            </Avatar>
-        </Box>
-        <Box display="flex" alignItems="center" gap={0.5} marginTop={1} minHeight={"20px"}>
-            {showPercentage && <>
-                <Icon fontSize="small" style={{fontSize: "15px"}} />
-                <Typography variant="caption" color={`${growth ? "green" : "red"}`}>{`${percentage} %`}</Typography>
-                <Typography variant="caption" style={{opacity: 0.7}}>In this month</Typography>
-            </>}
-        </Box>
-        <div className="mt-4">
-            <Typography variant="button" >{title}</Typography>
-        </div>
-    </div>
+                <Typography variant="h3" sx={{  fontWeight: "400", margin: "0px 0px 24px", fontSize: "1.5rem" }}>
+                        {symbol && "₹"} {priceFormatter(count)}
+                </Typography>
+                {
+                    showPercentage &&
+                    <Typography variant='h6' sx={{ display: "flex", fontWeight: "400", fontSize: "0.8125rem", alignItems: "center"}}>
+                        <span style={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "0 5px",
+                            borderRadius: "2px",
+                            marginRight: "8px",
+                            fontWeight: "600",
+                            backgroundColor:growth ?"rgba(76, 175, 80, 0.1)" : "rgba(244, 67, 54, 0.1)",
+                            color: growth ? "rgb(76, 175, 80)" : "rgb(244, 67, 54)"
+                        }}>
+                            {
+                                `${growth ? "+" : "-"} ${Math.abs(parseInt(percentage))} %`
+                            }
+                        </span>
+                        in this  {text}
+                </Typography>
+                }
+            </CardContent>
+        </Card>
+    </>
   )
 }
 
-export default Card
+export default CardContainer

@@ -1,16 +1,16 @@
 import React, { forwardRef, useEffect, useState } from "react";
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, ButtonBase, ButtonGroup, Grid, Paper, Typography } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import Card from "../../components/card";
+import CardContainer from "../../components/card";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ScaleIcon from '@mui/icons-material/Scale';
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import DatePicker from "react-datepicker";
 import { Col, Row } from "react-bootstrap";
-import { COMPANY_TYPE } from "../../constants/app-constant";
+import { COMPANY_TYPE, DASHBOARD_TAB_TYPE } from "../../constants/app-constant";
 import PageLoader from "../../components/page-loader";
 
 import {
@@ -22,6 +22,7 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  scales,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
 import { isMobileDevice } from "../../helpers/is-mobile-device";
@@ -31,9 +32,11 @@ import Swal from "sweetalert2";
 import AccessDenied from "../../components/access-denied";
 
 const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
+  const [reportType, setReportType] = useState(DASHBOARD_TAB_TYPE.MONTHLY);
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
+  const [financialYear, setFinancialYear] = useState("");
   const [reportStat, setReportStat] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
@@ -41,7 +44,10 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   const { user: {isAdmin} = {} } = auth;
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
-  const yearlyData = reportStat?.yearlyTotals || Array(12).fill(0);
+  const yearlyData = Object.values(reportStat?.fyResult || []) || Array(5).fill(0);
+  const yearlyLabel = Object.keys(reportStat?.fyResult || []) || Array(5).fill(0);
+  const apiDataKey = reportType === DASHBOARD_TAB_TYPE.MONTHLY ? "monthly" : "yearly";
+  const text = reportType === DASHBOARD_TAB_TYPE.MONTHLY ? "Month" : "Year";
 
   ChartJS.register(
     CategoryScale,
@@ -55,6 +61,18 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
 
   const options = {
     responsive: true,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+       y: {
+        grid: {
+          display: false,
+        },
+      },
+    },
     plugins: {
       legend: {
         position: "top",
@@ -77,6 +95,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         text: isCompanyAshok ? "Sales Type" : "Customer Breakdown",
       },
     },
+
   };
 
   const labels = [
@@ -95,12 +114,13 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   ];
 
   const data = {
-    labels,
+    labels: reportType === DASHBOARD_TAB_TYPE.MONTHLY ? labels : yearlyLabel,
     datasets: [
       {
         label: "₹ Sales",
-        data: monthlyData,
-        backgroundColor: "red",
+        data: reportType === DASHBOARD_TAB_TYPE.MONTHLY ? monthlyData : yearlyData,
+        backgroundColor: "rgb(0, 0, 0)",
+        barThickness: 10,
       },
     ],
   };
@@ -108,10 +128,11 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   const getLabel = () => {
     let label = [];
     let amount = [];
-    if (reportStat && reportStat.customerTotals) {
-    const itemKey = isCompanyAshok ? reportStat.ashokSalesType : reportStat.customerTotals
+    if (reportStat && reportStat.customerBreakdown) {
+    const itemKey = isCompanyAshok ? reportStat.itemBreakdown[apiDataKey] : reportStat.customerBreakdown[apiDataKey];
+    // const itemKey = reportStat.customerBreakdown
       Object.keys(itemKey).map((key) => label.push(key));
-      Object.keys(itemKey).map((key) => amount.push(itemKey[key].total));
+      Object.keys(itemKey).map((key) => isCompanyAshok ? amount.push(itemKey[key].total) : amount.push(itemKey[key]));
     }
 
     return {label, amount};
@@ -187,16 +208,32 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   };
 
   const ExampleCustomInput = forwardRef(({ value, onClick, className = "customBtn", size }, ref) => (
-    <div className="d-grid ">
-      <Button onClick={onClick} variant="contained" size={size} ref={ref} className={className}>
+      <Button fullWidth onClick={onClick} variant="contained" size={size} ref={ref} className={className}>
         {value}
       </Button>
-    </div>
   ));
 
   const handleDateChange = (selectedDate) => {
-    setDateValue(selectedDate);
+    if (reportType === DASHBOARD_TAB_TYPE.YEARLY) {
+      const fyStartYear =
+        selectedDate.getMonth() >= 3
+          ? selectedDate.getFullYear()
+          : selectedDate.getFullYear() - 1;
+
+      const fyEndYear = String(fyStartYear + 1).slice(-2);
+
+      const fy = `${fyStartYear}-${fyEndYear}`;
+
+      console.log("Selected FY:", fy);
+
+      setDateValue(selectedDate);
+      setFinancialYear(fy); // <- store FY string
+    }
+    else {
+      setDateValue(selectedDate);
+    }
   };
+
 
 
   const goToInvoiceDetail = (e, row) => {
@@ -212,6 +249,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
       forUnpaid: true,
+      unpaidInvoicesList: unpaidInvoices[apiDataKey] || []
     })
       .then(({ data, headers }) => {
         const blob = new Blob([data], { type: "text/csv" }); // Convert text to Blob
@@ -249,18 +287,14 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
 
   const renderUnpaidInvoices = () => {
     return (
-      <Paper sx={{ height: {
-                  xs: "auto",
-                  sm: "auto",
-                  md: 400,
-                }, overflow: "auto" }}>
+      <Paper sx={{ height: "500px", overflow: "auto", p: 1 }}>
                   <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center"}}>
                     <Grid item size={{ md: 4 }} sx={{alignItems: "center"}}>
-                      <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices?.length} Unpaid Invoices`}</Typography>
+                      <Typography  variant="h6" color="red" className="fw-bold ">{`${unpaidInvoices[apiDataKey]?.length} Unpaid Invoices`}</Typography>
                     </Grid>
 
                     <Grid item size={{ md:8 }} sx={{display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
-                      {!!(unpaidInvoices?.length) && <Grid>
+                      {!!(unpaidInvoices[apiDataKey]?.length) && <Grid>
                         <Button
                           onClick={exportCSV}
                           loading={btnLoading}
@@ -279,7 +313,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
                   <div className="customTable" style={{marginTop: "20px", overflow: "auto"}}>
                     <Table
                         bordered={true}
-                        data={unpaidInvoices || []}
+                        data={unpaidInvoices[apiDataKey] || []}
                         hoverable={true}
                         cols={tableConstants({isCompanyAshok})}
                         isClickable={true}
@@ -295,77 +329,97 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   const renderReport = () => {
     return (
       <>
-        <div className="d-flex align-items-center w-100">
-
-        </div>
         <Grid container spacing={2}>
-          <Grid item size={{ md: 3, xs: 12 }}>
-            <Card
-              symbol={true}
-              count={reportStat?.totalInvoiceAmount}
-              title={"Total Sales"}
-              CardIcon={CurrencyRupeeIcon}
-              percentage={reportStat?.invoiceAmountChange?.percentage}
-              growth={reportStat?.invoiceAmountChange?.growth}
-            />
-          </Grid>
-          {isCompanyAshok && <Grid item size={{ md: 3, xs: 12 }}>
-            <Card
-              symbol={true}
-              count={reportStat?.ashokSalesType["Frame"]?.qty}
-              title={"Total Tons"}
-              CardIcon={ScaleIcon}
-              showPercentage={false}
-            />
-          </Grid>}
-          <Grid item size={{ md: 3, xs: 12 }}>
-            <Card
-              count={reportStat?.totalItems}
-              title={"Total Invoices"}
-              CardIcon={ReceiptIcon}
-              percentage={reportStat?.invoiceCountChange?.percentage}
-              growth={reportStat?.invoiceCountChange?.growth}
-            />
-          </Grid>
-          <Grid item size={{ md: 3, xs: 12 }}>
-            <Card
-              symbol={true}
-              count={reportStat?.unpaidTotal}
-              title={"Total Unpaid Amount"}
-              CardIcon={CurrencyRupeeIcon}
-              // percentage={"16.9"}
-              // growth={true}
-              showPercentage={false}
-            />
-          </Grid>
-          <Grid item size={{ md: 3, xs: 12 }}>
-            <Card
-              symbol={true}
-              count={reportStat?.paidTotal}
-              title={"Total Paid Amount"}
-              CardIcon={CurrencyRupeeIcon}
-              // percentage={"16.9"}
-              // growth={true}
-              showPercentage={false}
-            />
-
-          </Grid>
-          <Grid container size={{ md: 12 }} mt={4}>
-            {
-              <Grid item size={{ md: 6 }} >
-                {renderUnpaidInvoices()}
-              </Grid>
-            }
-            <Grid item size={{ md: 6 }} sx={{width: "100%"}}>
-              <Bar key={value + dateValue} options={options} data={data} height={isMobileDevice()?350: 200} />
-            </Grid>
-            {<Grid item size={{ md: 12 }} sx={{width: "100%"}}>
-              <Box sx={{ maxWidth: 400, margin: "auto" }}>
-                  <Pie data={pieData} options={pieOptions} />
+          <Grid size={{
+            xs: 12,
+            sm: 12,
+            md: 5
+          }}>
+            <Paper sx={{
+              minHeight: "370px"
+            }}>
+              <Box sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item size={{ xs: 12, sm: 12, md: 6 }}>
+                    <CardContainer
+                      text={text}
+                      title="Sales"
+                      symbol={true}
+                      style={{
+                        backgroundColor: "rgba(57, 73, 171, 0.125)",
+                        color: "rgb(57, 73, 171)"
+                      }}
+                      count={reportStat?.sales?.[apiDataKey]}
+                      percentage={reportStat?.growth?.sales?.[apiDataKey].growthPercentage}
+                      growth={reportStat?.growth?.sales?.[apiDataKey].hasGrow}
+                      showPercentage={reportStat?.sales?.[apiDataKey] > 0}
+                    />
+                  </Grid>
+                  {isCompanyAshok && <Grid item size={{ xs: 12, sm: 12, md: 6 }}>
+                    <CardContainer
+                      text={text}
+                      title="Total Tons"
+                      showPercentage={reportStat?.tons?.[apiDataKey] > 0}
+                      count={reportStat?.tons?.[apiDataKey]}
+                      percentage={reportStat?.growth?.tons?.[apiDataKey]?.growthPercentage}
+                      growth={reportStat?.growth?.tons?.[apiDataKey]?.hasGrow}
+                    />
+                  </Grid>}
+                  <Grid item size={{ xs: 12, sm: 12, md: 6 }}>
+                    <CardContainer
+                      text={text}
+                      title=" Unpaid Amount"
+                      symbol={true}
+                      showPercentage={false}
+                      count={reportStat?.payment?.[apiDataKey]?.unpaid}
+                      style={{
+                        backgroundColor: "rgb(255,204,0)",
+                        color: "white"
+                      }}
+                    />
+                  </Grid>
+                  <Grid item size={{ xs: 12, sm: 12, md: 6 }}>
+                    <CardContainer
+                      text={text}
+                      title=" Paid Amount"
+                      symbol={true}
+                      showPercentage={false}
+                      style={{
+                        backgroundColor: "rgb(76, 175, 80)",
+                        color: "white"
+                      }}
+                      count={reportStat?.payment?.[apiDataKey]?.paid}
+                    />
+                  </Grid>
+                </Grid>
               </Box>
-            </Grid>}
+            </Paper>
+          </Grid>
+          <Grid size={{
+            sm: 12,
+            md: 7
+          }}>
+            <Paper sx={{minHeight: "370px"}}>
+               <Box sx={{ p: 2 }}>
+                  <Bar key={value + dateValue} options={options} data={data}  />
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
+        <Box sx={{ mt: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item size={{ md: 5 }} sx={{width: "100%"}}>
+              <Paper>
+                <Box sx={{ p: 2 }}>
+                  <Pie key={value + dateValue} options={pieOptions} data={pieData}  />
+                </Box>
+              </Paper>
+            </Grid>
+            <Grid item size={{ md: 7 }} sx={{width: "100%"}}>
+              {renderUnpaidInvoices()}
+            </Grid>
+          </Grid>
+        </Box>
       </>
     );
   };
@@ -379,7 +433,82 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   return (
     <>
       <div>
-        <Row className="w-100 mt-4" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <Grid container spacing={2} sx={{justifyContent: "space-between", alignItems: "center", flexDirection: { xs: "column", md: "row" }}}>
+          <Grid item size={{ md: 4 }}>
+            <Typography variant="h4" className="fw-bold ">Dashboard</Typography>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={8}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",  // 👈 ensures right alignment
+              alignItems: "center",
+              gap: 2,
+              width: {
+                xs: "100%",
+                sm: "auto"
+              },
+              flexDirection: { xs: "column", sm: "row" },
+            }}
+          >
+            <ButtonGroup
+              sx={{
+                  width: {
+                    xs: "100%",
+                    sm: "auto"
+                  }
+                }}
+            aria-label="outlined button group" disableElevation>
+              <Button
+                fullWidth
+                onClick={() => {
+                  setReportType(DASHBOARD_TAB_TYPE.MONTHLY);
+                  setDateValue(new Date());
+                }}
+                className={reportType === DASHBOARD_TAB_TYPE.MONTHLY ? "customBtn" : "outlinedCustomBtn"}
+              >
+                Monthly
+              </Button>
+              <Button
+             fullWidth
+                className={reportType === DASHBOARD_TAB_TYPE.YEARLY ? "customBtn" : "outlinedCustomBtn"}
+                onClick={() => setReportType(DASHBOARD_TAB_TYPE.YEARLY)}
+              >
+                Yearly
+              </Button>
+            </ButtonGroup>
+            <Box className={`m-1`} sx={{
+                width: {
+                    xs: "100%",
+                    sm: "auto",
+                },
+            }}  >
+            <DatePicker
+              selected={dateValue}
+              {
+                ...(reportType === DASHBOARD_TAB_TYPE.MONTHLY ?
+                  {
+                    showMonthYearPicker: true,
+                    dateFormat: "MMMM, yyyy",
+                  } :
+                  {
+                    showYearPicker: true,
+                    dateFormat: "yyyy",
+                    minDate:new Date(2025, 0, 1)
+
+                  }
+                )
+              }
+              withPortal
+              onChange={handleDateChange}
+              customInput={<ExampleCustomInput className="customBtn" />}
+            />
+            </Box>
+          </Grid>
+        </Grid>
+        {/* <Row className="w-100 mt-4" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <Col><h2 className="fw-bold">Dashboard</h2></Col>
             <Col sm={12} md={6} lg={3}>
               <div className="d-flex ">
@@ -393,7 +522,8 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
                 />
               </div>
             </Col>
-          </Row>
+
+          </Row> */}
       </div>
       <div className="mt-2">
         <TabContext value={value}>
