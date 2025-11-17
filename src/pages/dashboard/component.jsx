@@ -399,9 +399,14 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
             sm: 12,
             md: 7
           }}>
-            <Paper sx={{minHeight: "370px"}}>
+            <Paper sx={{
+              minHeight: {
+                xs: "300px",
+                md: "370px"
+              }
+            }}>
                <Box sx={{ p: 2 }}>
-                  <Bar key={value + dateValue} options={options} data={data}  />
+                  <Bar height={ isMobileDevice() ? "300px" : "auto"} key={value + dateValue} options={options} data={data}  />
               </Box>
             </Paper>
           </Grid>
