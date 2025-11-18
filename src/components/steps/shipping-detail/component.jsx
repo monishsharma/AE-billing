@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {INPUTS} from "./selector";
+import {getPayloadForASN, INPUTS} from "./selector";
 import Box from '@mui/material/Box';
 import { Grid, TextField, Typography } from '@mui/material';
 import StepperButton from '../stepper-button';
@@ -19,7 +19,7 @@ const ShippingDetails = ({
     handleBack,
     invoiceForm,
     saveDataConnect,
-    getBillPdfConnect,
+    checkASNExistConnect,
     generateASNConnect,
     resetReducerConnect,
     postInvoiceConnect,
@@ -204,6 +204,25 @@ const ShippingDetails = ({
         Swal.close();
     }
 
+    const fireSWal = (asnNumber) => (
+        Swal.fire({
+            icon: "success",
+            title: "ASN Already Generated",
+            html: `
+                <p>ASN NO - ${asnNumber}</p>
+                <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
+                    <button id="okBtn" class="swal2-confirm swal2-styled">OK</button>
+                    <button id="downloadBtn" class="swal2-confirm swal2-styled">Download ASN</button>
+                </div>
+            `,
+            showConfirmButton: false,   // we are using our own OK button
+            didOpen: () => {
+                document.getElementById("okBtn").onclick = () => Swal.close();
+                document.getElementById("downloadBtn").onclick = () => downloadASN(asnNumber);
+            }
+        })
+    )
+
     const generateASNHandler = () => {
 
         if (parseFloat(Total) > 50000 && (!eway || eway.trim() === "")) {
@@ -226,49 +245,58 @@ const ShippingDetails = ({
 
         setIsLoading(true);
 
-        generateASNConnect({invoiceId: id, poNumber: po})
+        checkASNExistConnect({invoiceId: id, poNumber: po})
         .then((response) => {
-            const asnNumber = response?.generatedASN?.[0]?.ASN || response.invoiceUpdated;
-            const isAsnGenerated = response?.generatedASN?.[0]?.ASNID;
-            if (!isAsnGenerated) {
-                Swal.fire({
-                    icon: "error",
-                    title: "ASN Generation Failed",
-                    text: `Failed to generate ASN`,
+            const asnNumber = response?.asnNumber || "0";
+            if (response?.status === "Draft" || asnNumber === "0") {
+                const payload = getPayloadForASN({
+                    invoiceDetail: invoiceForm,
+                    asnNumber
+                });
+
+                generateASNConnect({invoiceId: id, poNumber: po, payload})
+                .then((res) => {
+                    const asnNumber = res?.generatedASN?.[0]?.ASN;
+                    const isAsnGenerated = res?.generatedASN?.[0]?.ASNID;
+                    if (!isAsnGenerated) {
+                        setIsLoading(false);
+                        Swal.fire({
+                            icon: "error",
+                            title: "ASN Generation Failed",
+                            text: `Failed to generate ASN`,
+                        })
+                        return;
+                    }
+                    saveDataConnect({
+                        stepName: STEPPER_NAME.SHIPMENT_DETAIL,
+                        data: {
+                            "asn": asnNumber
+                        }
+                    });
+                    setIsLoading(false);
+                    fireSWal(asnNumber);
                 })
-                return;
-            };
-            saveDataConnect({
-                stepName: STEPPER_NAME.SHIPMENT_DETAIL,
-                data: {
-                    "asn": asnNumber
-                }
-            });
-            setIsLoading(false);
-            Swal.fire({
-                icon: "success",
-                title: "ASN Generated Successfully",
-                html: `
-                    <p>ASN NO - ${asnNumber}</p>
-                    <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                        <button id="okBtn" class="swal2-confirm swal2-styled">OK</button>
-                        <button id="downloadBtn" class="swal2-confirm swal2-styled">Download ASN</button>
-                    </div>
-                `,
-                showConfirmButton: false,   // we are using our own OK button
-                didOpen: () => {
-                    document.getElementById("okBtn").onclick = () => Swal.close();
-                    document.getElementById("downloadBtn").onclick = () => downloadASN(asnNumber);
-                }
-            });
+                .catch((err) => {
+                    setIsLoading(false);
+                     Swal.fire({
+                        icon: "error",
+                        title: "ASN Generation Failed",
+                        text: err.error,
+                    })
+                })
+
+            } else {
+                setIsLoading(false);
+                fireSWal(asnNumber);
+            }
 
         })
-        .catch((err) => {
+        .catch((error) => {
             setIsLoading(false);
-             Swal.fire({
+            Swal.fire({
                 icon: "error",
-                title: "ASN Generation Failed",
-                text: err.error,
+                title: "ASN Check Failed",
+                text: error.error,
             })
         })
 
@@ -305,6 +333,7 @@ const ShippingDetails = ({
                                 />
                             }
                             {
+                                // input.description &&
                                 input.description && !asn &&
                                 <Typography
                                     variant="subtitle1"

@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ShippingDetails from "./component.jsx";
 import { getBillPdf, postInvoice, resetReducer, updateInvoice } from "../../../store/invoice-form/action.js";
-import { generateASN } from "../../../store/ASN/action.js";
+import { checkASNExist, generateASN } from "../../../store/ASN/action.js";
 
 const mapStateToProps = () => ({});
 
@@ -11,7 +11,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     resetReducerConnect: resetReducer,
     getBillPdfConnect: getBillPdf,
     updateInvoiceConnect: updateInvoice,
-    generateASNConnect: generateASN
+    generateASNConnect: generateASN,
+    checkASNExistConnect: checkASNExist
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShippingDetails);
