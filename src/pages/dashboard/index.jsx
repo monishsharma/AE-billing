@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Dashboard from "./component.jsx";
-import { generateCSV, getInvoiceList, getReport, getUnpaidInvoices, resetReducer} from "../../store/invoice-form/action.js";
+import { generateCSV, getInvoiceList, getReport, getUnpaidInvoices, resetReducer, updateInvoice} from "../../store/invoice-form/action.js";
 
 const mapStateToProps = ({
     auth,
@@ -16,7 +16,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     getReportConnect: getReport,
     resetReducerConnect: resetReducer,
     generateCSVConnect: generateCSV,
-    getUnpaidInvoicesConnect: getUnpaidInvoices
+    getUnpaidInvoicesConnect: getUnpaidInvoices,
+    updateInvoiceConnect: updateInvoice
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

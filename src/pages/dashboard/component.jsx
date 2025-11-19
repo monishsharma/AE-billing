@@ -12,6 +12,8 @@ import DatePicker from "react-datepicker";
 import { Col, Row } from "react-bootstrap";
 import { COMPANY_TYPE, DASHBOARD_TAB_TYPE } from "../../constants/app-constant";
 import PageLoader from "../../components/page-loader";
+import { toast, Bounce } from "react-toastify";
+
 
 import {
   Chart as ChartJS,
@@ -30,13 +32,18 @@ import { tableConstants } from "./tableConstant";
 import Table from "../../components/table";
 import Swal from "sweetalert2";
 import AccessDenied from "../../components/access-denied";
+import PaymentConfirmationModal from "../../components/payment-confirmation-modal";
 
-const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect }) => {
+const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect, updateInvoiceConnect }) => {
   const [reportType, setReportType] = useState(DASHBOARD_TAB_TYPE.MONTHLY);
   const [isLoading, setIsLoading] = useState(true);
   const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
   const [financialYear, setFinancialYear] = useState("");
+      const [runEffect, setRunEffect] = useState(false);
+  const [openPaymentModal, setOpenPaymentModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState("");
   const [reportStat, setReportStat] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
@@ -58,6 +65,20 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
     Legend,
     ArcElement
   );
+
+  const showToast = React.useCallback(({ type, text, ...rest }) =>
+          toast[type](text, {
+              position: "bottom-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+              ...rest,
+      }), []);
 
   const options = {
     responsive: true,
@@ -201,7 +222,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setUnpaidInvoicesLoading(false);
       });
 
-  }, [value,dateValue]);
+  }, [value,dateValue, runEffect]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -283,7 +304,41 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
             text: "Failed to generate CSV",
         });
     });
-  }
+  };
+
+  const handleOpenPaymentModal = React.useCallback((invoice) => {
+          setSelectedInvoice(invoice);
+          setOpenPaymentModal(true);
+          setPaymentAmount(invoice.goodsDescription.Total);
+      }, []);
+
+  const chekboxhandler = React.useCallback(async (e, row) => {
+          e.stopPropagation();
+          if (e.target.checked) {
+              handleOpenPaymentModal(row);
+          } else {
+              setIsLoading(true);
+              const payload = {
+                  ...row,
+                  paid: false,
+                  paymentAmount: 0,
+              };
+              try {
+                  await updateInvoiceConnect(row._id, payload);
+                  setRunEffect((prev) => !prev);
+                  showToast({
+                      type: "error",
+                      text: `${row.invoiceDetail.invoiceNO} Marked Unpaid Successfully`,
+                  });
+              } catch {
+                  showToast({
+                      type: "error",
+                      text: `Error while marking ${row.invoiceDetail.invoiceNO} Unpaid`,
+                  });
+                  setIsLoading(false);
+              }
+          }
+      }, [updateInvoiceConnect, showToast, handleOpenPaymentModal]);
 
   const renderUnpaidInvoices = () => {
     return (
@@ -315,7 +370,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
                         bordered={true}
                         data={unpaidInvoices[apiDataKey] || []}
                         hoverable={true}
-                        cols={tableConstants({isCompanyAshok})}
+                        cols={tableConstants({isCompanyAshok, chekboxhandler})}
                         isClickable={true}
                         isQueryRunning={unpaidInvoicesLoading}
                         onClick={goToInvoiceDetail}
@@ -428,6 +483,53 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
       </>
     );
   };
+
+  const handleClosePaymentModal = () => {
+        setOpenPaymentModal(false);
+        setSelectedInvoice(null);
+        setPaymentAmount("");
+    };
+
+   const handlePaymentSubmit = async () => {
+        if (
+            !paymentAmount ||
+            isNaN(paymentAmount) ||
+            parseFloat(paymentAmount) <= 0
+        ) {
+            showToast({
+                type: "error",
+                text: "Please enter a valid payment amount",
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        const payload = {
+            ...selectedInvoice,
+            paid: true,
+            paymentAmount: parseFloat(paymentAmount),
+            duePayment:
+                parseFloat(selectedInvoice.goodsDescription.Total) -
+                parseFloat(paymentAmount),
+        };
+
+        try {
+            await updateInvoiceConnect(selectedInvoice._id, payload);
+            setRunEffect(!runEffect);
+            showToast({
+                type: "success",
+                text: `${selectedInvoice.invoiceDetail.invoiceNO} Marked Paid Successfully`,
+            });
+            handleClosePaymentModal();
+        } catch (error) {
+            showToast({
+                type: "error",
+                text: `Error while marking ${selectedInvoice.invoiceDetail.invoiceNO} Paid`,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
    if (!isAdmin) {
     return <AccessDenied />
@@ -570,6 +672,15 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
           </TabPanel>
         </TabContext>
       </div>
+      <PaymentConfirmationModal
+          openPaymentModal={openPaymentModal}
+          selectedInvoice={selectedInvoice}
+          paymentAmount={paymentAmount}
+          setPaymentAmount={setPaymentAmount}
+          isLoading={isLoading}
+          handlePaymentSubmit={handlePaymentSubmit}
+          handleClosePaymentModal={handleClosePaymentModal}
+      />
     </>
   );
 };

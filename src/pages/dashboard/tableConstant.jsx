@@ -2,8 +2,15 @@ import { Checkbox, Chip, IconButton, Typography } from '@mui/material'
 import React from 'react';
 import moment from 'moment';
 
-export const tableConstants = ({ isCompanyAshok }) => {
+export const tableConstants = ({ isCompanyAshok, chekboxhandler }) => {
   return [
+    {
+      field: "",
+      style: {
+        width: 50,
+      },
+      render: (rowData) => <Checkbox id="" checked={rowData.paid} onClick={(e) => chekboxhandler(e,rowData)} />,
+    },
     {
       field: 'Invoice No',
       headerName: 'Invoice No',

@@ -27,6 +27,7 @@ import { isMobileDevice } from "../../helpers/is-mobile-device";
 import { debounce } from "../../helpers/debounce";
 import { DataGrid } from "@mui/x-data-grid";
 import {  getColumns } from "./selector";
+import PaymentConfirmationModal from "../payment-confirmation-modal";
 
 const Invoice = ({
     invoiceForm,
@@ -675,59 +676,15 @@ const Invoice = ({
                 </TabContext>
             </div>
 
-            <Modal
-                open={openPaymentModal}
-                onClose={handleClosePaymentModal}
-                aria-labelledby="payment-modal-title"
-                aria-describedby="payment-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 2,
-                    }}
-                >
-                    <Typography
-                        id="payment-modal-title"
-                        variant="h6"
-                        component="h2"
-                        sx={{ mb: 2 }}
-                    >
-                        Enter Amount for {selectedInvoice?.invoiceDetail?.invoiceNO}
-                    </Typography>
-                    <TextField
-                        fullWidth
-                        label="Payment Amount"
-                        type="number"
-                        value={paymentAmount}
-                        onChange={(e) => setPaymentAmount(e.target.value)}
-                        sx={{ mb: 3 }}
-                        InputProps={{
-                            startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>,
-                        }}
-                    />
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                        <Button onClick={handleClosePaymentModal} variant="outlined" className="outlinedCustomBtn">
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handlePaymentSubmit}
-                            variant="contained"
-                            disabled={isLoading}
-                            className="customBtn"
-                        >
-                            {isLoading ? "Saving..." : "Save"}
-                        </Button>
-                    </Box>
-                </Box>
-            </Modal>
+            <PaymentConfirmationModal
+                openPaymentModal={openPaymentModal}
+                selectedInvoice={selectedInvoice}
+                paymentAmount={paymentAmount}
+                setPaymentAmount={setPaymentAmount}
+                isLoading={isLoading}
+                handlePaymentSubmit={handlePaymentSubmit}
+                handleClosePaymentModal={handleClosePaymentModal}
+            />
         </React.Fragment>
     );
 };
