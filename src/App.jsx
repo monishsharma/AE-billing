@@ -123,7 +123,7 @@ const App = ({ getVendorListConnect }) => {
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
                   >
-                    <Avatar sx={{ width: 40, height: 40 }} sx={{ bgcolor: "#000000" }}>
+                    <Avatar sx={{ width: 40, height: 40, bgcolor: "#000000" }} >
                       {getAvatarInitials(user?.displayName || user?.email || "")}
                     </Avatar>
                   </IconButton>
