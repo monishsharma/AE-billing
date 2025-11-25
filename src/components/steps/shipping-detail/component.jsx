@@ -287,6 +287,12 @@ const ShippingDetails = ({
 
             } else {
                 setIsLoading(false);
+                saveDataConnect({
+                    stepName: STEPPER_NAME.SHIPMENT_DETAIL,
+                    data: {
+                        "asn": asnNumber
+                    }
+                });
                 fireSWal(asnNumber);
             }
 
