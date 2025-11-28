@@ -11,8 +11,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { checkAuthState } from "./store/auth/action";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
 import {
   Avatar,
   Box,
@@ -83,7 +81,6 @@ const App = ({ getVendorListConnect }) => {
 
   return (
     <>
-    <SpeedInsights/>
       <ToastContainer />
       <Layout>
         <SideBar
