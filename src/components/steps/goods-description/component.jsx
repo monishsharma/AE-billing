@@ -1,14 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { use, useRef, useState } from "react";
 import Box from '@mui/material/Box';
-import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
+import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, TextField, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns } from './selector';
+import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
 import StepperButton from '../stepper-button';
 import { COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from '../../../constants/app-constant';
 import Items from "../../items";
 import styles from "./style.module.css";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import CustomSelect from "../../custom-select";
 import Summary from "../../summary";
 import { useParams } from "react-router-dom";
 import { isMobileDevice } from "../../../helpers/is-mobile-device";
@@ -26,6 +25,7 @@ const GoodsDescription = ({
     handleBack,
     invoiceForm,
     saveDataConnect,
+    getPODetailConnect,
     postHsnCodeConnect,
     deleteHsnCodeConnect,
     getHsnCodeListConnect
@@ -34,7 +34,7 @@ const GoodsDescription = ({
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
         [STEPPER_NAME.BUYER_DETAIL]: { customer },
-        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items,type = "" },
+        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "" },
     } = invoiceForm;
 
     const {vendorsList = [], hsn: HSNLIst = []} = config;
@@ -83,6 +83,10 @@ const GoodsDescription = ({
 
     const [localItems, setLocalItems] = useState([]);
 
+    const [poDetail, setPoDetail] = useState(null);
+
+    const [asnQty, setAsnQty] = useState([ASN_INITIAL_STATE]);
+
     const inputRefs = useRef([]);
 
     const lastSavedItemsRef = React.useRef(localItems);
@@ -90,6 +94,20 @@ const GoodsDescription = ({
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
+
+    React.useEffect(() => {
+        if (po && po.length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
+            getPODetailConnect({ poNumber: po })
+            .then((res) => {
+                setPoDetail(res.poDetail);
+            })
+            .catch((error) => {
+                setPoDetail([]);
+                console.error("Error fetching PO details:", error);
+            });
+        }
+    }, [po]);
+
 
     React.useEffect(() => {
         const debounce = setTimeout(() => {
@@ -105,6 +123,28 @@ const GoodsDescription = ({
 
         return () => clearTimeout(debounce);
     }, [localItems]);
+
+    React.useEffect(() => {
+        if (invoiceId && selectedCompany === COMPANY_TYPE.ASHOK && po && po.length === 10 && poDetail) {
+            const updatedAsnQty = items.map((item) => {
+                const matchedPoItem = poDetail.items.find(poItem => poItem.itemNo === item.sno);
+                if (matchedPoItem) {
+                    return {
+                        totalQty: matchedPoItem.totalQty,
+                        qtyLeft: matchedPoItem.openQty,
+                    };
+                } else {
+                    return {
+                        totalQty: 0,
+                        qtyLeft: 0,
+                    };
+                }
+
+            });
+            setAsnQty(updatedAsnQty);
+        }
+
+    }, [invoiceId, po, poDetail, selectedCompany, items.length]);
 
     const onFieldChange = (event) => {
         const { value = "", name = "" } = event.target;
@@ -236,7 +276,10 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
             data: {
                 items: [...items, createInitialValue()]
             }
-        })
+        });
+        const updatedAsnQty = [...asnQty];
+        updatedAsnQty.push(ASN_INITIAL_STATE);
+        setAsnQty(updatedAsnQty);
     };
 
     const onItemChange = (event, index) => {
@@ -249,6 +292,25 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
             };
             return updated;
         });
+        if (name === "sno" && value.length >=2 && selectedCompany === COMPANY_TYPE.ASHOK) {
+            const matchedPoItem = poDetail.items.find(poItem => poItem.itemNo === value);
+            setAsnQty((prev) => {
+                const updatedAsnQty = [...prev];
+                if (matchedPoItem) {
+                    updatedAsnQty[index] = {
+                        ...updatedAsnQty[index],
+                        totalQty: matchedPoItem.totalQty,
+                        qtyLeft: matchedPoItem.openQty,
+                    };
+                } else {
+                    updatedAsnQty[index] = {
+                        totalQty: 0,
+                        qtyLeft: 0,
+                    };
+                }
+                return updatedAsnQty;
+            });
+        }
     };
 
     const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
@@ -285,7 +347,10 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
 
     const deleteItem = (index) => {
         const updatedItems = [...items];
+        const updatedAsnQty = [...asnQty];
         updatedItems.splice(index, 1);
+        updatedAsnQty.splice(index, 1);
+        setAsnQty(updatedAsnQty);
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
             data: {
@@ -375,24 +440,32 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                 }
                                 {
                                     input.type === "textField" &&
-                                    <Component
-                                        {...input.extraProps}
-                                        name={input.id}
-                                        label={input.placeholder}
-                                        variant="outlined"
-                                        onChange={onFieldChange}
-                                        value={invoiceFormDetail[input.key]}
-                                        error={!invoiceFormValidation[input.key]}
-                                        helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
-                                        fullWidth
-                                    />
+                                    <>
+                                        <Component
+                                            {...input.extraProps}
+                                            name={input.id}
+                                            label={input.placeholder}
+                                            variant="outlined"
+                                            onChange={onFieldChange}
+                                            value={invoiceFormDetail[input.key]}
+                                            error={!invoiceFormValidation[input.key]}
+                                            helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
+                                            fullWidth
+                                        />
+                                        {
+                                            input.span &&
+                                            <a href=""  style={{fontSize: "9px",   color: "blue"}} onClick={(e) => e.preventDefault()}>
+                                                {po}
+                                            </a>
+                                        }
+                                    </>
                                 }
 
                             </Grid>
                         );
                     })}
                 </Grid>
-                <div className="mt-4">
+                <div >
                     <Items columns={columns}>
                         {localItems.map((item, idx) => (
                             <div className={styles.itemsContainer}  key={idx}>
@@ -435,26 +508,37 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                                 )}
                                             />
                                         ) : (
-                                            <TextField
-                                                fullWidth
-                                                id={row.label}
-                                                label={row.label}
-                                                inputRef={(el) => (inputRefs.current[idx] = el)}
-                                                name={row.key}
-                                                value={item[row.key] || ''}
-                                                variant="standard"
-                                                error={!itemsValidation[idx][row.key]}
-                                                onChange={(e) => onItemChange(e, idx)}
-                                                inputProps={{
-                                                    style: {
-                                                        textAlign: 'left',
-                                                        // padding: '8px 0',
-                                                        whiteSpace: 'pre-wrap',
-                                                        wordBreak: 'break-word'
-                                                    }
-                                                }}
-                                                {...row.extraProps}
-                                            />
+                                            <>
+                                                <TextField
+                                                    fullWidth
+                                                    id={row.label}
+                                                    label={row.label}
+                                                    inputRef={(el) => (inputRefs.current[idx] = el)}
+                                                    name={row.key}
+                                                    value={item[row.key] || ''}
+                                                    variant="standard"
+                                                    error={!itemsValidation[idx][row.key]}
+                                                    onChange={(e) => onItemChange(e, idx)}
+                                                    inputProps={{
+                                                        style: {
+                                                            textAlign: 'left',
+                                                            // padding: '8px 0',
+                                                            whiteSpace: 'pre-wrap',
+                                                            wordBreak: 'break-word'
+                                                        }
+                                                    }}
+                                                    {...row.extraProps}
+                                                />
+                                                {
+                                                    row.span && item["sno"].length >= 2 && asnQty[idx] && !!(asnQty[idx].totalQty) && selectedCompany === COMPANY_TYPE.ASHOK &&
+                                                    <Typography variant="caption" display="block" color="secondary" style={{fontSize: "10px", marginTop: "5px"}} >
+                                                        ASN QTY - {`${asnQty[idx].qtyLeft}`}
+                                                    </Typography>
+                                                    // <span style={{fontSize: "9px", marginTop: "5px",  color: "red"}}>
+                                                    //     ASN QTY - {`${asnQty[idx].qtyLeft}`}
+                                                    // </span>
+                                                }
+                                            </>
                                         )}
                                     </span>
                                 ))}

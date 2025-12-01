@@ -1,15 +1,20 @@
 export default (api) => {
 
-    const generateASN = ({ poNumber, invoiceId, payload }) => {
-        return api.post(`/ASN/get/ASN/detail/${poNumber}/${invoiceId}`, payload)
+    const generateASN = ({ poNumber, payloadBody }) => {
+        return api.post(`/ASN/get/ASN/detail/${poNumber}`, payloadBody)
     };
 
-    const checkASNExist = ({ poNumber, invoiceId }) => {
-        return api.get(`/ASN/check/ASN/generation/${poNumber}/${invoiceId}`)
+    const checkASNExist = ({ poNumber, payload }) => {
+        return api.post(`/ASN/check/ASN/generation/${poNumber}`, payload)
+    }
+
+    const getPODetail = ({ poNumber }) => {
+        return api.get(`/purchase-order/get/details/${poNumber}`)
     }
 
     return {
         generateASN,
+        getPODetail,
         checkASNExist
     }
 

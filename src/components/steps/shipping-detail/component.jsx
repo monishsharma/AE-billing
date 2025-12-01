@@ -193,6 +193,8 @@ const ShippingDetails = ({
             }
         })
 
+        if (["asn", "eway"].includes(name)) return;
+
         setInvoiceFormValidation({
             ...invoiceFormValidation,
             [name]: !!value
@@ -245,7 +247,7 @@ const ShippingDetails = ({
 
         setIsLoading(true);
 
-        checkASNExistConnect({invoiceId: id, poNumber: po})
+        checkASNExistConnect({poNumber: po, payload: invoiceForm})
         .then((response) => {
             const asnNumber = response?.asnNumber || "0";
             if (response?.status === "Draft" || asnNumber === "0") {
@@ -254,7 +256,12 @@ const ShippingDetails = ({
                     asnNumber
                 });
 
-                generateASNConnect({invoiceId: id, poNumber: po, payload})
+                const payloadBody = {
+                    payload: payload,
+                    invoiceDetail: invoiceForm
+                };
+
+                generateASNConnect({poNumber: po, payloadBody})
                 .then((res) => {
                     const asnNumber = res?.generatedASN?.[0]?.ASN;
                     const isAsnGenerated = res?.generatedASN?.[0]?.ASNID;

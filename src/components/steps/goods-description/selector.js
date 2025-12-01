@@ -10,7 +10,8 @@ export const INPUTS = [
         placeholder: "Purchase Order No",
         type: "textField",
         key: "po",
-        component: TextField
+        component: TextField,
+        span: true
     },
     {
         id: "serial",
@@ -90,8 +91,8 @@ export const initialState = [
     {
         label: "Qty/Kgs/Nos",
         key: "qty",
-        intialValue: 0
-
+        intialValue: 0,
+        span: true,
     },
     {
         label: "Rate",
@@ -161,3 +162,8 @@ export const columns = [
         class: ""
     }
 ]
+
+export const ASN_INITIAL_STATE = {
+    totalQty: 0,
+    qtyLeft: 0,
+}
