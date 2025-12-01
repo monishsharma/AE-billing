@@ -45,7 +45,7 @@
         gap: 1rem;
     }
     .itemsContainer span {
-        display: flex;
+        /* display: flex; */
         -webkit-box-pack: justify;
         justify-content: space-between;
         width: 100%;

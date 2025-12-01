@@ -1,6 +1,6 @@
 import React, { use, useRef, useState } from "react";
 import Box from '@mui/material/Box';
-import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, TextField, Typography } from '@mui/material';
+import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, Skeleton, TextField, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
 import StepperButton from '../stepper-button';
@@ -79,6 +79,8 @@ const GoodsDescription = ({
 
     const [itemsValidation, setItemsValidation] = useState([]);
 
+    const [isFetchingPO, setIsFetchingPO] = useState(true);
+
     const [totalItems, setTotalItems] = useState([]);
 
     const [localItems, setLocalItems] = useState([]);
@@ -97,17 +99,20 @@ const GoodsDescription = ({
 
     React.useEffect(() => {
         if (po && po.length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
+            setIsFetchingPO(true);
             getPODetailConnect({ poNumber: po })
             .then((res) => {
                 setPoDetail(res.poDetail);
+                setIsFetchingPO(false);
+
             })
             .catch((error) => {
                 setPoDetail([]);
                 console.error("Error fetching PO details:", error);
+                setIsFetchingPO(false);
             });
         }
     }, [po]);
-
 
     React.useEffect(() => {
         const debounce = setTimeout(() => {
@@ -530,13 +535,13 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                                     {...row.extraProps}
                                                 />
                                                 {
-                                                    row.span && item["sno"].length >= 2 && asnQty[idx] && !!(asnQty[idx].totalQty) && selectedCompany === COMPANY_TYPE.ASHOK &&
+                                                    row.span && item["sno"].length >= 2 && selectedCompany === COMPANY_TYPE.ASHOK &&
                                                     <Typography variant="caption" display="block" color="secondary" style={{fontSize: "10px", marginTop: "5px"}} >
-                                                        ASN QTY - {`${asnQty[idx].qtyLeft}`}
+                                                        {
+                                                            isFetchingPO ? <Skeleton variant="text"  animation="wave" /> :
+                                                            `ASN Qty: ${asnQty?.[idx]?.qtyLeft}`
+                                                        }
                                                     </Typography>
-                                                    // <span style={{fontSize: "9px", marginTop: "5px",  color: "red"}}>
-                                                    //     ASN QTY - {`${asnQty[idx].qtyLeft}`}
-                                                    // </span>
                                                 }
                                             </>
                                         )}
