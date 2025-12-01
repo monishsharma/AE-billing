@@ -452,12 +452,12 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                             helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
                                             fullWidth
                                         />
-                                        {
+                                        {/* {
                                             input.span &&
                                             <a href=""  style={{fontSize: "9px",   color: "blue"}} onClick={(e) => e.preventDefault()}>
                                                 {po}
                                             </a>
-                                        }
+                                        } */}
                                     </>
                                 }
 
