@@ -539,7 +539,7 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                                     <Typography variant="caption" display="block" color="secondary" style={{fontSize: "10px", marginTop: "5px"}} >
                                                         {
                                                             isFetchingPO ? <Skeleton variant="text"  animation="wave" /> :
-                                                            `ASN Qty: ${asnQty?.[idx]?.qtyLeft}`
+                                                            `ASN Qty: ${asnQty?.[idx]?.totalQty} | Left: ${asnQty?.[idx]?.qtyLeft}`
                                                         }
                                                     </Typography>
                                                 }
