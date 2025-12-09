@@ -8,6 +8,8 @@ import {
     Typography,
     Modal,
     TextField,
+    InputAdornment,
+    inputBaseClasses,
 } from "@mui/material";
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from "@mui/material/Tab";
@@ -28,6 +30,7 @@ import { debounce } from "../../helpers/debounce";
 import { DataGrid } from "@mui/x-data-grid";
 import {  getColumns } from "./selector";
 import PaymentConfirmationModal from "../payment-confirmation-modal";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const Invoice = ({
     invoiceForm,
@@ -422,7 +425,7 @@ const Invoice = ({
             setSearchValue("");
             fetchInvoices();
           }
-        }, 500), [value, paginationModel, dateValue]
+        }, 800), [value, paginationModel, dateValue]
       );
 
       const handleInputChange = (e) => {
@@ -628,6 +631,27 @@ const Invoice = ({
                             xs: "100%",
                             sm: "auto",
                         },
+                    }}
+                    slotProps={{
+                        input:{
+                            endAdornment: (
+                                !!(searchValue .length) &&
+                                <InputAdornment
+                                    position="end"
+                                    sx={{
+                                        cursor: 'pointer' ,
+                                    }}
+                                    onClick={() => {
+                                        setSearchValue("");
+                                        setIsQueryRunning(false);
+                                        fetchInvoices();
+                                    }}
+                                >
+
+                                    <ClearIcon  />
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
             </Box>
