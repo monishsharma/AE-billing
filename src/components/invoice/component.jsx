@@ -166,7 +166,7 @@ const Invoice = ({
             id: row._id,
         };
 
-        let toastId = null;
+        let toastId = new Date().getTime();
 
         showToast({
             type: "info",
@@ -175,7 +175,7 @@ const Invoice = ({
             closeButton: false,
             progress: 0,
             theme: "dark",
-            toastId: "download-toast",
+            toastId: toastId,
         });
 
         try {
@@ -199,7 +199,7 @@ const Invoice = ({
                                 closeButton: false,
                                 theme: "dark",
                                 transition: Bounce,
-                                toastId: "download-toast", // consistent ID to update the same toast
+                                toastId: toastId, // consistent ID to update the same toast
                             });
                         } else {
                             toast.update("download-toast", {
@@ -228,7 +228,7 @@ const Invoice = ({
             document.body.removeChild(link);
 
             //   setIsLoading(false);
-            toast.update("download-toast", {
+            toast.update(toastId, {
                 render: "Download complete!",
                 type: "success",
                 autoClose: 2000,
