@@ -130,7 +130,7 @@ const GoodsDescription = ({
     }, [localItems]);
 
     React.useEffect(() => {
-        if (invoiceId && selectedCompany === COMPANY_TYPE.ASHOK && po && po.length === 10 && poDetail) {
+        if (invoiceId && selectedCompany === COMPANY_TYPE.ASHOK && po && po.length === 10 && poDetail && poDetail.items) {
             const updatedAsnQty = items.map((item) => {
                 const matchedPoItem = poDetail.items.find(poItem => poItem.itemNo === item.sno);
                 if (matchedPoItem) {
