@@ -535,7 +535,7 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                                     {...row.extraProps}
                                                 />
                                                 {
-                                                    row.span && item["sno"].length >= 2 && selectedCompany === COMPANY_TYPE.ASHOK &&
+                                                    row.span && item["sno"].length >= 2 && selectedCompany === COMPANY_TYPE.ASHOK && poDetail && poDetail.items &&
                                                     <Typography variant="caption" display="block" color="secondary" style={{fontSize: "10px", marginTop: "5px"}} >
                                                         {
                                                             isFetchingPO ? <Skeleton variant="text"  animation="wave" /> :

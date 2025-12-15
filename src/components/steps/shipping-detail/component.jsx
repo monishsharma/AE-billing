@@ -206,10 +206,10 @@ const ShippingDetails = ({
         Swal.close();
     }
 
-    const fireSWal = (asnNumber) => (
+    const fireSWal = ({asnNumber, title}) => (
         Swal.fire({
             icon: "success",
-            title: "ASN Already Generated",
+            title: title,
             html: `
                 <p>ASN NO - ${asnNumber}</p>
                 <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
@@ -281,7 +281,7 @@ const ShippingDetails = ({
                         }
                     });
                     setIsLoading(false);
-                    fireSWal(asnNumber);
+                    fireSWal({asnNumber, title: "ASN Generated Successfully"});
                 })
                 .catch((err) => {
                     setIsLoading(false);
@@ -300,7 +300,8 @@ const ShippingDetails = ({
                         "asn": asnNumber
                     }
                 });
-                fireSWal(asnNumber);
+                fireSWal({asnNumber, title: "ASN Already Generated"});
+
             }
 
         })
