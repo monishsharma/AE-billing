@@ -322,6 +322,7 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         const { target: { id, value: inputValue } } = event;
         const finalValue = inputValue ? inputValue : value || "";
 
+
         // Split the value properly to handle long descriptions
         const parts = finalValue.split("-");
         let description = "";
@@ -337,10 +338,10 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         copyOfItems[index] = {
             ...copyOfItems[index],
             itemType: inputValue ? "manual" : parts[0],
-            // ...(!invoiceId && {
+            ...((value) && {
                 description,
-            // }),
-            [selectedId || "rate"]: selectedValue || 0,
+            }),
+            [selectedId || "rate"]: selectedValue || "",
         };
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,

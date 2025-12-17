@@ -126,7 +126,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
       const text = params?.row?.goodsDescription?.items?.[0]?.description || "-";
       const getTitle = () => {
         const allText = params?.row?.goodsDescription?.items
-          ?.map((item) => `${item.description}   WO:${item.wo}  QTY: ${item.qty} ${params?.row?.goodsDescription?.type||""}`)
+          ?.map((item) => `${item.sno}, ${item.description}, WO:${item.wo}  QTY: ${item.qty} ${params?.row?.goodsDescription?.type||""}`)
           .join("\n");
         return allText || "-";
       }
@@ -177,7 +177,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
     ),
     sortable: false,
     minWidth: 150,
-    valueGetter: (params, row) => `${row?.goodsDescription.po}`,
+    valueGetter: (params, row) => `${row?.goodsDescription.fullPo || row?.goodsDescription.po}`,
   },
   {
     field: "date",
