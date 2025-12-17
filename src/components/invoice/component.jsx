@@ -446,7 +446,7 @@ const Invoice = ({
 
     const renderInvoices = () => (
         <>
-            <Paper sx={{ width: "100%", overflow: "hidden", height: "55vh" }}>
+            <Paper sx={{ width: "100%", overflow: "hidden", height: "54vh" }}>
                 {/* <div className="customTable">
                     <Table
                         data={invoices}

@@ -1,6 +1,6 @@
 // columns.js
 import React from "react";
-import { IconButton, Chip, Checkbox, Typography, Button } from "@mui/material";
+import { IconButton, Chip, Checkbox, Typography, Button, Tooltip, Zoom } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import DownloadIcon from "@mui/icons-material/Download";
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -124,23 +124,38 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
     sortable: false,
     renderCell: (params) => {
       const text = params?.row?.goodsDescription?.items?.[0]?.description || "-";
-      const geTitle = () => {
+      const getTitle = () => {
         const allText = params?.row?.goodsDescription?.items
-          ?.map((item) => `${item.description} - ${item.wo}`)
-          .join(", ");
+          ?.map((item) => `${item.description}   WO:${item.wo}  QTY: ${item.qty} ${params?.row?.goodsDescription?.type||""}`)
+          .join("\n");
         return allText || "-";
       }
       return (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          title={geTitle()}
+        <Tooltip
+          title={getTitle()}
+          arrow
+          slots={{
+          transition: Zoom,
+        }}
+          componentsProps={{
+          tooltip: {
+            sx: {
+              whiteSpace: "pre-line",
+            },
+          },
+        }}
         >
-          {text}
-        </div>
+          <span
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "block",
+            }}
+          >
+            {text}
+          </span>
+        </Tooltip>
       );
     },
   },
