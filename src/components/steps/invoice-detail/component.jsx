@@ -128,6 +128,7 @@ export default function InvoiceDetail({
                                         name={input.id}
                                         label={input.placeholder}
                                         value={invoiceFormDetail[input.key]}
+                                        disabled={input.extraProps && input.extraProps.disableOnEdit && id}
                                         onChange={onFieldChange}
                                     >
                                         {input.extraProps.options.map((option, idx) => (

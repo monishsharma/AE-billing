@@ -13,6 +13,7 @@ export const INPUTS = [
         key: "company",
         component: Select,
         extraProps: {
+            disableOnEdit: true,
             options: Object.keys(COMPANY_TYPE).map((type) => ({
                 value: COMPANY_TYPE[type],
                 label: COMPANY_TYPE[type]

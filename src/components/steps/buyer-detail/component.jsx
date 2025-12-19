@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {INPUTS, orderTypeOptions} from "./selector";
+import {getCustomerDetail, INPUTS, orderTypeOptions} from "./selector";
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import StepperButton from '../stepper-button';
 import { COMPANY, COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from "../../../constants/app-constant";
+import { useParams } from "react-router-dom";
 
 
 const BuyerDetail = ({
@@ -19,6 +20,9 @@ const BuyerDetail = ({
     invoiceForm,
     saveDataConnect
 }) => {
+
+    const { id } = useParams();
+
 
     const {
         invoiceDetail: {
@@ -34,7 +38,6 @@ const BuyerDetail = ({
 
     const {vendorsList = []} = config;
 
-    const isUnqiueVendor = [VENDOR_NAME.PARINAMITRA_ELECTRICALS,VENDOR_NAME.RAJASTHAN_EXPLOSIVES_AND_CHEMICALS_LTD].includes(customer);
 
     const getValueByKey = (obj, value) => {
         return Object.keys(obj).find(key => obj[key] === value);
@@ -66,50 +69,48 @@ const BuyerDetail = ({
                 orderType: true,
             })
             const {
-                address,
-                isInterState,
-                vendorCode,
-                GSTIN,
-                PAN,
-                name,
-                type,
-                state,
-                city,
                 materialCode,
             } = selectedCustomer;
+            const customerDetail = getCustomerDetail({
+                selectedCustomer,
+                orderType: orderType || invoiceFormDetail.orderType || "",
+                materialCode: materialCode || invoiceFormDetail.materialCode || ""
+            });
+
+
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
-                    customer: selectedCustomer.label,
-                    address,
-                    isInterState,
-                    vendorCode,
-                    GSTIN,
-                    PAN,
-                    name,
-                    type,
-                    state,
-                    city,
-                    orderType: orderType || invoiceFormDetail.orderType || "",
-                    materialCode: materialCode || invoiceFormDetail.materialCode || ""
+                    ...customerDetail
                 }
             })
         }
     }, [])
 
 
+    // React.useEffect(() => {
+    //     if (selectedCompany === COMPANY_TYPE.PADMA && !!(OPTIONS.length)) {
+    //         const index = OPTIONS.findIndex(option =>( option.id === customer || option.label === customer ));
+    //         const selectedCustomer = OPTIONS[index];
+    //         const customerDetail = getCustomerDetail({
+    //             selectedCustomer,
+    //             orderType: orderType || invoiceFormDetail.orderType || "",
+    //             materialCode: materialCode || invoiceFormDetail.materialCode || ""
+    //         });
+    //         invoiceFormDetail["customer"] = selectedCustomer.id;
+    //         saveDataConnect({
+    //             stepName: STEPPER_NAME.BUYER_DETAIL,
+    //             data: {
+    //                 ...customerDetail
+    //             }
+    //         })
+    //     }
+    // }, [OPTIONS.length])
+
 
     const performValidation = () => {
         const updatedValidation = Object.keys(invoiceFormDetail).reduce((acc, key) => {
-            if (isUnqiueVendor) {
-                if (["vendorCode","materialCode"].includes(key)) {
-                    acc[key] = true;
-                } else {
-                    acc[key] = !!invoiceFormDetail[key];
-                }
-            } else {
-                acc[key] = !!invoiceFormDetail[key];
-            }
+            acc[key] = !!invoiceFormDetail[key];
             return acc;
         }, {});
 
@@ -127,37 +128,13 @@ const BuyerDetail = ({
     const onFieldChange = (event) => {
         const { value, name } = event.target;
         if (name === "customer") {
-            const index = OPTIONS.findIndex(option => option.label === value);
+            const index = OPTIONS.findIndex(option => option.id === value);
             const selectedCustomer = OPTIONS[index];
-            const {
-                    address,
-                    isInterState,
-                    vendorCode,
-                    GSTIN,
-                    PAN,
-                    name,
-                    type,
-                    state,
-                    city,
-                    materialCode,
-                    orderType = ""
-                } = selectedCustomer;
+            const customerDetail = getCustomerDetail({selectedCustomer});
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
-                    customer: selectedCustomer.label,
-                    address,
-                    isInterState,
-                    vendorCode,
-                    GSTIN,
-                    PAN,
-                    name,
-                    type,
-                    city,
-                    state,
-                    orderType,
-                    materialCode
-
+                    ...customerDetail
                 }
             })
         } else if (name === "orderType") {
@@ -219,11 +196,13 @@ const BuyerDetail = ({
                                         label={input.placeholder}
                                         value={invoiceFormDetail[input.key]}
                                         onChange={onFieldChange}
+                                        disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
+
                                     >
                                         {
                                             input.name === "customer" &&
-                                            OPTIONS.map((option, idx) => (
-                                                <MenuItem key={idx} value={option.label}>{option.label}</MenuItem>
+                                            OPTIONS.map((option) => (
+                                                <MenuItem key={option.id} value={`${option.id}`}>{option.label}</MenuItem>
                                             ))
                                         }
                                         {
@@ -247,6 +226,7 @@ const BuyerDetail = ({
                                     variant='outlined'
                                     onChange={onFieldChange}
                                     value={invoiceFormDetail[input.key]}
+                                    disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
                                     error={!invoiceFormValidation[input.key]}
                                     helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
                                     fullWidth

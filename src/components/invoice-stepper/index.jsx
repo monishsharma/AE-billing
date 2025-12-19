@@ -5,8 +5,9 @@ import { setData, setCurrentStep, saveData, getConfig, getInvoiceList, saveApiDa
 import { getHsnCodeList } from "../../store/config/action.js";
 
 const mapStateToProps = ({
-    invoiceForm
-}) => ({invoiceForm});
+    invoiceForm,
+    config
+}) => ({invoiceForm, config});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     setDataConnect: setData,

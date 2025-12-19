@@ -19,6 +19,7 @@ export const INPUTS = [
         key: "customer",
         component: Select,
         extraProps: {
+            disabledOnEdit: true,
             options: Object.keys(COMPANY_TYPE).map((type) => ({
                 value: type,
                 label: COMPANY_TYPE[type]
@@ -33,7 +34,7 @@ export const INPUTS = [
         key: "vendorCode",
         component: TextField,
         extraProps: {
-            disabled: false
+            disabledOnEdit: true
         }
     },
     {
@@ -44,6 +45,8 @@ export const INPUTS = [
         key: "orderType",
         component: Select,
         extraProps: {
+            disabledOnEdit: true,
+
             options: [
                 ...orderTypeOptions
             ]
@@ -59,3 +62,40 @@ export const INPUTS = [
         extraProps: {}
     }
 ];
+
+export const getCustomerDetail = ({
+    selectedCustomer,
+    ...rest
+}) => {
+    const materialCode = rest.materialCode || selectedCustomer.materialCode || "";
+    const orderType = rest.orderType || selectedCustomer.orderType || "";
+    const {
+        id,
+        address,
+        isInterState,
+        vendorCode,
+        GSTIN,
+        PAN,
+        name,
+        type,
+        state,
+        city,
+    } = selectedCustomer;
+
+    return {
+            materialCode,
+            orderType,
+            customer: id,
+            customerName: selectedCustomer.label,
+            address,
+            isInterState,
+            vendorCode,
+            GSTIN,
+            PAN,
+            name,
+            type,
+            city,
+            state,
+
+    }
+}

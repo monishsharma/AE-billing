@@ -40,7 +40,7 @@ export const tableConstants = ({ isCompanyAshok, chekboxhandler }) => {
       },
       render: (rowData) => (
         <Typography variant="body2" color={"#000000"}>
-          {rowData.buyerDetail.customer}
+          {rowData.buyerDetail.customerName ||  rowData.buyerDetail.customer}
         </Typography>
       )
     }] : []),

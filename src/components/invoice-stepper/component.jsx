@@ -40,6 +40,7 @@ const steps = [
 ];
 
 export default function InvoiceStepper({
+    config,
     invoiceForm,
     saveDataConnect,
     getConfigConnect,
@@ -51,7 +52,8 @@ export default function InvoiceStepper({
 
   const {currentStep, invoiceDetail, buyerDetail, goodsDescription, shippingDetail} = invoiceForm;
 
-      const { id } = useParams();
+  const { id } = useParams();
+  const {vendorsList = []} = config;
 
   const [activeStep, setActiveStep] = React.useState(currentStep);
   const [isLoading, setIsLoading] = React.useState(false)
@@ -83,15 +85,25 @@ export default function InvoiceStepper({
   }, [getConfigConnect, getHsnCodeListConnect])
 
   React.useEffect(() => {
-    if (id) {
+    if (id && vendorsList.length) {
     setIsLoading(true);
 
       getInvoiceListConnect({id})
       .then((res) => {
+        const resCopy = JSON.parse(JSON.stringify(res));
+        const  {buyerDetail = {}} = resCopy;
+        if (buyerDetail) {
+          const index = vendorsList.findIndex(option => option.label === buyerDetail.customer);
+          const selectedCustomer = vendorsList[index];
+          if (selectedCustomer && !selectedCustomer.customerName) {
+              resCopy.buyerDetail.customerName = selectedCustomer.label;
+              resCopy.buyerDetail.customer = selectedCustomer.id;
+          }
+        }
           saveApiDataConnect({
               data: {
                   currentStep: 0,
-                  ...res
+                  ...resCopy
               }
           });
         setIsLoading(false);
@@ -102,7 +114,7 @@ export default function InvoiceStepper({
       })
     }
 
-  }, [id])
+  }, [id, vendorsList.length])
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -128,7 +140,7 @@ export default function InvoiceStepper({
       return `${invoiceDetail.company} - ${invoiceDetail.invoiceNO}`;
     }
     if (stepName === STEPPER_NAME.BUYER_DETAIL) {
-      return `${buyerDetail.customer}`;
+      return `${buyerDetail.customerName || buyerDetail.customer}`;
     }
     if (stepName === STEPPER_NAME.GOODS_DESCRIPTION) {
       return `PO - ${goodsDescription.po}`;

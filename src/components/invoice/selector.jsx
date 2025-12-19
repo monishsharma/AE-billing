@@ -165,7 +165,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
     renderHeader: () => <strong>Billed To</strong>,
     minWidth: 150,
     sortable: false,
-    valueGetter: (params, row) => `${row?.buyerDetail.customer}`,
+    valueGetter: (params, row) => `${row?.buyerDetail.customerName || row?.buyerDetail.customer}`,
   }
 ] : []),
   {
