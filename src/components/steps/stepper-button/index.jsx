@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Button } from "@mui/material";
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 const StepperButton = ({ handleNext = () => {}, index, steps, handleBack = () => {} }) => {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./style.module.css";
-import { TextField } from "@mui/material";
+import TextField from '@mui/material/TextField';
 import { STEPPER_NAME } from "../../constants/app-constant";
 
 

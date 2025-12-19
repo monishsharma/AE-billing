@@ -29,17 +29,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import PageLoader from "../../components/page-loader";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-import { Bar, Pie } from "react-chartjs-2";
+
 import AccessDenied from "../../components/access-denied";
 
 
@@ -56,30 +46,8 @@ export default function Payment({
   getPaymentInfoConnect
  }) {
 
-    ChartJS.register(
-      CategoryScale,
-      LinearScale,
-      BarElement,
-      Title,
-      Tooltip,
-      Legend,
-      ArcElement
-    );
 
-    const pieOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Payment Summary",
-      },
-    },
-  };
-
-  let totalPaidAmount = 0;
+  // let totalPaidAmount = 0;
   const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
   const [response, setResponse] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -392,9 +360,9 @@ export default function Payment({
                                   value={`summary_0`}
                                 />
                                 {response.map((item, index) => {
-                                  totalPaidAmount = item.updates.reduce((acc, curr) => {
-                                    return acc + (parseFloat(curr?.paidAmount) || 0);
-                                  }, 0);
+                                  // totalPaidAmount = item.updates.reduce((acc, curr) => {
+                                  //   return acc + (parseFloat(curr?.paidAmount) || 0);
+                                  // }, 0);
                                   return (
                                     <Tab
                                       label={moment(item.date).format("DD MMM")}
@@ -410,9 +378,9 @@ export default function Payment({
                                 </Typography>
                             </TabPanel>
                             {response.map((item, index) => {
-                              const amoundMarkedPaid = item.updates.reduce((acc, curr) => {
-                                return acc + (parseFloat(curr?.paidAmount) || 0);
-                              }, 0);
+                              // const amoundMarkedPaid = item.updates.reduce((acc, curr) => {
+                              //   return acc + (parseFloat(curr?.paidAmount) || 0);
+                              // }, 0);
                               return (
                                 <TabPanel
                                   value={`dates_${index}`}

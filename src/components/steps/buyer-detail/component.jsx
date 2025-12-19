@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {getCustomerDetail, INPUTS, orderTypeOptions} from "./selector";
 import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';

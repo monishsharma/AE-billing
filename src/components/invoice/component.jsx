@@ -1,33 +1,27 @@
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import styles from "./invoice.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
-import {
-    Paper,
-    Box,
-    Typography,
-    Modal,
-    TextField,
-    InputAdornment,
-    inputBaseClasses,
-} from "@mui/material";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Swal from "sweetalert2";
-import PageLoader from "../page-loader";
 import DatePicker from "react-datepicker";
 import { toast, Bounce } from "react-toastify";
 import AddIcon from "@mui/icons-material/Add";
-import Table from "../table";
 import { useOutletContext } from "react-router-dom";
-import { tableConstants } from "./tableConstant";
-import Pagination from "../pagination";
 import { isMobileDevice } from "../../helpers/is-mobile-device";
 import { debounce } from "../../helpers/debounce";
-import { DataGrid } from "@mui/x-data-grid";
+// import { DataGrid } from "@mui/x-data-grid";
+const DataGrid = React.lazy(() =>
+  import('@mui/x-data-grid').then(m => ({ default: m.DataGrid }))
+);
 import {  getColumns } from "./selector";
 import PaymentConfirmationModal from "../payment-confirmation-modal";
 import ClearIcon from '@mui/icons-material/Clear';

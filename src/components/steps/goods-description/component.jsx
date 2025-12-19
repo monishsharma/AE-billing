@@ -1,6 +1,16 @@
-import React, { use, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Box from '@mui/material/Box';
-import {Autocomplete, Button, FormControl, Grid, InputLabel, Select, Skeleton, TextField, Typography } from '@mui/material';
+const Autocomplete = React.lazy(() =>
+  import('@mui/material/Autocomplete')
+);
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Skeleton from '@mui/material/Skeleton';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
 import StepperButton from '../stepper-button';

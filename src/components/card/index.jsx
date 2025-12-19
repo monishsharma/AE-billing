@@ -1,7 +1,8 @@
 import React from 'react';
-import styles from "./style.module.css";
 import Card from '@mui/material/Card';
-import { Avatar, Box, CardContent, colors, Typography } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import priceFormatter from '../../helpers/price-formatter';

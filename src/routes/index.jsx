@@ -1,16 +1,16 @@
 import App from "../App";
-import ErrorPage from "../shared/components/not-found";
-import Invoice from "../components/invoice";
-import InvoiceStepper from "../components/invoice-stepper";
-import Vendors from "../pages/vendors";
-import AddVendor from "../pages/add-vendor";
-import Dashboard from "../pages/dashboard";
-import Login from "../components/login";
+import React from "react";
+const ErrorPage = React.lazy(() => import("../shared/components/not-found"));
+const Invoice = React.lazy(() => import("../components/invoice"));
+const InvoiceStepper = React.lazy(() => import("../components/invoice-stepper"));
+const Vendors = React.lazy(() => import("../pages/vendors"));
+const AddVendor = React.lazy(() => import("../pages/add-vendor"));
+const Dashboard = React.lazy(() => import("../pages/dashboard"));
+const Login = React.lazy(() => import("../components/login"));
+const NotFound = React.lazy(() => import("../components/not-found"));
+const Payment = React.lazy(() => import("../pages/payment"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
-import NotFound from "../components/not-found";
-import { Navigate } from "react-router-dom";
-import Payment from "../pages/payment";
 
 const routes = [
   {
@@ -47,6 +47,7 @@ const routes = [
           },
           {
             path: "add/vendor",
+            // element: <AddVendorsV2 />,
             element: <AddVendor />,
             errorElement: <ErrorPage />,
           },

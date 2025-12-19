@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import {getPayloadForASN, INPUTS} from "./selector";
 import Box from '@mui/material/Box';
-import { Grid, TextField, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import StepperButton from '../stepper-button';
 import { CG_URL, COMPANY, STEPPER_NAME } from "../../../constants/app-constant";
 import {VENDOR_NAME} from "../../../constants/app-constant";

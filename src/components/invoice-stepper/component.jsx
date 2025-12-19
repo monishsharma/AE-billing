@@ -7,11 +7,11 @@ import StepContent from '@mui/material/StepContent';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import InvoiceDetail from "../steps/invoice-detail"
-import BuyerDetail from '../steps/buyer-detail';
-import GoodsDescription from "../steps/goods-description";
+const InvoiceDetail = React.lazy(() => import('../steps/invoice-detail'));
+const BuyerDetail = React.lazy(() => import('../steps/buyer-detail'));
+const GoodsDescription = React.lazy(() => import("../steps/goods-description"));
+const ShippingDetails = React.lazy(() => import("../steps/shipping-detail"));
 import { STEPPER_NAME } from '../../constants/app-constant';
-import ShippingDetails from "../steps/shipping-detail";
 import { useParams } from 'react-router-dom';
 import PageLoader from '../page-loader';
 
