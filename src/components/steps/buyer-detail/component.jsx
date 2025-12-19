@@ -196,7 +196,7 @@ const BuyerDetail = ({
                                         label={input.placeholder}
                                         value={invoiceFormDetail[input.key]}
                                         onChange={onFieldChange}
-                                        disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
+                                        // disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
 
                                     >
                                         {

@@ -50,7 +50,8 @@ const ShippingDetails = ({
             asn = ""
         },
         [STEPPER_NAME.BUYER_DETAIL]: {
-            customer
+            customer,
+            customerName = ""
         },
         [STEPPER_NAME.GOODS_DESCRIPTION]: {
             po,
@@ -58,13 +59,12 @@ const ShippingDetails = ({
         }
     } = invoiceForm;
 
-    const isUnqiueVendor = customer === VENDOR_NAME.RAJASTHAN_EXPLOSIVES_AND_CHEMICALS_LTD;
-
+    const isCompanyAshok = [customer, customerName].includes(VENDOR_NAME.CROMPTON);
 
     const invoiceFormDetail = {
         vehicleNo: vehicleNo || "",
         eway: eway || "",
-        ...(customer === VENDOR_NAME.CROMPTON && {
+        ...((isCompanyAshok) && {
             asn: asn ||  ""
         })
     };
@@ -75,7 +75,7 @@ const ShippingDetails = ({
     });
 
     React.useEffect(() => {
-        if (customer === VENDOR_NAME.CROMPTON) {
+        if (isCompanyAshok) {
             if (!dynamicInputs.find((item) => item.key === "asn"))
             setDynamicInputs([
                 ...dynamicInputs,
@@ -92,10 +92,6 @@ const ShippingDetails = ({
 
     const performValidation = () => {
         const updatedValidation = Object.keys(invoiceFormDetail).reduce((acc, key) => {
-            if (isUnqiueVendor) {
-                acc[key]= true
-                return acc;
-            }
             if (key === "eway") {
                 acc[key] = true; // skip validation
             }
@@ -117,13 +113,6 @@ const ShippingDetails = ({
           setIsLoading(true);
 
           const { config, ...rest } = invoiceForm;
-          if (!rest.invoiceDetail.htmlContent) {
-            const {vendorList, ...otherData} = COMPANY[rest.invoiceDetail.value] || {};
-            rest.invoiceDetail = {
-                ...rest.invoiceDetail,
-                ...otherData
-            }
-          }
           delete rest.currentStep;
 
           const payload = {
