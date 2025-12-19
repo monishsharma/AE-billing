@@ -1,9 +1,7 @@
 import React, { useRef, useState } from "react";
 import Box from '@mui/material/Box';
-const Autocomplete = React.lazy(() =>
-  import('@mui/material/Autocomplete')
-);
 import Button from '@mui/material/Button';
+import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -12,6 +10,7 @@ import Skeleton from '@mui/material/Skeleton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
+
 import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
 import StepperButton from '../stepper-button';
 import { COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from '../../../constants/app-constant';
@@ -43,7 +42,7 @@ const GoodsDescription = ({
 
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
-        [STEPPER_NAME.BUYER_DETAIL]: { customer },
+        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "" },
         [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "" },
     } = invoiceForm;
 
@@ -70,7 +69,7 @@ const GoodsDescription = ({
     };
 
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
-    const selectedVendor = list.filter(item => item.label === customer) || {};
+    const selectedVendor = list.filter(item => item.id === customer || item.label || customerName) || {};
     const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
 
     const invoiceFormDetail = {
