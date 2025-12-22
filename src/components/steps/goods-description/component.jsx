@@ -69,7 +69,7 @@ const GoodsDescription = ({
     };
 
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
-    const selectedVendor = list.filter(item => item.id === customer || item.label || customerName) || {};
+    const selectedVendor = list.filter(item => item.id === customer || item.label === customerName) || {};
     const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
 
     const invoiceFormDetail = {
