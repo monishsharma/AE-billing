@@ -152,187 +152,187 @@ const Invoice = ({
         navigate(`/edit/invoice/${row._id}`);
     };
 
-    // const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
-    //     e.stopPropagation(); // prevent triggering row click
+    const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
+        e.stopPropagation(); // prevent triggering row click
 
-    //     const payload = {
-    //         downloadOriginal,
-    //         id: row._id,
-    //     };
+        const payload = {
+            downloadOriginal,
+            id: row._id,
+        };
 
-    //     let toastId = new Date().getTime();
+        let toastId = new Date().getTime();
 
-    //     showToast({
-    //         type: "info",
-    //         text: "Preparing download...",
-    //         autoClose: false,
-    //         closeButton: false,
-    //         progress: 0,
-    //         theme: "dark",
-    //         toastId: toastId,
-    //     });
-
-    //     try {
-    //         //   setIsLoading(true);
-    //         const pdfResponse = await getBillPdfConnect(payload, {
-    //             responseType: "blob",
-    //             headers: {
-    //                 Accept: "application/pdf",
-    //             },
-    //             onDownloadProgress: (progressEvent) => {
-    //                 if (progressEvent.lengthComputable) {
-    //                     const percent = Math.round(
-    //                         (progressEvent.loaded * 100) / progressEvent.total
-    //                     );
-
-    //                     // Show or update the toast
-    //                     if (!toastId) {
-    //                         toastId = toast.info(`Downloading... ${percent}%`, {
-    //                             progress: percent / 100,
-    //                             autoClose: false,
-    //                             closeButton: false,
-    //                             theme: "dark",
-    //                             transition: Bounce,
-    //                             toastId: toastId, // consistent ID to update the same toast
-    //                         });
-    //                     } else {
-    //                         toast.update("download-toast", {
-    //                             render: `Downloading... ${percent}%`,
-    //                             progress: percent / 100,
-    //                             theme: "dark",
-    //                             transition: Bounce,
-    //                         });
-    //                     }
-    //                 }
-    //             },
-    //         });
-
-    //         const contentDisposition = pdfResponse.headers["content-disposition"];
-    //         const match = contentDisposition?.match(/filename="?(.+)"?/);
-    //         const filename = match?.[1] || "invoice.pdf";
-
-    //         const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
-    //         const fileURL = URL.createObjectURL(blob);
-
-    //         const link = document.createElement("a");
-    //         link.href = fileURL;
-    //         link.download = filename;
-    //         document.body.appendChild(link);
-    //         link.click();
-    //         document.body.removeChild(link);
-
-    //         //   setIsLoading(false);
-    //         toast.update(toastId, {
-    //             render: "Download complete!",
-    //             type: "success",
-    //             autoClose: 2000,
-    //             progress: undefined,
-    //         });
-    //     } catch (pdfErr) {
-    //         console.error("PDF generation error", pdfErr);
-    //         Swal.fire({
-    //             icon: "error",
-    //             text: "Failed to generate PDF",
-    //         });
-    //         setIsLoading(false);
-    //     }
-    // }, [getBillPdfConnect, showToast, setIsLoading]);
-
-    const downloadPdfWithProgress = async ({
-        row,
-        downloadOriginal,
-        toastId,
-        label,
-    }) => {
         showToast({
             type: "info",
-            text: `Preparing ${label}...`,
+            text: downloadOriginal ? "Preparing original invoice..." : "Preparing duplicate invoice...",
             autoClose: false,
             closeButton: false,
             progress: 0,
             theme: "dark",
-            toastId,
+            toastId: toastId,
         });
 
-        const response = await getBillPdfConnect(
-            {
-            id: row._id,
-            downloadOriginal,
-            },
-            {
-            responseType: "blob",
-            headers: { Accept: "application/pdf" },
-            onDownloadProgress: (e) => {
-                if (!e.total) return;
+        try {
+            //   setIsLoading(true);
+            const pdfResponse = await getBillPdfConnect(payload, {
+                responseType: "blob",
+                headers: {
+                    Accept: "application/pdf",
+                },
+                onDownloadProgress: (progressEvent) => {
+                    if (progressEvent.lengthComputable) {
+                        const percent = Math.round(
+                            (progressEvent.loaded * 100) / progressEvent.total
+                        );
 
-                const percent = Math.round((e.loaded * 100) / e.total);
-
-                toast.update(toastId, {
-                render: `Downloading ${label}... ${percent}%`,
-                progress: percent / 100,
-                theme: "dark",
-                });
-            },
-            }
-        );
-
-        const contentDisposition = response.headers["content-disposition"];
-        const match = contentDisposition?.match(/filename="?(.+)"?/);
-
-        const filename =
-            match?.[1] ||
-            (downloadOriginal
-            ? "invoice-original.pdf"
-            : "invoice-duplicate.pdf");
-
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        link.click();
-
-        URL.revokeObjectURL(url);
-
-        toast.update(toastId, {
-            render: `${label} downloaded`,
-            type: "success",
-            autoClose: 2000,
-            progress: undefined,
-        });
-    };
-
-    const handleDownload = React.useCallback(
-        async (e, row) => {
-            e.stopPropagation();
-
-            try {
-            // 🔹 Duplicate invoice
-            await downloadPdfWithProgress({
-                row,
-                downloadOriginal: false,
-                toastId: `dup-${row._id}`,
-                label: "Duplicate invoice",
+                        // Show or update the toast
+                        if (!toastId) {
+                            toastId = toast.info(`Downloading... ${percent}%`, {
+                                progress: percent / 100,
+                                autoClose: false,
+                                closeButton: false,
+                                theme: "dark",
+                                transition: Bounce,
+                                toastId: toastId, // consistent ID to update the same toast
+                            });
+                        } else {
+                            toast.update("download-toast", {
+                                render: `Downloading... ${percent}%`,
+                                progress: percent / 100,
+                                theme: "dark",
+                                transition: Bounce,
+                            });
+                        }
+                    }
+                },
             });
 
-            // 🔹 Original invoice
-            await downloadPdfWithProgress({
-                row,
-                downloadOriginal: true,
-                toastId: `org-${row._id}`,
-                label: "Original invoice",
+            const contentDisposition = pdfResponse.headers["content-disposition"];
+            const match = contentDisposition?.match(/filename="?(.+)"?/);
+            const filename = match?.[1] || "invoice.pdf";
+
+            const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
+            const fileURL = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = fileURL;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            //   setIsLoading(false);
+            toast.update(toastId, {
+                render: "Download complete!",
+                type: "success",
+                autoClose: 5000,
+                progress: undefined,
             });
-            } catch (err) {
-            console.error(err);
+        } catch (pdfErr) {
+            console.error("PDF generation error", pdfErr);
             Swal.fire({
                 icon: "error",
-                text: "Failed to download invoices",
+                text: "Failed to generate PDF",
             });
-            }
-        },
-        [getBillPdfConnect, showToast]
-    );
+            setIsLoading(false);
+        }
+    }, [getBillPdfConnect, showToast, setIsLoading]);
+
+    // const downloadPdfWithProgress = async ({
+    //     row,
+    //     downloadOriginal,
+    //     toastId,
+    //     label,
+    // }) => {
+    //     showToast({
+    //         type: "info",
+    //         text: `Preparing ${label}...`,
+    //         autoClose: false,
+    //         closeButton: false,
+    //         progress: 0,
+    //         theme: "dark",
+    //         toastId,
+    //     });
+
+    //     const response = await getBillPdfConnect(
+    //         {
+    //         id: row._id,
+    //         downloadOriginal,
+    //         },
+    //         {
+    //         responseType: "blob",
+    //         headers: { Accept: "application/pdf" },
+    //         onDownloadProgress: (e) => {
+    //             if (!e.total) return;
+
+    //             const percent = Math.round((e.loaded * 100) / e.total);
+
+    //             toast.update(toastId, {
+    //             render: `Downloading ${label}... ${percent}%`,
+    //             progress: percent / 100,
+    //             theme: "dark",
+    //             });
+    //         },
+    //         }
+    //     );
+
+    //     const contentDisposition = response.headers["content-disposition"];
+    //     const match = contentDisposition?.match(/filename="?(.+)"?/);
+
+    //     const filename =
+    //         match?.[1] ||
+    //         (downloadOriginal
+    //         ? "invoice-original.pdf"
+    //         : "invoice-duplicate.pdf");
+
+    //     const blob = new Blob([response.data], { type: "application/pdf" });
+    //     const url = URL.createObjectURL(blob);
+
+    //     const link = document.createElement("a");
+    //     link.href = url;
+    //     link.download = filename;
+    //     link.click();
+
+    //     URL.revokeObjectURL(url);
+
+    //     toast.update(toastId, {
+    //         render: `${label} downloaded`,
+    //         type: "success",
+    //         autoClose: 2000,
+    //         progress: undefined,
+    //     });
+    // };
+
+    // const handleDownload = React.useCallback(
+    //     async (e, row) => {
+    //         e.stopPropagation();
+
+    //         try {
+    //         // 🔹 Duplicate invoice
+    //         await downloadPdfWithProgress({
+    //             row,
+    //             downloadOriginal: false,
+    //             toastId: `dup-${row._id}`,
+    //             label: "Duplicate invoice",
+    //         });
+
+    //         // 🔹 Original invoice
+    //         await downloadPdfWithProgress({
+    //             row,
+    //             downloadOriginal: true,
+    //             toastId: `org-${row._id}`,
+    //             label: "Original invoice",
+    //         });
+    //         } catch (err) {
+    //         console.error(err);
+    //         Swal.fire({
+    //             icon: "error",
+    //             text: "Failed to download invoices",
+    //         });
+    //         }
+    //     },
+    //     [getBillPdfConnect, showToast]
+    // );
 
 
 

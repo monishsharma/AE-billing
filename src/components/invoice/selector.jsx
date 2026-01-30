@@ -38,7 +38,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
       return (
         (
           <>
-          <Button
+          {/* <Button
             color="primary"
             variant="contained"
             // className="customBtn"
@@ -49,8 +49,8 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
             size="small"
           >
             Print
-          </Button>
-            {/* <IconButton
+          </Button> */}
+            <IconButton
               color="primary"
               onClick={(e) => {
                 e.stopPropagation();
@@ -71,7 +71,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
               size="small"
             >
               <ReceiptIcon />
-            </IconButton> */}
+            </IconButton>
           </>
         )
       )
@@ -84,29 +84,29 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
         return <strong>ASN</strong>;
       },
       sortable: false,
-      width: 100,
+      width: 60,
       renderCell: (params) => {
         const asnNumber = params?.row?.shippingDetail.asn || "";
         return (
           asnNumber &&
-          <Button
-            color="secondary"
-            variant="contained"
-          // className="customBtn"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(`${CG_URL}${asnNumber}`, '_blank')
-            }}
-            size="small"
-          >
-            ASN
-          </Button>
-          // <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
-          //       e.stopPropagation();
-          //       window.open(`${CG_URL}${asnNumber}`, '_blank')
-          //     }}>
-          //   <DownloadIcon />
-          // </IconButton>
+          // <Button
+          //   color="secondary"
+          //   variant="contained"
+          // // className="customBtn"
+          //   onClick={(e) => {
+          //     e.stopPropagation();
+          //     window.open(`${CG_URL}${asnNumber}`, '_blank')
+          //   }}
+          //   size="small"
+          // >
+          //   ASN
+          // </Button>
+          <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
+                e.stopPropagation();
+                window.open(`${CG_URL}${asnNumber}`, '_blank')
+              }}>
+            <DownloadIcon />
+          </IconButton>
         );
       },
 
