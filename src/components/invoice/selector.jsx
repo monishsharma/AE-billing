@@ -5,6 +5,7 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import DownloadIcon from "@mui/icons-material/Download";
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import moment from "moment";
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
 
 
@@ -37,7 +38,19 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
       return (
         (
           <>
-            <IconButton
+          <Button
+            color="primary"
+            variant="contained"
+            // className="customBtn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload(e, params.row);
+            }}
+            size="small"
+          >
+            Print
+          </Button>
+            {/* <IconButton
               color="primary"
               onClick={(e) => {
                 e.stopPropagation();
@@ -58,7 +71,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
               size="small"
             >
               <ReceiptIcon />
-            </IconButton>
+            </IconButton> */}
           </>
         )
       )
@@ -71,16 +84,29 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
         return <strong>ASN</strong>;
       },
       sortable: false,
-      width: 60,
+      width: 100,
       renderCell: (params) => {
         const asnNumber = params?.row?.shippingDetail.asn || "";
         return (
-          asnNumber && <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
-                e.stopPropagation();
-                window.open(`${CG_URL}${asnNumber}`, '_blank')
-              }}>
-            <DownloadIcon />
-          </IconButton>
+          asnNumber &&
+          <Button
+            color="secondary"
+            variant="contained"
+          // className="customBtn"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(`${CG_URL}${asnNumber}`, '_blank')
+            }}
+            size="small"
+          >
+            ASN
+          </Button>
+          // <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
+          //       e.stopPropagation();
+          //       window.open(`${CG_URL}${asnNumber}`, '_blank')
+          //     }}>
+          //   <DownloadIcon />
+          // </IconButton>
         );
       },
 
@@ -204,40 +230,64 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
         ? moment(row.invoiceDetail.invoiceDate).format("ll")
         : "-",
   },
+
   {
-    field: "status",
-    minWidth: 100,
-    sortable: false,
-    renderHeader: () => (
-      <strong>
-        Status
-      </strong>
-    ),
-    renderCell: (params, row) => (
-      <Chip
-        label={row?.paid ? "Paid" : "Unpaid"}
-        size="small"
-        variant="outlined"
-        color={row?.paid ? "primary" : "error"}
-      />
-    ),
-  },
-  {
-    field: "Amount",
-    renderHeader: () => (
-      <strong>
-        Amount
-      </strong>
-    ),
-    sortable: true,
-    flex: 1,
-    minWidth: 120,
-    valueGetter: (params, row) =>
+  field: "Amount",
+  renderHeader: () => <strong>Amount</strong>,
+  sortable: true,
+  // flex: 1,
+  minWidth: 120,
+  valueGetter: (params, row) =>
       parseFloat(row?.goodsDescription?.Total || 0).toLocaleString("en-IN", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }),
+  }),
+  renderCell: (params) => (
+    <div >
+      <span >
+        ₹ {params.value}
+      </span>
+    </div>
+  ),
+},
+{
+  field: "status",
+  minWidth: 120,
+  sortable: false,
+  renderHeader: () => <strong>Status</strong>,
+  renderCell: (params) => {
+    const paid = params.row?.paid;
+
+    return (
+      <div className="status-cell">
+        <Chip
+          label={paid ? "Paid" : "Unpaid"}
+          size="small"
+          variant="outlined"
+          color={paid ? "success" : "error"}
+          className="status-chip"
+        />
+
+        <div className="gmail-actions">
+          <Button
+            variant="outlined"
+            startIcon={<ContentPasteIcon />}
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(
+                paid ? "Paid" : "Unpaid"
+              );
+            }}
+          >
+            Copy
+          </Button>
+        </div>
+      </div>
+    );
   },
+}
+
   // Example action column for marking paid:
 ]
 };

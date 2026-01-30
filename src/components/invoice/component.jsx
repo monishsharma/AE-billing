@@ -152,91 +152,189 @@ const Invoice = ({
         navigate(`/edit/invoice/${row._id}`);
     };
 
-    const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
-        e.stopPropagation(); // prevent triggering row click
+    // const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
+    //     e.stopPropagation(); // prevent triggering row click
 
-        const payload = {
-            downloadOriginal,
-            id: row._id,
-        };
+    //     const payload = {
+    //         downloadOriginal,
+    //         id: row._id,
+    //     };
 
-        let toastId = new Date().getTime();
+    //     let toastId = new Date().getTime();
 
+    //     showToast({
+    //         type: "info",
+    //         text: "Preparing download...",
+    //         autoClose: false,
+    //         closeButton: false,
+    //         progress: 0,
+    //         theme: "dark",
+    //         toastId: toastId,
+    //     });
+
+    //     try {
+    //         //   setIsLoading(true);
+    //         const pdfResponse = await getBillPdfConnect(payload, {
+    //             responseType: "blob",
+    //             headers: {
+    //                 Accept: "application/pdf",
+    //             },
+    //             onDownloadProgress: (progressEvent) => {
+    //                 if (progressEvent.lengthComputable) {
+    //                     const percent = Math.round(
+    //                         (progressEvent.loaded * 100) / progressEvent.total
+    //                     );
+
+    //                     // Show or update the toast
+    //                     if (!toastId) {
+    //                         toastId = toast.info(`Downloading... ${percent}%`, {
+    //                             progress: percent / 100,
+    //                             autoClose: false,
+    //                             closeButton: false,
+    //                             theme: "dark",
+    //                             transition: Bounce,
+    //                             toastId: toastId, // consistent ID to update the same toast
+    //                         });
+    //                     } else {
+    //                         toast.update("download-toast", {
+    //                             render: `Downloading... ${percent}%`,
+    //                             progress: percent / 100,
+    //                             theme: "dark",
+    //                             transition: Bounce,
+    //                         });
+    //                     }
+    //                 }
+    //             },
+    //         });
+
+    //         const contentDisposition = pdfResponse.headers["content-disposition"];
+    //         const match = contentDisposition?.match(/filename="?(.+)"?/);
+    //         const filename = match?.[1] || "invoice.pdf";
+
+    //         const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
+    //         const fileURL = URL.createObjectURL(blob);
+
+    //         const link = document.createElement("a");
+    //         link.href = fileURL;
+    //         link.download = filename;
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         document.body.removeChild(link);
+
+    //         //   setIsLoading(false);
+    //         toast.update(toastId, {
+    //             render: "Download complete!",
+    //             type: "success",
+    //             autoClose: 2000,
+    //             progress: undefined,
+    //         });
+    //     } catch (pdfErr) {
+    //         console.error("PDF generation error", pdfErr);
+    //         Swal.fire({
+    //             icon: "error",
+    //             text: "Failed to generate PDF",
+    //         });
+    //         setIsLoading(false);
+    //     }
+    // }, [getBillPdfConnect, showToast, setIsLoading]);
+
+    const downloadPdfWithProgress = async ({
+        row,
+        downloadOriginal,
+        toastId,
+        label,
+    }) => {
         showToast({
             type: "info",
-            text: "Preparing download...",
+            text: `Preparing ${label}...`,
             autoClose: false,
             closeButton: false,
             progress: 0,
             theme: "dark",
-            toastId: toastId,
+            toastId,
         });
 
-        try {
-            //   setIsLoading(true);
-            const pdfResponse = await getBillPdfConnect(payload, {
-                responseType: "blob",
-                headers: {
-                    Accept: "application/pdf",
-                },
-                onDownloadProgress: (progressEvent) => {
-                    if (progressEvent.lengthComputable) {
-                        const percent = Math.round(
-                            (progressEvent.loaded * 100) / progressEvent.total
-                        );
+        const response = await getBillPdfConnect(
+            {
+            id: row._id,
+            downloadOriginal,
+            },
+            {
+            responseType: "blob",
+            headers: { Accept: "application/pdf" },
+            onDownloadProgress: (e) => {
+                if (!e.total) return;
 
-                        // Show or update the toast
-                        if (!toastId) {
-                            toastId = toast.info(`Downloading... ${percent}%`, {
-                                progress: percent / 100,
-                                autoClose: false,
-                                closeButton: false,
-                                theme: "dark",
-                                transition: Bounce,
-                                toastId: toastId, // consistent ID to update the same toast
-                            });
-                        } else {
-                            toast.update("download-toast", {
-                                render: `Downloading... ${percent}%`,
-                                progress: percent / 100,
-                                theme: "dark",
-                                transition: Bounce,
-                            });
-                        }
-                    }
-                },
+                const percent = Math.round((e.loaded * 100) / e.total);
+
+                toast.update(toastId, {
+                render: `Downloading ${label}... ${percent}%`,
+                progress: percent / 100,
+                theme: "dark",
+                });
+            },
+            }
+        );
+
+        const contentDisposition = response.headers["content-disposition"];
+        const match = contentDisposition?.match(/filename="?(.+)"?/);
+
+        const filename =
+            match?.[1] ||
+            (downloadOriginal
+            ? "invoice-original.pdf"
+            : "invoice-duplicate.pdf");
+
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+
+        URL.revokeObjectURL(url);
+
+        toast.update(toastId, {
+            render: `${label} downloaded`,
+            type: "success",
+            autoClose: 2000,
+            progress: undefined,
+        });
+    };
+
+    const handleDownload = React.useCallback(
+        async (e, row) => {
+            e.stopPropagation();
+
+            try {
+            // 🔹 Duplicate invoice
+            await downloadPdfWithProgress({
+                row,
+                downloadOriginal: false,
+                toastId: `dup-${row._id}`,
+                label: "Duplicate invoice",
             });
 
-            const contentDisposition = pdfResponse.headers["content-disposition"];
-            const match = contentDisposition?.match(/filename="?(.+)"?/);
-            const filename = match?.[1] || "invoice.pdf";
-
-            const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
-            const fileURL = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.href = fileURL;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            //   setIsLoading(false);
-            toast.update(toastId, {
-                render: "Download complete!",
-                type: "success",
-                autoClose: 2000,
-                progress: undefined,
+            // 🔹 Original invoice
+            await downloadPdfWithProgress({
+                row,
+                downloadOriginal: true,
+                toastId: `org-${row._id}`,
+                label: "Original invoice",
             });
-        } catch (pdfErr) {
-            console.error("PDF generation error", pdfErr);
+            } catch (err) {
+            console.error(err);
             Swal.fire({
                 icon: "error",
-                text: "Failed to generate PDF",
+                text: "Failed to download invoices",
             });
-            setIsLoading(false);
-        }
-    }, [getBillPdfConnect, showToast, setIsLoading]);
+            }
+        },
+        [getBillPdfConnect, showToast]
+    );
+
+
 
     const handleOpenPaymentModal = React.useCallback((invoice) => {
         setSelectedInvoice(invoice);
@@ -435,12 +533,11 @@ const Invoice = ({
         }
       };
 
-
-      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value }), [handleDownload, chekboxhandler, value]);
+    const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value }), [handleDownload, chekboxhandler, value]);
 
     const renderInvoices = () => (
         <>
-            <Paper sx={{ width: "100%", overflow: "hidden", height: "54vh" }}>
+            <Paper sx={{ width: "100%", overflow: "hidden", height: "61vh" }}>
                 {/* <div className="customTable">
                     <Table
                         data={invoices}
@@ -470,6 +567,45 @@ const Invoice = ({
                         outline: 'none !important',
                         },
                         cursor: 'pointer',
+
+                        "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": {
+                            outline: "none",
+                        },
+
+                        // /* Status cell container */
+                        // "& .status-cell": {
+                        //     position: "relative",
+                        //     width: "100%",
+                        // },
+
+                        // /* Chip visible by default */
+                        // "& .status-chip": {
+                        //     zIndex: 1,
+                        //     transition: "opacity 0.15s ease",
+                        // },
+
+                        // /* Hover actions (hidden by default) */
+                        // "& .gmail-actions": {
+                        //     position: "absolute",
+                        //     top: "50%",
+                        //     transform: "translateY(-50%)",
+                        //     opacity: 0,
+                        //     pointerEvents: "none",
+                        //     transition: "opacity 0.15s ease",
+                        //     zIndex: 2,
+                        // },
+
+                        // /* Show actions on row hover */
+                        // "& .MuiDataGrid-row:hover .gmail-actions": {
+                        //     opacity: 1,
+                        //     pointerEvents: "auto",
+                        // },
+
+                        // /* Hide chip on hover (Gmail swap effect) */
+                        // "& .MuiDataGrid-row:hover .status-chip": {
+                        //     opacity: 0,
+                        // },
+
                      }}
                     initialState={
                         {
@@ -529,7 +665,7 @@ const Invoice = ({
                     sx={{
                         display: "flex",
                         flexDirection: {
-                            xs: "column",
+                            xs: "column-reverse",
                             sm: "row",
                         },
                         width: {
@@ -542,6 +678,51 @@ const Invoice = ({
                         }
                     }}
                 >
+                    <Box className={`m-1`} sx={{
+                        width: {
+                            xs: "100%",
+                            sm: "auto",
+                        }
+                    }}  >
+                        <TextField
+                            label="Search Invoice"
+                            variant="outlined"
+                            size="small"
+                            onChange={(e) => handleInputChange(e)}
+                            value={searchValue}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '20px', // 👈 Rounded corners
+                                },
+                                width: {
+                                    xs: "100%",
+                                    sm: "auto",
+                                },
+
+                            }}
+                            slotProps={{
+                                input:{
+                                    endAdornment: (
+                                        !!(searchValue .length) &&
+                                        <InputAdornment
+                                            position="end"
+                                            sx={{
+                                                cursor: 'pointer' ,
+                                            }}
+                                            onClick={() => {
+                                                setSearchValue("");
+                                                setIsQueryRunning(false);
+                                                fetchInvoices();
+                                            }}
+                                        >
+
+                                            <ClearIcon  />
+                                        </InputAdornment>
+                                    )
+                                }
+                            }}
+                        />
+                    </Box>
                     <Box className={`m-1`} sx={{
                         width: {
                             xs: "100%",
@@ -606,48 +787,6 @@ const Invoice = ({
                         </Box>
                     </Box>
                 </Box>
-            </Box>
-
-            <Box className="d-flex" sx={{
-                mt: 2,
-            }}>
-                <TextField
-                    label="Search Invoice"
-                    variant="outlined"
-                    size="small"
-                    onChange={(e) => handleInputChange(e)}
-                    value={searchValue}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '20px', // 👈 Rounded corners
-                        },
-                        width: {
-                            xs: "100%",
-                            sm: "auto",
-                        },
-                    }}
-                    slotProps={{
-                        input:{
-                            endAdornment: (
-                                !!(searchValue .length) &&
-                                <InputAdornment
-                                    position="end"
-                                    sx={{
-                                        cursor: 'pointer' ,
-                                    }}
-                                    onClick={() => {
-                                        setSearchValue("");
-                                        setIsQueryRunning(false);
-                                        fetchInvoices();
-                                    }}
-                                >
-
-                                    <ClearIcon  />
-                                </InputAdornment>
-                            )
-                        }
-                    }}
-                />
             </Box>
 
             <div className="mt-2">
