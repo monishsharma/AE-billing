@@ -7,6 +7,7 @@ import { isMobileDevice } from "../../../helpers/is-mobile-device";
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../../store/auth/action';
 import AE from "../../../assets/logo.png"
+import { ROUTES } from "./selector";
 
 const SideBar = ({
     isActive,
@@ -26,6 +27,13 @@ const SideBar = ({
         dispatch(logoutUser());
     }
 
+    const getActiveClass = (currentPath, routePath, isExactRoute = false) => {
+        if (isExactRoute) {
+            return currentPath === routePath ? "activeLi" : "";
+        }
+        return currentPath.includes(routePath) ? "activeLi" : "";
+    }
+
     return (
         <React.Fragment>
             <div className={isActive ? "navigation active" : "navigation"}>
@@ -34,38 +42,22 @@ const SideBar = ({
                     {/* <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span> */}
                 </Link>
                 <ul>
-                    <li className={pathname === "/" ? "activeLi" : ""} onClick={onClick}>
-                        <Link to="/">
-                            <span className="icon">
-                                <ion-icon name="home-outline"></ion-icon>
-                            </span>
-                            <span className="title">Dashboard</span>
-                        </Link>
-                    </li>
-                    <li className={pathname.includes("/invoice") ? "activeLi" : ""} onClick={onClick}>
-                        <Link to="/invoice">
-                            <span className="icon">
-                                <ion-icon name="grid-outline"></ion-icon>
-                            </span>
-                            <span className="title">Invoice</span>
-                        </Link>
-                    </li>
-                    <li className={pathname.includes("/payment") ? "activeLi" : ""} onClick={onClick}>
-                        <Link to="/payment">
-                            <span className="icon">
-                                <ion-icon name="wallet-outline"></ion-icon>
-                            </span>
-                            <span className="title">Payment</span>
-                        </Link>
-                    </li>
-                    <li className={pathname.includes("/vendor") ? "activeLi" : ""} onClick={onClick}>
-                        <Link to="/vendors">
-                            <span className="icon">
-                                <ion-icon name="people-outline"></ion-icon>
-                            </span>
-                            <span className="title">Vendors</span>
-                        </Link>
-                    </li>
+                    {
+                        ROUTES.map((route, index) => (
+                            <li
+                                key={index}
+                                className={getActiveClass(pathname, route.path, route.isExactRoute)}
+                                onClick={onClick}
+                            >
+                                <Link to={route.path}>
+                                    <span className="icon">
+                                        <ion-icon name={route.icon}></ion-icon>
+                                    </span>
+                                    <span className="title">{route.title}</span>
+                                </Link>
+                            </li>
+                        ))
+                    }
                     <li onClick={handleLogout}>
                         <a style={{cursor: "pointer", color: "white"}}>
                             <span className="icon">

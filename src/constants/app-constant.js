@@ -46,3 +46,15 @@ export const STEPPER_NAME = {
     GENERATE_ASN: "GENERATE_ASN"
 }
 
+export const QUOTATION_STEPPER_NAME = {
+    QUOTATION_DETAIL: "quotationDetail",
+    GOODS_DESCRIPTION: "goodsDescription",
+    BUYER_DETAIL: "buyerDetail",
+}
+
+export const QUOTATION_FIELDS ={
+    QUOTATION_NO: "quotationNo",
+    QUOTATION_DATE: "quotationDate",
+    QUOTATION_COMPANY: "quotationCompany",
+    QUOTATION_CUSTOMER: "customer",
+};

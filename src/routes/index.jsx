@@ -9,6 +9,8 @@ const Dashboard = React.lazy(() => import("../pages/dashboard"));
 const Login = React.lazy(() => import("../components/login"));
 const NotFound = React.lazy(() => import("../components/not-found"));
 const Payment = React.lazy(() => import("../pages/payment"));
+const Quotation = React.lazy(() => import("../pages/quotation"));
+const NewQuotation = React.lazy(() => import("../pages/create-quotation"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 
@@ -38,6 +40,21 @@ const routes = [
           {
             path: "edit/invoice/:id",
             element: <InvoiceStepper />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "quotation",
+            element: <Quotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "new/quotation",
+            element: <NewQuotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "edit/quotation/:id",
+            element: <NewQuotation />,
             errorElement: <ErrorPage />,
           },
           {
