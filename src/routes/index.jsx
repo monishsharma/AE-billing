@@ -11,6 +11,7 @@ const NotFound = React.lazy(() => import("../components/not-found"));
 const Payment = React.lazy(() => import("../pages/payment"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import AddVendorsV2 from "../pages/add-vendor-v2";
 
 const routes = [
   {
@@ -47,8 +48,8 @@ const routes = [
           },
           {
             path: "add/vendor",
-            // element: <AddVendorsV2 />,
-            element: <AddVendor />,
+            element: <AddVendorsV2 />,
+            // element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
           {
