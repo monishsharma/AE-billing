@@ -2,8 +2,8 @@ export const ROUTES = [
     {
         title: "Dashboard",
         icon: "home-outline",
-        path: "/",
-        isExactRoute: true,
+        path: "/dashboard",
+        // isExactRoute: true,
     },
     {
         title: "Invoice",

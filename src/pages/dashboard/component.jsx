@@ -231,7 +231,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   }, [company,dateValue, runEffect]);
 
   const handleChange = (event, newValue) => {
-    Navigate(`/${newValue}`);
+    Navigate(`/dashboard/${newValue}`);
   };
 
   const ExampleCustomInput = forwardRef(({ value, onClick, className = "customBtn", size }, ref) => (

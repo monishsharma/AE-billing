@@ -28,17 +28,17 @@ const SideBar = ({
     }
 
     const getActiveClass = (currentPath, routePath, isExactRoute = false) => {
-        const segments = currentPath.split("/").filter(Boolean);
-        if (isExactRoute) {
-            return segments.length === 1 ? "activeLi" : "";
-        }
+        // const segments = currentPath.split("/").filter(Boolean);
+        // if (isExactRoute) {
+        //     return segments.length === 1 ? "activeLi" : "";
+        // }
         return currentPath.includes(routePath) ? "activeLi" : "";
     }
 
     return (
         <React.Fragment>
             <div className={isActive ? "navigation active" : "navigation"}>
-                <Link to="/" style={{textDecoration: "none"}}>
+                <Link to="/dashboard" style={{textDecoration: "none"}}>
                     <img src={AE} alt="logo" className="companyTitle" />
                     {/* <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span> */}
                 </Link>

@@ -27,11 +27,15 @@ const routes = [
         children: [
           {
             index: true,
-            element: <Navigate to="/ASHOK" replace />,
+            element: <Navigate to="/dashboard/ASHOK" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <Navigate to="/dashboard/ASHOK" replace />,
             errorElement: <ErrorPage />,
           },
           {
-            path: "/:company",
+            path: "dashboard/:company",
             element: <Dashboard />,
             errorElement: <ErrorPage />,
           },
