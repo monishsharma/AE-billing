@@ -35,14 +35,17 @@ import Table from "../../components/table";
 import Swal from "sweetalert2";
 import AccessDenied from "../../components/access-denied";
 import PaymentConfirmationModal from "../../components/payment-confirmation-modal";
+import { useNavigate, useParams } from "react-router-dom";
+import CompanyTabs from "../../components/company-tabs";
 
 const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect, updateInvoiceConnect }) => {
+
+      const Navigate = useNavigate();
   const [reportType, setReportType] = useState(DASHBOARD_TAB_TYPE.MONTHLY);
   const [isLoading, setIsLoading] = useState(true);
-  const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
   const [dateValue, setDateValue] = useState(new Date());
   const [financialYear, setFinancialYear] = useState("");
-      const [runEffect, setRunEffect] = useState(false);
+  const [runEffect, setRunEffect] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -51,7 +54,8 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   const [unpaidInvoices, setUnpaidInvoices] = useState([]);
   const [unpaidInvoicesLoading, setUnpaidInvoicesLoading] = useState(true);
   const { user: {isAdmin} = {} } = auth;
-  const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
+  const { company } = useParams();
+  const isCompanyAshok = company === COMPANY_TYPE.ASHOK;
   const monthlyData = reportStat?.monthlyTotals || Array(12).fill(0);
   const yearlyData = Object.values(reportStat?.fyResult || []) || Array(5).fill(0);
   const yearlyLabel = Object.keys(reportStat?.fyResult || []) || Array(5).fill(0);
@@ -192,7 +196,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   useEffect(() => {
     setIsLoading(true);
     getReportConnect({
-      company: value,
+      company,
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
     })
@@ -205,13 +209,13 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setReportStat({});
       });
 
-  }, [value, dateValue]);
+  }, [company, dateValue]);
 
 
   useEffect(() => {
     setUnpaidInvoicesLoading(true);
     getUnpaidInvoicesConnect({
-      company: value,
+      company,
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
     })
@@ -224,10 +228,10 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setUnpaidInvoicesLoading(false);
       });
 
-  }, [value,dateValue, runEffect]);
+  }, [company,dateValue, runEffect]);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    Navigate(`/${newValue}`);
   };
 
   const ExampleCustomInput = forwardRef(({ value, onClick, className = "customBtn", size }, ref) => (
@@ -268,7 +272,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
   const exportCSV = () => {
     setBtnLoading(true);
     generateCSVConnect({
-      company: value,
+      company,
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
       forUnpaid: true,
@@ -279,7 +283,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         const url = window.URL.createObjectURL(blob);
         const contentDisposition = headers.get("Content-Disposition");
 
-        let filename = `${value} UNPAID INVOICES .csv`; // Fallback
+        let filename = `${company} UNPAID INVOICES .csv`; // Fallback
         if (contentDisposition) {
             const match = contentDisposition.match(/filename="?([^"]+)"?/);
             if (match && match[1]) {
@@ -463,7 +467,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
               }
             }}>
                <Box sx={{ p: 2 }}>
-                  <Bar height={ isMobileDevice() ? "300px" : "auto"} key={value + dateValue} options={options} data={data}  />
+                  <Bar height={ isMobileDevice() ? "300px" : "auto"} key={company + dateValue} options={options} data={data}  />
               </Box>
             </Paper>
           </Grid>
@@ -473,7 +477,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
             <Grid item size={{ md: 5 }} sx={{width: "100%"}}>
               <Paper>
                 <Box sx={{ p: 2 }}>
-                  <Pie key={value + dateValue} options={pieOptions} data={pieData}  />
+                  <Pie key={company + dateValue} options={pieOptions} data={pieData}  />
                 </Box>
               </Paper>
             </Grid>
@@ -635,44 +639,11 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
           </Row> */}
       </div>
       <div className="mt-2">
-        <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="dashboard tabs" textColor="black"
-                            sx={{
-                                "& .MuiTabs-indicator": {
-                                    backgroundColor: "#000", // set your custom color
-                                },
-                            }}>
-              <Tab label="Ashok" value={COMPANY_TYPE.ASHOK} />
-              <Tab label="Padma" value={COMPANY_TYPE.PADMA} />
-            </TabList>
-          </Box>
-          <TabPanel
-            sx={{
-              p: {
-                xs: 0,
-                sm: 2,
-                md: 0
-              },
-              mt: 2
-            }}
-            value={COMPANY_TYPE.ASHOK}
-          >
-            {renderReport()}
-          </TabPanel>
-          <TabPanel
-            sx={{
-              p: {
-                xs: 0,
-                sm: 2,
-                md: 0,
-              },
-            }}
-            value={COMPANY_TYPE.PADMA}
-          >
-            {renderReport()}
-          </TabPanel>
-        </TabContext>
+        <CompanyTabs
+            value={company}
+            onChange={handleChange}
+            renderContent={renderReport}
+        />
       </div>
       <PaymentConfirmationModal
           openPaymentModal={openPaymentModal}

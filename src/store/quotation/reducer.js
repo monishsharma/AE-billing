@@ -1,8 +1,7 @@
 import { createReducer } from "reduxsauce";
 import  Types from "./actionTypes";
-import { QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from "../../constants/app-constant";
+import { DEFAULT_TERMS_AND_CONDITION, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from "../../constants/app-constant";
 import { createInitialValue } from "../../pages/create-quotation/selector";
-import quotation from "../../services/quotation";
 
 
 export const INITIAL_STATE = {
@@ -14,7 +13,8 @@ export const INITIAL_STATE = {
     [QUOTATION_STEPPER_NAME.BUYER_DETAIL]: { },
     [QUOTATION_STEPPER_NAME.GOODS_DESCRIPTION]: {
         cost: "",
-        items: [createInitialValue()]
+        items: [createInitialValue()],
+        terms: DEFAULT_TERMS_AND_CONDITION
     },
     quotationConfig: null
 };

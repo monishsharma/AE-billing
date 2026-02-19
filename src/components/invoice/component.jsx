@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -25,6 +25,7 @@ const DataGrid = React.lazy(() =>
 import {  getColumns } from "./selector";
 import PaymentConfirmationModal from "../payment-confirmation-modal";
 import ClearIcon from '@mui/icons-material/Clear';
+import CompanyTabs from "../company-tabs";
 
 const Invoice = ({
     invoiceForm,
@@ -36,13 +37,14 @@ const Invoice = ({
     searchInvoiceConnect
 }) => {
     const navigate = useNavigate();
+    const { company } = useParams();
     const {isActive, ref} = useOutletContext();
     const scroll = localStorage.getItem("scroll");
     const { _id = "" } = invoiceForm || {};
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
     const [totalpage, setTotalpage] = useState(0);
-    const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
+    // const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
         pageSize: 20,
@@ -86,7 +88,7 @@ const Invoice = ({
         setIsLoading(true);
         setSearchValue("")
         getInvoiceListConnect({
-          company: value,
+          company,
           page: paginationModel.page + 1,
           limit: paginationModel.pageSize,
           month: dateValue.getMonth() + 1,
@@ -108,7 +110,7 @@ const Invoice = ({
 
       const fetchSearchInvoices = (searchTerm) => {
         setIsQueryRunning(true);
-        searchInvoiceConnect({ company: value, searchTerm, page : paginationModel.page + 1})
+        searchInvoiceConnect({ company, searchTerm, page : paginationModel.page + 1})
               .then((res) => {
                 setInvoices(res.data);
                 setTotalpage(Number(res.totalItems));
@@ -134,7 +136,7 @@ const Invoice = ({
         } else {
             fetchInvoices();
         }
-      }, [value, paginationModel, dateValue, runEffect]);
+      }, [company, paginationModel, dateValue, runEffect]);
 
 
     const handleChange = (event, newValue) => {
@@ -143,7 +145,8 @@ const Invoice = ({
             pageSize: 10,
         });
         setSearchValue("");
-        setValue(newValue);
+        navigate(`/invoice/${newValue}`);
+        // setValue(newValue);
     };
 
     const handleRowClick = async ({row}) => {
@@ -341,7 +344,7 @@ const Invoice = ({
     const downloadCSV = async (forGST = false) => {
         setBtnLoading(true);
         generateCSVConnect({
-            company: value,
+            company,
             forGST,
             month: dateValue.getMonth() + 1,
             year: dateValue.getFullYear(),
@@ -351,7 +354,7 @@ const Invoice = ({
                 const url = window.URL.createObjectURL(blob);
                 const contentDisposition = headers.get("Content-Disposition");
 
-                let filename = `${value} SALES .csv`; // Fallback
+                let filename = `${company} SALES .csv`; // Fallback
                 if (contentDisposition) {
                     const match = contentDisposition.match(/filename="?([^"]+)"?/);
                     if (match && match[1]) {
@@ -419,7 +422,7 @@ const Invoice = ({
             setSearchValue("");
             fetchInvoices();
           }
-        }, 800), [value, paginationModel, dateValue]
+        }, 800), [company, paginationModel, dateValue]
       );
 
       const handleInputChange = (e) => {
@@ -436,7 +439,7 @@ const Invoice = ({
       };
 
 
-      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value }), [handleDownload, chekboxhandler, value]);
+      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, company }), [handleDownload, chekboxhandler, company]);
 
     const renderInvoices = () => (
         <>
@@ -581,7 +584,7 @@ const Invoice = ({
                                 className="outlinedCustomBtn"
                             >
                                 <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                    {value} Sales
+                                    {company} Sales
                                 </span>
                             </Button>
                         </Box>
@@ -600,7 +603,7 @@ const Invoice = ({
                                 className="outlinedCustomBtn"
                             >
                                 <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                    {value} GST
+                                    {company} GST
                                 </span>
                             </Button>
                         </Box>
@@ -651,7 +654,12 @@ const Invoice = ({
             </Box>
 
             <div className="mt-2">
-                <TabContext value={value}>
+                <CompanyTabs
+                    value={company}
+                    onChange={handleChange}
+                    renderContent={renderInvoices}
+                />
+                {/* <TabContext value={value}>
                     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                         <TabList
                             textColor="black"
@@ -691,7 +699,7 @@ const Invoice = ({
                     >
                         {renderInvoices()}
                     </TabPanel>
-                </TabContext>
+                </TabContext> */}
             </div>
 
             <PaymentConfirmationModal

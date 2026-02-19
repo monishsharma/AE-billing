@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import CreateQuotation from "./component.jsx";
-import {getConfig, saveData, saveQuotation, resetReducer, getQuotationById} from "../../store/quotation/action.js";
+import {getConfig, saveData, saveQuotation, resetReducer, getQuotationById, updateQuotation} from "../../store/quotation/action.js";
 
 const mapStateToProps = ({
     quotation
@@ -14,6 +14,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     getConfigConnect: getConfig,
     saveQuotationConnect: saveQuotation,
     resetReducerConnect: resetReducer,
+    updateQuotationConnect: updateQuotation,
     getQuotationByIdConnect: getQuotationById
 }, dispatch);
 

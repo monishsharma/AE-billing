@@ -13,6 +13,9 @@ const Quotation = React.lazy(() => import("../pages/quotation"));
 const NewQuotation = React.lazy(() => import("../pages/create-quotation"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import { Navigate } from "react-router-dom";
+
+
 
 const routes = [
   {
@@ -24,11 +27,21 @@ const routes = [
         children: [
           {
             index: true,
+            element: <Navigate to="/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "/:company",
             element: <Dashboard />,
             errorElement: <ErrorPage />,
           },
           {
             path: "invoice",
+            element: <Navigate to="/invoice/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "invoice/:company",
             element: <Invoice />,
             errorElement: <ErrorPage />,
           },
@@ -44,6 +57,10 @@ const routes = [
           },
           {
             path: "quotation",
+            element: <Navigate to="/quotation/ASHOK" replace />,
+          },
+          {
+            path: "quotation/:company",
             element: <Quotation />,
             errorElement: <ErrorPage />,
           },

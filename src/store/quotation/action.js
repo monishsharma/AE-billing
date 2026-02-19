@@ -98,11 +98,48 @@ const setApiData = ({data}) => ({
       })
   }
 
+  const getQuotationPdf = (payload, config = {}) => () => {
+      return new Promise((resolve, reject) => {
+          QuotationService.getQuotationPdf(payload,config)
+          .then((res) => {
+              resolve(res);
+          })
+          .catch((err) => {
+              reject(err);
+              Swal.fire({
+                  icon: "error",
+                  text: err.error,
+              })
+          })
+      })
+  }
+
+  const updateQuotation = ({id,payload}) => () => {
+    return new Promise((resolve, reject) => {
+        QuotationService.updateQuotation({id,payload})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+  }
+
+
+
+
 export {
     saveData,
     getConfig,
     resetReducer,
     getQuotation,
     saveQuotation,
-    getQuotationById
+    updateQuotation,
+    getQuotationById,
+    getQuotationPdf
 }

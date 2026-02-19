@@ -1,34 +1,51 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CompanyTabs from '../../components/company-tabs';
 import { COMPANY_TYPE } from '../../constants/app-constant';
 import { DataGrid } from '@mui/x-data-grid';
 import { getColumns } from './selector';
+import { toast, Bounce } from "react-toastify";
+import Swal from 'sweetalert2';
+
 
 
 const Quotation = ({
     getQuotationConnect,
-    resetReducerConnect
+    resetReducerConnect,
+    getQuotationPdfConnect
 }) => {
 
     const Navigate = useNavigate();
-
-    const [value, setValue] = useState(COMPANY_TYPE.ASHOK);
+    const { company } = useParams();
     const [quotationList, setQuotationList] = useState([])
     const [isLoading, setIsLoading] = useState(true);
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
         pageSize: 20,
     });
+    const showToast = React.useCallback(({ type, text, ...rest }) =>
+            toast[type](text, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+                ...rest,
+        }), []);
 
 
 
     React.useEffect(() => {
         setIsLoading(true);
-        getQuotationConnect({company: value})
+        setQuotationList([])
+        getQuotationConnect({company})
         .then((res) => {
             setQuotationList(res.data);
             setIsLoading(false);
@@ -37,10 +54,11 @@ const Quotation = ({
             console.log(err)
             setIsLoading(false);
         })
-    }, [value])
+    }, [company])
 
     const handleChange = (event, newValue) => {
-        setValue(newValue);
+        Navigate(`/quotation/${newValue}`);
+        // setValue(newValue);
     };
 
     const onClick = () => {
@@ -53,7 +71,91 @@ const Quotation = ({
         Navigate(`/edit/quotation/${row._id}`);
     }
 
-    const columns = useMemo(() => getColumns({  value }), [ value]);
+    const downloadQuotation = useCallback(async(e,row) => {
+
+        const payload = {
+            id: row._id,
+        };
+
+        let toastId = new Date().getTime();
+
+        showToast({
+            type: "info",
+            text: "Preparing download...",
+            autoClose: false,
+            closeButton: false,
+            progress: 0,
+            theme: "dark",
+            toastId: toastId,
+        });
+
+        try {
+            //   setIsLoading(true);
+            const pdfResponse = await getQuotationPdfConnect(payload, {
+                responseType: "blob",
+                headers: {
+                    Accept: "application/pdf",
+                },
+                onDownloadProgress: (progressEvent) => {
+                    if (progressEvent.lengthComputable) {
+                        const percent = Math.round(
+                            (progressEvent.loaded * 100) / progressEvent.total
+                        );
+
+                        // Show or update the toast
+                        if (!toastId) {
+                            toastId = toast.info(`Downloading... ${percent}%`, {
+                                progress: percent / 100,
+                                autoClose: false,
+                                closeButton: false,
+                                theme: "dark",
+                                transition: Bounce,
+                                toastId: toastId, // consistent ID to update the same toast
+                            });
+                        } else {
+                            toast.update("download-toast", {
+                                render: `Downloading... ${percent}%`,
+                                progress: percent / 100,
+                                theme: "dark",
+                                transition: Bounce,
+                            });
+                        }
+                    }
+                },
+            });
+
+            const contentDisposition = pdfResponse.headers["content-disposition"];
+            const match = contentDisposition?.match(/filename="?(.+)"?/);
+            const filename = match?.[1] || "Quotation.pdf";
+
+            const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
+            const fileURL = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = fileURL;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            //   setIsLoading(false);
+            toast.update(toastId, {
+                render: "Download complete!",
+                type: "success",
+                autoClose: 2000,
+                progress: undefined,
+            });
+        } catch (pdfErr) {
+            console.error("PDF generation error", pdfErr);
+            Swal.fire({
+                icon: "error",
+                text: "Failed to generate PDF",
+            });
+            setIsLoading(false);
+        }
+    }, [getQuotationPdfConnect, showToast])
+
+    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation }), [ company, downloadQuotation]);
 
 
     const renderContent = () => {
@@ -61,6 +163,7 @@ const Quotation = ({
             <DataGrid
                 rows={isLoading ? [] : quotationList}
                 getRowId={(row) => row._id}
+
                 columns={columns}
                 disableColumnMenu={true}
                 onRowClick={handleRowClick}
@@ -115,7 +218,7 @@ const Quotation = ({
             </div>
            <div className="mt-4">
              <CompanyTabs
-                value={value}
+                value={company}
                 onChange={handleChange}
                 renderContent={renderContent}
             />

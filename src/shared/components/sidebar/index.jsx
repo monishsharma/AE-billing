@@ -28,8 +28,9 @@ const SideBar = ({
     }
 
     const getActiveClass = (currentPath, routePath, isExactRoute = false) => {
+        const segments = currentPath.split("/").filter(Boolean);
         if (isExactRoute) {
-            return currentPath === routePath ? "activeLi" : "";
+            return segments.length === 1 ? "activeLi" : "";
         }
         return currentPath.includes(routePath) ? "activeLi" : "";
     }

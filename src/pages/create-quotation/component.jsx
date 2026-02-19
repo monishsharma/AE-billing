@@ -15,6 +15,7 @@ import { getNextInvoiceNo } from '../../helpers/get-invoice-no';
 import { useParams } from 'react-router-dom';
 import { performValidation } from '../../helpers/perform-validation';
 import { useNavigate } from "react-router-dom";
+import RichTextEditor from '../../components/rich-text-editor';
 
 
 
@@ -23,6 +24,7 @@ const CreateQuotation = ({
   saveDataConnect,
   getConfigConnect,
   saveQuotationConnect,
+  updateQuotationConnect,
   getQuotationByIdConnect
 }) => {
   const {
@@ -30,12 +32,13 @@ const CreateQuotation = ({
       quotationCompany
     },
     [QUOTATION_STEPPER_NAME.GOODS_DESCRIPTION]: {
+      terms,
       items = []
-    }
+    },
   } = quotation || {};
 
-  const {quotationDetail = {}, buyerDetail} = quotation;
-  const { id } = useParams();
+  const {quotationDetail = {}, buyerDetail, columns: serverColumns} = quotation;
+  const { id = "" } = useParams();
   const navigate = useNavigate();
   const vendorList = useSelector((state) => state.config.vendorsList);
   const filteredVendorList = vendorList?.filter((vendor) => vendor.type === quotationCompany);
@@ -65,7 +68,7 @@ const CreateQuotation = ({
 
 
   React.useEffect(() => {
-    if (quotationCompany) {
+    if (quotationCompany && !id) {
       setIsLoading(true);
       getConfigConnect()
       .then((res) => {
@@ -104,7 +107,12 @@ const CreateQuotation = ({
     }
     if (id) fetchData();
 
-  }, [id])
+  }, [id]);
+
+  React.useEffect(() => {
+    if (serverColumns) setColumns(serverColumns);
+  }
+  , [serverColumns]);
 
   const onFieldChange = ({ event, stepName, savingItems = false, itemIndex }) => {
     const { name, value } = event.target;
@@ -188,8 +196,10 @@ const CreateQuotation = ({
   };
 
 
+  const saveQuotation = (e) => {
+      e?.preventDefault();
+      e?.stopPropagation();
 
-  const saveQuotation = () => {
     const {isValid, updatedValidation} = performValidation({...quotationDetail, customer:buyerDetail.customer});
     setQuotationFormValidation(updatedValidation);
     if (validateAllItems(items) && isValid) {
@@ -197,17 +207,25 @@ const CreateQuotation = ({
       const { quotationConfig: _, ...rest } = quotation;
       const {goodsDescription: {items = []}} = rest;
       const cost = items.reduce((total, item) => total + (parseFloat(item.rate) || 0), 0);
+      rest.cost = cost;
       const payload = {
-        cost,
-        ...rest
+        ...rest,
+        columns
       }
-      saveQuotationConnect(payload)
+      const action = id ? () => updateQuotationConnect({id, payload}) : () => saveQuotationConnect(payload);
+      action()
       .then(() => {
        Swal.fire({
             icon: "success",
-            title: `Quotation ${id ? "Updated" : "Created"} Successfully`
+            title: `Quotation ${id ? "Updated" : "Created"} Successfully`,
+            focusConfirm: true,      // important
+            didOpen: () => {
+              setTimeout(() => {
+                Swal.getConfirmButton()?.focus();
+              }, 50);
+            }
         }).then(() => {
-            navigate('/quotation', { replace: true });
+            navigate(-1);
 
         })
       setIsLoading(false)
@@ -304,6 +322,24 @@ const CreateQuotation = ({
           </div>
         </div>
       </Box>
+      <Box
+        sx={{
+          mt: 4,
+          height: "35%",
+          display: "flex",
+          flexDirection: "column",
+        }}>
+          <RichTextEditor
+            value={terms}
+            onChange={(html) => {
+              saveDataConnect({
+                stepName: QUOTATION_STEPPER_NAME.GOODS_DESCRIPTION,
+                data: { terms: html }
+              })
+            }}
+          />
+          {/* <Texta */}
+        </Box>
       <Box
         sx={{
           height: "35%",

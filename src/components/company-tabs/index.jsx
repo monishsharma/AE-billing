@@ -5,16 +5,17 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {COMPANY_TYPE} from "../../constants/app-constant"
+import { useParams } from "react-router-dom";
 
 const CompanyTabs = ({
-    value,
     onChange,
     renderContent = () => {},
 }) => {
 
+     const { company } = useParams();
 
     return (
-        <TabContext value={value}>
+        <TabContext value={company}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                     textColor="black"

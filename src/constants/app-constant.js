@@ -58,3 +58,12 @@ export const QUOTATION_FIELDS ={
     QUOTATION_COMPANY: "quotationCompany",
     QUOTATION_CUSTOMER: "customer",
 };
+
+export const DEFAULT_TERMS_AND_CONDITION = `
+    <ol>
+      <li>RATES ARE EX-GO DOWN GWALIOR</li>
+      <li>ALL MEASUREMENT AS PER I.S METHOD</li>
+      <li>GST AS PER ACTUAL (18% EXTRA)</li>
+      <li>VALIDITY OF OFFER 10 DAYS</li>
+    </ol>
+  `;

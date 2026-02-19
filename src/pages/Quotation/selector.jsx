@@ -40,7 +40,7 @@ export const getColumns = ({ handleDownload, value }) => {
   },
   {
     field: "quotationNo",
-    flex: 1,
+    width: 150,
     renderHeader: () => (
       <strong>
         Quotation No
@@ -66,7 +66,7 @@ export const getColumns = ({ handleDownload, value }) => {
   },
   {
     field: "Description",
-    flex: 1,
+    width: 400,
     renderHeader: () => (
       <strong>
         Description
@@ -77,7 +77,7 @@ export const getColumns = ({ handleDownload, value }) => {
       const text = params?.row?.goodsDescription?.items?.[0]?.description || "-";
       const getTitle = () => {
         const allText = params?.row?.goodsDescription?.items
-          ?.map((item) => ` ${item.description}, ${params?.row?.goodsDescription?.cost||""}`)
+          ?.map((item) => ` ${item.description}, ₹ ${parseFloat(item.rate || 0).toFixed(2)}`)
           .join("\n");
         return allText || "-";
       }
@@ -111,6 +111,17 @@ export const getColumns = ({ handleDownload, value }) => {
     },
   },
   {
+    field: "customerName",
+    flex: 1,
+    renderHeader: () => (
+      <strong>
+        Company
+      </strong>
+    ),
+    sortable: false,
+    valueGetter: (params, row) => row?.buyerDetail?.customerName ?? "",
+  },
+  {
     field: "date",
     flex: 1,
     renderHeader: () => (
@@ -135,21 +146,21 @@ export const getColumns = ({ handleDownload, value }) => {
         ? moment(row.quotationDetail.quotationDate).format("ll")
         : "-",
   },
-  {
-    field: "rate",
-    flex: 1,
-    renderHeader: () => (
-      <strong>
-        Rate
-      </strong>
-    ),
-    sortable: true,
-    valueGetter: (params, row) =>
-      parseFloat(row?.cost || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-  },
+  // {
+  //   field: "rate",
+  //   flex: 1,
+  //   renderHeader: () => (
+  //     <strong>
+  //       Rate
+  //     </strong>
+  //   ),
+  //   sortable: true,
+  //   valueGetter: (params, row) =>
+  //     parseFloat(row?.cost || 0).toLocaleString("en-IN", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     }),
+  // },
   // Example action column for marking paid:
 ]
 };

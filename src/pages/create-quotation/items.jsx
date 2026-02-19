@@ -41,8 +41,9 @@ const QuotationItems = ({
                             variant='standard'
                             id={`${input.name}-${inputIndex}`}
                             name={input.name}
+
                             // placeholder={input.placeholder}
-                            // label={input.placeholder}
+                            label={input.placeholder}
                             error={!itemsValidation[itemIndex]?.[input.name]}
                             value={items[itemIndex]?.[input.name] || ""}
                             onChange={(event) => onFieldChange({event, stepName: QUOTATION_STEPPER_NAME.GOODS_DESCRIPTION, savingItems: true, itemIndex})}
