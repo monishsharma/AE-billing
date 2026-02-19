@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {getCustomerDetail, INPUTS, orderTypeOptions} from "./selector";
+import {INPUTS, orderTypeOptions} from "./selector";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -7,8 +7,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import StepperButton from '../stepper-button';
-import { COMPANY, COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from "../../../constants/app-constant";
+import { COMPANY_TYPE, STEPPER_NAME } from "../../../constants/app-constant";
 import { useParams } from "react-router-dom";
+import { getCustomerDetail } from "../../../helpers/customer-detail";
 
 
 const BuyerDetail = ({

@@ -46,3 +46,24 @@ export const STEPPER_NAME = {
     GENERATE_ASN: "GENERATE_ASN"
 }
 
+export const QUOTATION_STEPPER_NAME = {
+    QUOTATION_DETAIL: "quotationDetail",
+    GOODS_DESCRIPTION: "goodsDescription",
+    BUYER_DETAIL: "buyerDetail",
+}
+
+export const QUOTATION_FIELDS ={
+    QUOTATION_NO: "quotationNo",
+    QUOTATION_DATE: "quotationDate",
+    QUOTATION_COMPANY: "quotationCompany",
+    QUOTATION_CUSTOMER: "customer",
+};
+
+export const DEFAULT_TERMS_AND_CONDITION = `
+    <ol>
+      <li>RATES ARE EX-GO DOWN GWALIOR</li>
+      <li>ALL MEASUREMENT AS PER I.S METHOD</li>
+      <li>GST AS PER ACTUAL (18% EXTRA)</li>
+      <li>VALIDITY OF OFFER 10 DAYS</li>
+    </ol>
+  `;

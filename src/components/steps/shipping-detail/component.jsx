@@ -155,7 +155,7 @@ const ShippingDetails = ({
                 icon: "success",
                 title: `Invoice ${id ? "Updated" : "Created"} Successfully`
             }).then(() => {
-                navigate('/invoice', { replace: true });
+                navigate(-1);
 
             })
               handleNext();

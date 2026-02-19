@@ -8,7 +8,7 @@ import { persistReducer, persistStore } from "redux-persist";
 const persistConfig = {
     key: "root", // Key to store data in localStorage
     storage, // Use localStorage,,
-    whitelist: ["invoiceForm"]
+    whitelist: ["invoiceForm", "quotation"] // Reducers to persist
 };
 
 // Create a persisted reducer

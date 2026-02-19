@@ -11,14 +11,17 @@
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     column-gap: 0.5rem;
-    grid-template-columns: repeat(18, 1fr);
+    /* grid-template-columns: repeat(18, 1fr); */
     padding: 1rem;
     background: black;
 }
 .bigGrid{
     grid-column: span 6 !important;
 }
-
+.headerInput {
+    color: white;
+    outline: white;
+}
 .gridContainer span:nth-child(1){
     grid-column: span 1 !important;
 }

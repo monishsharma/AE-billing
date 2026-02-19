@@ -9,8 +9,13 @@ const Dashboard = React.lazy(() => import("../pages/dashboard"));
 const Login = React.lazy(() => import("../components/login"));
 const NotFound = React.lazy(() => import("../components/not-found"));
 const Payment = React.lazy(() => import("../pages/payment"));
+const Quotation = React.lazy(() => import("../pages/quotation"));
+const NewQuotation = React.lazy(() => import("../pages/create-quotation"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import { Navigate } from "react-router-dom";
+
+
 
 const routes = [
   {
@@ -22,11 +27,21 @@ const routes = [
         children: [
           {
             index: true,
+            element: <Navigate to="/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "/:company",
             element: <Dashboard />,
             errorElement: <ErrorPage />,
           },
           {
             path: "invoice",
+            element: <Navigate to="/invoice/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "invoice/:company",
             element: <Invoice />,
             errorElement: <ErrorPage />,
           },
@@ -38,6 +53,25 @@ const routes = [
           {
             path: "edit/invoice/:id",
             element: <InvoiceStepper />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "quotation",
+            element: <Navigate to="/quotation/ASHOK" replace />,
+          },
+          {
+            path: "quotation/:company",
+            element: <Quotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "new/quotation",
+            element: <NewQuotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "edit/quotation/:id",
+            element: <NewQuotation />,
             errorElement: <ErrorPage />,
           },
           {
