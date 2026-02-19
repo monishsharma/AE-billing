@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useParams } from "react-router-dom";
 import CompanyTabs from '../../components/company-tabs';
-import { COMPANY_TYPE } from '../../constants/app-constant';
 import { DataGrid } from '@mui/x-data-grid';
 import { getColumns } from './selector';
 import { toast, Bounce } from "react-toastify";
