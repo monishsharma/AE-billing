@@ -56,6 +56,9 @@ const ShippingDetails = ({
         [STEPPER_NAME.GOODS_DESCRIPTION]: {
             po,
             Total
+        },
+        [STEPPER_NAME.INVOICE_DETAILS]: {
+            company
         }
     } = invoiceForm;
 
@@ -155,7 +158,7 @@ const ShippingDetails = ({
                 icon: "success",
                 title: `Invoice ${id ? "Updated" : "Created"} Successfully`
             }).then(() => {
-                navigate(-1);
+                navigate(`/invoice/${company}`);
 
             })
               handleNext();

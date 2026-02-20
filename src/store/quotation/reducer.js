@@ -7,7 +7,7 @@ import { createInitialValue } from "../../pages/create-quotation/selector";
 export const INITIAL_STATE = {
     [QUOTATION_STEPPER_NAME.QUOTATION_DETAIL]: {
         [QUOTATION_FIELDS.QUOTATION_NO]: "",
-        [QUOTATION_FIELDS.QUOTATION_DATE]: "",
+        [QUOTATION_FIELDS.QUOTATION_DATE]: new Date().toISOString().split('T')[0],
         [QUOTATION_FIELDS.QUOTATION_COMPANY]: "",
     },
     [QUOTATION_STEPPER_NAME.BUYER_DETAIL]: { },

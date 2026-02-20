@@ -114,6 +114,19 @@ const CreateQuotation = ({
   }
   , [serverColumns]);
 
+  React.useEffect(() => {
+    // preselect customer if length is one
+    if (filteredVendorList?.length === 1 && !id && quotationCompany) {
+      const selectedVendor = getCustomerDetail({selectedCustomer: filteredVendorList[0]});
+      saveDataConnect({
+        stepName: QUOTATION_STEPPER_NAME.BUYER_DETAIL,
+        data: {
+          ...selectedVendor
+        }
+      });
+    }
+  }, [quotationCompany, filteredVendorList.length]);
+
   const onFieldChange = ({ event, stepName, savingItems = false, itemIndex }) => {
     const { name, value } = event.target;
     let customValue = value;
