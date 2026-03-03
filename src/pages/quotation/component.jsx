@@ -8,11 +8,12 @@ import { DataGrid } from '@mui/x-data-grid';
 import { getColumns } from './selector';
 import { toast, Bounce } from "react-toastify";
 import Swal from 'sweetalert2';
-
-
+import { getNextInvoiceNo } from '../../helpers/get-invoice-no';
 
 const Quotation = ({
+    getConfigConnect,
     getQuotationConnect,
+    saveQuotationConnect,
     resetReducerConnect,
     getQuotationPdfConnect
 }) => {
@@ -39,9 +40,7 @@ const Quotation = ({
                 ...rest,
         }), []);
 
-
-
-    React.useEffect(() => {
+    const fetchQuotationList = useCallback(() => {
         setIsLoading(true);
         setQuotationList([])
         getQuotationConnect({company})
@@ -53,6 +52,11 @@ const Quotation = ({
             console.log(err)
             setIsLoading(false);
         })
+    }, [company, getQuotationConnect])
+
+    React.useEffect(() => {
+        setIsLoading(true);
+        fetchQuotationList();
     }, [company])
 
     const handleChange = (event, newValue) => {
@@ -152,9 +156,47 @@ const Quotation = ({
             });
             setIsLoading(false);
         }
-    }, [getQuotationPdfConnect, showToast])
+    }, [getQuotationPdfConnect, showToast]);
 
-    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation }), [ company, downloadQuotation]);
+    const makeQuotationCopy = (e,row) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to create a copy of this quotation?",
+            icon: "question",
+            showCancelButton: true,
+        }).then((result) => {
+
+            console.log(row)
+            if (result.isConfirmed) {
+              setIsLoading(true);
+                // Call API to copy quotation
+                getConfigConnect()
+                      .then(async(res) => {
+                        const {config: {quotation} = {}} = res;
+                        const payload = {...row}
+                        delete payload._id;
+                        const nextQuotationeNo = getNextInvoiceNo(quotation[company], "nextQuotationNo");
+                        payload.quotationDetail.quotationNo = nextQuotationeNo;
+                        payload.quotationDetail.quotationDate = new Date().toISOString().split('T')[0];
+                        payload.quotationDate = new Date();
+                        await saveQuotationConnect(payload);
+                        fetchQuotationList();
+                        setIsLoading(false);
+                      })
+                      .catch(() => {
+                        setIsLoading(false);
+                      })
+                // On success:
+                showToast({
+                    type: "success",
+                    text: "Quotation copied successfully!",
+                });
+                // Optionally, refresh the quotation list or navigate to the new quotation
+            }
+        });
+    }
+
+    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation, makeQuotationCopy }), [ company, downloadQuotation]);
 
 
     const renderContent = () => {
