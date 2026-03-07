@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import "./styles.css";
 import PropTypes from "prop-types";
@@ -7,7 +7,11 @@ import { isMobileDevice } from "../../../helpers/is-mobile-device";
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../../store/auth/action';
 import AE from "../../../assets/logo.png"
-import { ROUTES } from "./selector";
+import { PAGES, ROUTES } from "./selector";
+import { Box } from "@mui/material";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 const SideBar = ({
     isActive,
@@ -16,6 +20,17 @@ const SideBar = ({
     const location = useLocation();
     const { pathname } = location;
     const dispatch = useDispatch();
+    const [openDropdown, setOpenDropdown] = useState(1);
+
+    useEffect(() => {
+    const activeIndex = PAGES.findIndex((page) =>
+        page.children?.some((child) => pathname.includes(child.path))
+    );
+
+    if (activeIndex !== -1) {
+        setOpenDropdown(activeIndex);
+    }
+}, [pathname]);
 
     const onClick = () => {
         if (isMobileDevice()) {
@@ -27,48 +42,113 @@ const SideBar = ({
         dispatch(logoutUser());
     }
 
+    const toggleDropdown = (e, index) => {
+        e.stopPropagation();
+        setOpenDropdown(openDropdown === index ? null : index);
+    };
+
     const getActiveClass = (currentPath, routePath, isExactRoute = false) => {
-        // const segments = currentPath.split("/").filter(Boolean);
-        // if (isExactRoute) {
-        //     return segments.length === 1 ? "activeLi" : "";
-        // }
         return currentPath.includes(routePath) ? "activeLi" : "";
     }
 
     return (
         <React.Fragment>
-            <div className={isActive ? "navigation active" : "navigation"}>
-                <Link to="/dashboard" style={{textDecoration: "none"}}>
-                    <img src={AE} alt="logo" className="companyTitle" />
-                    {/* <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span> */}
-                </Link>
+            <Box
+                className={isActive ? "navigation active" : "navigation"}
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                }}
+            >
+                <img src={AE} alt="logo" className={isActive ? "companySmallLogo" : "companyLogo"} />
+                {/* <span className="companyTitle">{isActive ? "AS" : "Ashok Enterprises"}</span> */}
                 <ul>
                     {
-                        ROUTES.map((route, index) => (
+                        PAGES.map((page, index) => (
                             <li
                                 key={index}
-                                className={getActiveClass(pathname, route.path, route.isExactRoute)}
                                 onClick={onClick}
                             >
-                                <Link to={route.path}>
-                                    <span className="icon">
-                                        <ion-icon name={route.icon}></ion-icon>
-                                    </span>
-                                    <span className="title">{route.title}</span>
-                                </Link>
+                                {
+                                    page.children ?
+                                    <>
+                                        <Box
+                                            className={`${openDropdown === index ? "open" : ""}`}
+                                            onClick={(e) => toggleDropdown(e, index)}
+                                            sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                    cursor: "pointer",
+                                                }}
+                                        >
+                                            <Box className="dropdownTitle">
+                                                <span className="icon"><page.icon /></span>
+                                                <span className="title">{page.title}</span>
+                                            </Box>
+                                            <Box
+                                                sx={{
+                                                    color: "white"
+                                                }}
+                                            >
+                                                <span className="arrow">{openDropdown === index ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}</span>
+                                            </Box>
+                                        </Box>
+                                        {openDropdown === index && (
+                                                <ul className={`dropdownList submenu ${openDropdown === index ? "openDropdown" : ""}`}>
+                                                    {page.children.map((child, cIndex) => (
+                                                    <li
+                                                        key={cIndex}
+                                                        onClick={onClick}
+                                                        className={` submenu-item ${getActiveClass(pathname, child.path)}`}
+
+                                                    >
+                                                        <Link
+                                                            to={child.path}
+                                                        >
+                                                        <span className="title">{child.title}</span>
+                                                        </Link>
+                                                    </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                    </>
+                                    :
+                                    <Link
+                                        to={page.path}
+                                        className={getActiveClass(pathname, page.path, page.isExactRoute)}
+                                    >
+                                        <span className="icon">
+                                            <page.icon />
+                                        </span>
+                                        <span className="title">{page.title}</span>
+                                    </Link>
+                                }
+
                             </li>
                         ))
                     }
-                    <li onClick={handleLogout}>
-                        <a style={{cursor: "pointer", color: "white"}}>
-                            <span className="icon">
-                                <ion-icon name="log-out-outline"></ion-icon>
-                            </span>
-                            <span className="title">Logout</span>
-                        </a>
-                    </li>
                 </ul>
-            </div>
+                 <Box
+                sx={{
+                    position: "absolute",
+                    color: "white",
+                    bottom: 30,
+                    width: "100%",
+                }}
+            >
+                <li
+                    onClick={handleLogout}
+                    className="logout"
+                >
+                    <span className="icon"><LogoutOutlinedIcon /></span>
+                    <span className="title">Logout</span>
+                </li>
+            </Box>
+            </Box>
+            {/* logout LI at the bottom  */}
+
         </React.Fragment>
     );
 };

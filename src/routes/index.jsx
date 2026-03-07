@@ -79,18 +79,18 @@ const routes = [
             errorElement: <ErrorPage />,
           },
           {
-            path: "vendors",
+            path: "customers",
             element: <Vendors />,
             errorElement: <ErrorPage />,
           },
           {
-            path: "add/vendor",
+            path: "add/customers",
             // element: <AddVendorsV2 />,
             element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
           {
-            path: "edit/vendor/:id",
+            path: "edit/customers/:id",
             element: <AddVendor />,
             errorElement: <ErrorPage />,
           },

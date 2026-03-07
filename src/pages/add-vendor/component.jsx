@@ -272,7 +272,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             updateVendorListConnect(vendorListCopy)
             .then(async() => {
                 await getVendorListConnect();
-                navigate("/vendors", { replace: true });
+                navigate("/customers", { replace: true });
                 resetAll();
                 setIsLoading(false);
             })
@@ -289,7 +289,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
     return (
         <div>
             <div className="mt-4">
-                <h2 className="fw-bold">Add Vendor</h2>
+                <h2 className="fw-bold">Add Customer</h2>
                 <div className="mt-4">
                 <Box
                     component="form"
@@ -301,7 +301,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                 >
                     <Grid container spacing={2}>
                         <Grid  size={{md: 5, xs: 12}}>
-                        <h6 className="fw-bold mt-4 mb-4">Vendor Detail</h6>
+                        <h6 className="fw-bold mt-4 mb-4">Customer Detail</h6>
                             <Stack spacing={2}>
 
                                 {
