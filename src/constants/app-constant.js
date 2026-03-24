@@ -59,6 +59,15 @@ export const QUOTATION_FIELDS ={
     QUOTATION_CUSTOMER: "customer",
 };
 
+export const PURCHASE_ORDER_FIELDS = {
+    PO_NUMBER: "poNumber",
+    PO_DATE: "poDate",
+    PO_COMPANY: "company",
+    PO_CUSTOMER: "customer",
+    TOTAL_VALUE: "totalValue"
+
+}
+
 export const DEFAULT_TERMS_AND_CONDITION = `
     <ol>
       <li>RATES ARE EX-GO DOWN GWALIOR</li>

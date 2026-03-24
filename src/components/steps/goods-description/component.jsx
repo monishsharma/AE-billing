@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 
-import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
+import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE, normalizePOInput, formatPoDisplay } from './selector';
 import StepperButton from '../stepper-button';
 import { COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from '../../../constants/app-constant';
 import Items from "../../items";
@@ -24,6 +24,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import CustomAutocomplete from "../../../shared/components/autocomplete";
 import { toast, Bounce } from "react-toastify";
 import ClearIcon from '@mui/icons-material/Clear';
+import PoSelection from "../../po-selection";
 
 
 const GoodsDescription = ({
@@ -42,10 +43,9 @@ const GoodsDescription = ({
 
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
-        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "" },
-        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "" },
+        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType },
+        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "", poDisplay = "" },
     } = invoiceForm;
-
     const {vendorsList = [], hsn: HSNLIst = []} = config;
 
     const { id: invoiceId } = useParams();
@@ -73,7 +73,7 @@ const GoodsDescription = ({
     const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
 
     const invoiceFormDetail = {
-        po: po || "",
+        po: poDisplay || po || "",
         serial: serial || "",
         HSN: HSN || "",
         type: type || ""
@@ -88,11 +88,15 @@ const GoodsDescription = ({
 
     const [itemsValidation, setItemsValidation] = useState([]);
 
+    const [showModal, setShowModal] = useState(false);
+
     const [isFetchingPO, setIsFetchingPO] = useState(true);
 
     const [totalItems, setTotalItems] = useState([]);
 
     const [localItems, setLocalItems] = useState([]);
+
+    const originalItemsRef = useRef([]);
 
     const [poDetail, setPoDetail] = useState(null);
 
@@ -105,6 +109,17 @@ const GoodsDescription = ({
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
+
+    React.useEffect(() => {
+        // Capture original items only once (on invoice edit load).
+        if (!invoiceId) return;
+        if (originalItemsRef.current.length > 0) return;
+
+        const hasRealQty = Array.isArray(items) && items.some((it) => Number(it?.qty) > 0);
+        if (hasRealQty) {
+            originalItemsRef.current = items;
+        }
+    }, [invoiceId, items]);
 
     React.useEffect(() => {
         if (po && po.length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
@@ -129,7 +144,9 @@ const GoodsDescription = ({
             if (!isEqual) {
                 saveDataConnect({
                     stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                    data: { items: localItems },
+                    data: {
+                        items: localItems
+                     },
                 });
                 lastSavedItemsRef.current = localItems;
             }
@@ -160,50 +177,61 @@ const GoodsDescription = ({
 
     }, [invoiceId, po, poDetail, selectedCompany, items.length]);
 
+    const toggleModal = () => setShowModal(!showModal);
+
     const onFieldChange = (event) => {
+
         const { value = "", name = "" } = event.target;
+
+        let payload = { [name]: value.toUpperCase() };
+
+        if (name === "po") {
+
+        payload = normalizePOInput(value);
+        }
+
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-            data: {
-                [name]: value.toUpperCase(),
-            }
-        })
+            data: payload
+        });
+
         setInvoiceFormValidation(prev => ({
             ...prev,
             [name]: !!value
         }));
+
     };
 
-const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
-    // Detect if this is from onInputChange (3 args) or onChange (2 args)
-    let value;
+    const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
+        // Detect if this is from onInputChange (3 args) or onChange (2 args)
+        let value;
 
-    // If 3rd argument exists, this is onInputChange
-    if (typeof reasonOrUndefined === 'string') {
-        value = valueOrInput; // it's a string typed in
-    } else {
-        // It's from onChange
-        const newValue = valueOrInput;
-        if (newValue && typeof newValue === 'object' && newValue.label) {
-            value = newValue.label;
+        // If 3rd argument exists, this is onInputChange
+        if (typeof reasonOrUndefined === 'string') {
+            value = valueOrInput; // it's a string typed in
         } else {
-            value = newValue; // may be string if user entered manually
+            // It's from onChange
+            const newValue = valueOrInput;
+            if (newValue && typeof newValue === 'object' && newValue.label) {
+                value = newValue.label;
+            } else {
+                value = newValue; // may be string if user entered manually
+            }
         }
-    }
 
-    // Now safe to use `value`
-    saveDataConnect({
-        stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-        data: {
-            HSN: value,
-        }
-    });
+        // Now safe to use `value`
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                HSN: value,
+            }
+        });
 
-    setInvoiceFormValidation(prev => ({
-        ...prev,
-        HSN: !!value
-    }));
-};
+        setInvoiceFormValidation(prev => ({
+            ...prev,
+            HSN: !!value
+        }));
+    };
 
 
     const onBlur = (event) => {
@@ -386,8 +414,62 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         });
     }
 
+    const onSave = (selectedItem) => {
+        const mappedItems = [];
+        const poSet = new Set();
+        const isCompanyAshok = selectedCompany === COMPANY_TYPE.ASHOK;
+        const selectedItemCopy = [...selectedItem];
+        selectedItemCopy.map((item, index) => {
+            const rate = isCompanyAshok ? item.bdsRate : item.rate;
+            poSet.add(item.poNumber);
+            const selectedRate = OPTIONS.filter(option => Number(option.rate) === Number(rate));
+            const resolvedRate = selectedRate?.[0]?.rate ? selectedRate[0].rate :  0;
+            const resolvedDescription = selectedRate?.[0]?.description ?? item.description ?? "";
+            mappedItems.push({
+                sno: isCompanyAshok ? item.itemNo : index + 1 ,
+                description: resolvedDescription,
+                wo: item.workOrder || "-",
+                qty: item.dispatchQty,
+                rate: resolvedRate,
+                value: Number(resolvedRate) * Number(item.dispatchQty),
+                itemId: item.itemId,
+                poNumber: item.poNumber
+            });
+        });
+        const poArray = Array.from(poSet);
+        const poDisplay = formatPoDisplay(poArray);
+
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                items: mappedItems
+            }
+        });
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                po: poArray,
+                poDisplay
+            }
+        });
+    };
+
     return (
         <>
+            {/* //modal */}
+            {showModal && <PoSelection
+                open={showModal}
+                items={items}
+                company={selectedCompany}
+                toggleModal={toggleModal}
+                orderType={orderType}
+                customer={customer}
+                onSave={onSave}
+                invoiceId={invoiceId}
+                preselectedItems={localItems}
+                originalItems={originalItemsRef.current.length ? originalItemsRef.current : localItems}
+                selectedPoNumbers={Array.isArray(po) ? po : (po ? [po] : [])}
+            />}
             <Box
                 component="form"
                 sx={{ '& > :not(style)': { m: 1, width: '100%',height: "100%" } }}
@@ -467,12 +549,12 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                             helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
                                             fullWidth
                                         />
-                                        {/* {
+                                        {
                                             input.span &&
-                                            <a href=""  style={{fontSize: "9px",   color: "blue"}} onClick={(e) => e.preventDefault()}>
-                                                {po}
-                                            </a>
-                                        } */}
+                                            <Typography variant="subtitle2" mt={1} ml={1} display="flex" onClick={toggleModal}>
+                                                Select PO
+                                            </Typography>
+                                        }
                                     </>
                                 }
 

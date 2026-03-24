@@ -150,3 +150,24 @@ td {
     justify-content: center;
   }
 }
+
+.poRow {
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.poLabel {
+  width: 120px;
+  font-weight: 600;
+}
+
+.poValue {
+  flex: 1;
+}
+
+.tabelCellElippis {
+  max-width: 300px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}

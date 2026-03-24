@@ -203,7 +203,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
     ),
     sortable: false,
     minWidth: 150,
-    valueGetter: (params, row) => `${row?.goodsDescription.fullPo || row?.goodsDescription.po}`,
+    valueGetter: (params, row) => `${row?.goodsDescription.poDisplay || row?.goodsDescription.po}`,
   },
   {
     field: "date",

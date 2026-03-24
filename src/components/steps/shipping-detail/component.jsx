@@ -20,6 +20,7 @@ const ShippingDetails = ({
     handleNext,
     handleBack,
     invoiceForm,
+    updatePoConnect,
     saveDataConnect,
     checkASNExistConnect,
     generateASNConnect,
@@ -124,54 +125,37 @@ const ShippingDetails = ({
                 paid: false
             })
           };
+
           const action = id ? () => updateInvoiceConnect(id, payload) : () => postInvoiceConnect(payload);
 
           action()
-            .then(async () => {
-            //     const payload = {
-            //         downloadOriginal: false,
-            //         id: res.id
-            //     }
+            .then(async (res) => {
+                const updatedPaylaod = {
+                    ...payload,
+                    _id: res.id || id
+                }
+                updatePoConnect(updatedPaylaod)
+                .then((_) => {})
+                .catch((error) => console.log(error))
+                Swal.fire({
+                    icon: "success",
+                    title: `Invoice ${id ? "Updated" : "Created"} Successfully`
+                }).then(() => {
+                    navigate(`/invoice/${company}`);
 
-            //   try {
-            //     // Get PDF blob using GET
-            //     const pdfResponse = await getBillPdfConnect(payload, {
-            //       responseType: "blob",
-            //       headers: {
-            //         Accept: "application/pdf",
-            //       },
-            //     });
-
-            //     const contentType = pdfResponse.headers["content-type"];
-            //     const blob = new Blob([pdfResponse.data], { type: contentType });
-
-            //     const fileURL = URL.createObjectURL(blob);
-            //     window.open(fileURL, "_blank");
-            //   } catch (pdfErr) {
-            //     console.error("PDF generation error", pdfErr);
-            //     Swal.fire({
-            //       icon: "error",
-            //       text: "Failed to generate PDF",
-            //     });
-            //   }
-            Swal.fire({
-                icon: "success",
-                title: `Invoice ${id ? "Updated" : "Created"} Successfully`
-            }).then(() => {
-                navigate(`/invoice/${company}`);
-
+                })
+                handleNext();
+                resetReducerConnect();
+                setIsLoading(false);
             })
-              handleNext();
-              resetReducerConnect();
-              setIsLoading(false);
-            })
-            .catch((error) => {
-              Swal.fire({
-                icon: "error",
-                text: error?.err || "Something went wrong",
-              });
-              setIsLoading(false);
-            });
+                .catch((error) => {
+                    console.log(error)
+                    Swal.fire({
+                        icon: "error",
+                        text: error?.err || "Something went wrong",
+                    });
+                    setIsLoading(false);
+                });
         }
       };
 

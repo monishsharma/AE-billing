@@ -68,13 +68,13 @@ const QuotationItems = ({
             }
           </EditableItems>
           {
-            items.length <= 9 && (
+            // items.length <= 9 && (
                 <Box display="flex" justifyContent="center" alignItems="center">
                     <Button color="primary"  onClick={addItem} className="outlinedCustomBtn">
                         Add More Item
                     </Button>
                 </Box>
-            )
+            // )
           }
     </div>
   )
