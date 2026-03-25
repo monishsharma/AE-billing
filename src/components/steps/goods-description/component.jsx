@@ -122,9 +122,9 @@ const GoodsDescription = ({
     }, [invoiceId, items]);
 
     React.useEffect(() => {
-        if (po && po.length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
+        if (po && po.length && po[0] && po[0].length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
             setIsFetchingPO(true);
-            getPODetailConnect({ poNumber: po })
+            getPODetailConnect({ poNumber: po[0] })
             .then((res) => {
                 setPoDetail(res.poDetail);
                 setIsFetchingPO(false);
