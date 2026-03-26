@@ -225,7 +225,7 @@ const ShippingDetails = ({
 
         setIsLoading(true);
 
-        checkASNExistConnect({poNumber: po, payload: invoiceForm})
+        checkASNExistConnect({poNumber: po?.[0], payload: invoiceForm})
         .then((response) => {
             const asnNumber = response?.asnNumber || "0";
             if (response?.status === "Draft" || asnNumber === "0") {
