@@ -224,14 +224,15 @@ const ShippingDetails = ({
         }
 
         setIsLoading(true);
-
-        checkASNExistConnect({poNumber: po?.[0], payload: invoiceForm})
+        const poNumber = po?.[0];
+        checkASNExistConnect({poNumber, payload: invoiceForm})
         .then((response) => {
             const asnNumber = response?.asnNumber || "0";
             if (response?.status === "Draft" || asnNumber === "0") {
                 const payload = getPayloadForASN({
                     invoiceDetail: invoiceForm,
-                    asnNumber
+                    asnNumber,
+                    poNumber
                 });
 
                 const payloadBody = {
@@ -239,7 +240,7 @@ const ShippingDetails = ({
                     invoiceDetail: invoiceForm
                 };
 
-                generateASNConnect({poNumber: po, payloadBody})
+                generateASNConnect({poNumber, payloadBody})
                 .then((res) => {
                     const asnNumber = res?.generatedASN?.[0]?.ASN;
                     const isAsnGenerated = res?.generatedASN?.[0]?.ASNID;

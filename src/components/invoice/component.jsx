@@ -799,47 +799,6 @@ const Invoice = ({
                     onChange={handleChange}
                     renderContent={renderInvoices}
                 />
-                {/* <TabContext value={value}>
-                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList
-                            textColor="black"
-                            sx={{
-                                "& .MuiTabs-indicator": {
-                                    backgroundColor: "#000", // set your custom color
-                                },
-                            }}
-                            onChange={handleChange}
-                            aria-label="lab API tabs example"
-                        >
-                            <Tab label={COMPANY_TYPE.ASHOK} value={COMPANY_TYPE.ASHOK} />
-                            <Tab label={COMPANY_TYPE.PADMA} value={COMPANY_TYPE.PADMA} />
-                        </TabList>
-                    </Box>
-                    <TabPanel
-                        value={COMPANY_TYPE.ASHOK}
-                        sx={{
-                            p: {
-                                xs: 0,
-                                sm: 2,
-                                md: 0,
-                            },
-                        }}
-                    >
-                        {renderInvoices()}
-                    </TabPanel>
-                    <TabPanel
-                        value={COMPANY_TYPE.PADMA}
-                        sx={{
-                            p: {
-                                xs: 0,
-                                sm: 2,
-                                md: 0,
-                            },
-                        }}
-                    >
-                        {renderInvoices()}
-                    </TabPanel>
-                </TabContext> */}
             </div>
 
             <PaymentConfirmationModal
