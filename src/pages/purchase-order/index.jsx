@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PurchaseOrder from "./component.jsx";
-import { getPoList } from "../../store/purchase-order/action.js";
+import { deletePo, getPoList } from "../../store/purchase-order/action.js";
 
 const mapStateToProps = ({
     config,
@@ -12,7 +12,8 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    getPoListConnect: getPoList
+    getPoListConnect: getPoList,
+    deletePoConnect: deletePo
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseOrder);

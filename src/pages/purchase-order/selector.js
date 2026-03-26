@@ -58,9 +58,9 @@ export const TABLE_HEAD = [
     {
         value: "Customer"
     },
-    {
-        value: "PO Date"
-    },
+    // {
+    //     value: "PO Date"
+    // },
     {
         value: "Status"
     },

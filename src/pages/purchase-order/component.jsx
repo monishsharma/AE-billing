@@ -14,11 +14,14 @@ import { Chip,IconButton, LinearProgress, Table, TableBody, TableCell, TableCont
 import moment from 'moment';
 import CollapsibleItem from './collpasible-item';
 import TableSkeleton from './table-skeleton';
+import Swal from 'sweetalert2';
+import RollerFilter from '../../components/roller-filter';
 
 
 const PurchaseOrder = ({
     config,
     purchaseOrder,
+    deletePoConnect,
     getPoListConnect
 }) => {
 
@@ -65,9 +68,11 @@ const PurchaseOrder = ({
     };
 
     const handleChange = (event, newValue) => {
+        const updatedFilters = {...filters};
+        if (updatedFilters.size) delete updatedFilters.size;
         setFilters({
-            ...filters,
-            company: newValue
+            ...updatedFilters,
+            company: newValue,
         });
         Navigate(`/purchase-order/${newValue}`);
         // setValue(newValue);
@@ -110,6 +115,36 @@ const PurchaseOrder = ({
             updatedFilters.poStatus = value;
         }
         setFilters(updatedFilters);
+    };
+
+    const onChangeRollerSizeFilter = (selectedSize) => {
+        const { target: { value } } = selectedSize;
+        let updatedFilters = { ...filters };
+        updatedFilters.size = value;
+        setFilters(updatedFilters);
+    };
+
+    const deletePo = async(id) => {
+        Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to delete this PO?",
+                icon: "question",
+                showCancelButton: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                deletePoConnect(id)
+                    .then(async() => {
+                        Swal.fire(({
+                            title: "Succesfully Deleted",
+                            icon: "success"
+                        }));
+                        await getPoListConnect(filters);
+                    })
+                }
+
+
+
+            })
     }
 
     // const columns = useMemo(() => getColumns({ company, vendorsList, expandedRow, toggleRow}), [company, vendorsList, expandedRow, toggleRow]);
@@ -160,7 +195,7 @@ const PurchaseOrder = ({
                                                         vendorsList[index]?.label
                                                     }
                                                 </TableCell>
-                                                <TableCell>{moment(data.poDate).format("ll")}</TableCell>
+                                                {/* <TableCell>{moment(data.poDate, "DD-MM-YYYY").format("ll")}</TableCell> */}
                                                 <TableCell>
                                                     <div className="status-cell">
                                                         <Chip
@@ -212,6 +247,7 @@ const PurchaseOrder = ({
                                                 data={data}
                                                 isOpen={isOpen}
                                                 detailRef={detailRef}
+                                                deletePoHandler={(id) => deletePo(id)}
                                             />
                                         </>
 
@@ -250,6 +286,16 @@ const PurchaseOrder = ({
                     </Box>
 
                     <Box display={"flex"} gap={2} alignContent={"flex-end"}>
+                        {
+                            ((company === COMPANY_TYPE.ASHOK && poType.id === FILTER_OPTION[2].id)
+                            ||
+                            (company === COMPANY_TYPE.PADMA)) &&
+                            <RollerFilter
+                                value={filters?.size || ""}
+                                onChange={onChangeRollerSizeFilter}
+                            />
+                        }
+
                         {
                             company === COMPANY_TYPE.PADMA &&
                             <SelectVendor

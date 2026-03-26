@@ -1,22 +1,50 @@
-import { Box, Chip, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import { Box, Button, Chip, Collapse, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import React from 'react'
 import DispatchDetail from './dispatch-detail'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
 const CollapsibleItem = ({
     isOpen,
     data,
-    detailRef
+    detailRef,
+    deletePoHandler
 }) => {
 
     const isPoForFrame = data.poType === "FRAME";
+
+
 
     return (
         <TableCell ref={detailRef} style={{ paddingBottom: 0, paddingTop: 0, background: "#ececec" }} colSpan={7}>
             <Collapse in={isOpen} timeout="auto" unmountOnExit>
                 <Box sx={{ mt: 4, mb: 4 }}>
-                    <Typography variant="h6"  >
-                        Po Detail
-                    </Typography>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Typography variant="h6"  >
+                            Po Detail
+                        </Typography>
+                        <Box gap={2} display={"flex"} mb={2}>
+                            <Button
+                                variant='contained'
+                                size='small'
+                            >
+                                Fetch Dispatch Detail
+                            </Button>
+                            <Button
+                                variant='contained'
+                                size='small'
+                                color='error'
+                                startIcon={<DeleteOutlineOutlinedIcon />}
+                                onClick={() => deletePoHandler(data._id)}
+                            >
+                                Delete
+                            </Button>
+                        </Box>
+                    </Box>
                     <Table  size="small"  aria-label="purchases">
                         <TableHead>
                             <TableRow>
