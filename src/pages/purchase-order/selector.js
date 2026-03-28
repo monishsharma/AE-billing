@@ -21,27 +21,7 @@ export const FILTER_OPTION = [
         id: 5
     }
 ];
-export const STATUS_FILTER = [
-    {
-        label: "All",
-        value: "ALL",
-        id: 1,
-        color: "#1a237e"
-    },
-    {
-        label: "Pending",
-        value: "PENDING",
-        id: 2,
-        color: "#ED6C02"
-    },
-    {
-        label: "Completed",
-        value: "COMPLETED",
-        id: 3,
-        color: "#4caf50"
-    },
 
-];
 
 
 export const TABLE_HEAD = [

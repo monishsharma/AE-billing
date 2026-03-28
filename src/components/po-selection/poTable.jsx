@@ -112,12 +112,12 @@ const PoTable = ({
               </TableCell>
 
               {/* Description */}
-              <TableCell className='tabelCellElippis'>
+              <TableCell className='tabelCellElippis' sx={{minWidth: 200}}>
                 {poItem.description}
               </TableCell>
 
               {/* Work Order */}
-              <TableCell align='center'>
+              <TableCell align='center' sx={{minWidth: 200}}>
                 {poItem.workOrder}
               </TableCell>
 

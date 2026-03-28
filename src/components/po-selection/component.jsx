@@ -15,6 +15,7 @@ import PageLoader from "../page-loader"
 import { COMPANY_TYPE } from '../../constants/app-constant';
 import PoTable from './poTable';
 import { deductPercent, preSelectItems } from './selector';
+import RollerFilter from '../roller-filter';
 
 const style = {
     position: 'absolute',
@@ -51,6 +52,15 @@ const PoSelection = ({
     const [selectedPo, setSelectedPo] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
     const [selectedItems, setSelectedItems] = useState({});
+    const [filters, setFilters] = useState({
+        company,
+        ...(orderType && {
+                poType: orderType.toUpperCase()
+        }),
+        ...(customer && !isCompanyAshok && {
+            vendorId: customer
+        })
+    })
 
     useEffect(() => {
       if (items.length && data.length) {
@@ -62,18 +72,10 @@ const PoSelection = ({
 
     useEffect(() => {
         setIsFetching(true)
-        getPoListConnect({
-            company,
-            ...(orderType && {
-                poType: orderType.toUpperCase()
-            }),
-            ...(customer && !isCompanyAshok && {
-                vendorId: customer
-            })
-        })
+        getPoListConnect(filters)
         .then((_) => setIsFetching(false))
         .catch((_) => setIsFetching(false))
-    }, []);
+    }, [filters]);
 
     // useEffect(() => {
     //     if (!open || !data.length) return;
@@ -125,6 +127,19 @@ const PoSelection = ({
         });
     };
 
+    const onChangeRollerSizeFilter = (selectedSize) => {
+        const { target: { value } } = selectedSize;
+        let updatedFilters = { ...filters };
+        updatedFilters.size = value;
+        setFilters(updatedFilters);
+    };
+
+    const onClear = () => {
+        let updatedFilters = { ...filters };
+        delete updatedFilters.size;
+        setFilters(updatedFilters)
+    }
+
     const getSelectedCountByPo = (poIndex) => {
         const poNumber = data[poIndex]?.poNumber;
 
@@ -160,123 +175,135 @@ const PoSelection = ({
         toggleModal();
     };
 
-    if (isFetching) return <PageLoader />
 
     return (
         <Modal open={open} onClose={toggleModal}>
-            <Box sx={style}>
-
-                {/* HEADER */}
-                <Box
-                    px={3}
-                    pt={2}
-                    pb={1}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                >
-                    <Typography variant="h5">Select Po</Typography>
-                    <CloseOutlinedIcon
-                        onClick={toggleModal}
-                        sx={{ cursor: 'pointer' }}
-                    />
-                </Box>
-
-                <TabContext value={selectedPo}>
-
-                    {/* MAIN FLEX AREA */}
+                <Box sx={style}>
+                        {/* HEADER */}
                     <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            flex: 1,
-                            minHeight: 0
-                        }}
+                        px={3}
+                        pt={2}
+                        pb={1}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
                     >
+                        <Typography variant="h5">Select Po</Typography>
+                        <CloseOutlinedIcon
+                            onClick={toggleModal}
+                            sx={{ cursor: 'pointer' }}
+                        />
+                    </Box>
+                    <Box m={2} display={"flex"} gap={2}>
+                        <Box >
+                            <RollerFilter
+                                    onClear={onClear}
+                                    value={filters?.size || ""}
+                                    onChange={onChangeRollerSizeFilter}
+                                />
 
-                        {/* TABS */}
-                        <Box px={3}>
-                            <TabList
-                                onChange={handleChange}
-                                variant="scrollable"
-                                scrollButtons="auto"
-                            >
-                                {data.map((item, index) => (
-                                    <Tab
-                                        key={index}
-                                        value={index}
-                                        label={
-                                            <Box display="flex" gap={1} alignItems="center">
-                                                <span>{item.poNumber}</span>
-
-                                                {getSelectedCountByPo(index) > 0 && (
-                                                <Chip
-                                                    label={getSelectedCountByPo(index)}
-                                                    size="small"
-                                                    color="primary"
-                                                />
-                                            )}
-                                            </Box>
-                                        }
-                                    />
-                                ))}
-                            </TabList>
                         </Box>
+                    </Box>
 
-                        {/* SCROLLABLE TABLE AREA */}
-                        <TabPanel
-                            value={selectedPo}
+                    {
+                        isFetching ? <PageLoader />
+                        :
+                        <TabContext value={selectedPo}>
+
+                        {/* MAIN FLEX AREA */}
+                        <Box
                             sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
                                 flex: 1,
-                                overflow: 'auto',
-                                minHeight: 0,
-                                px: 3,
-                                pb: 2,
-                                pt: 0
+                                minHeight: 0
                             }}
                         >
-                            <PoTable
-                                data={data}
-                                isCompanyAshok={isCompanyAshok}
-                                selectedPo={selectedPo}
-                                items={items}
-                                selectedItems={selectedItems}
-                                handleSelectItem={handleSelectItem}
-                                handleQtyChange={handleQtyChange}
-                                invoiceId={invoiceId}
-                                getInvoiceListConnect={getInvoiceListConnect}
-                            />
-                        </TabPanel>
 
-                    </Box>
-                </TabContext>
-                <Box
-                    px={3}
-                    py={2}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    borderTop="1px solid #eee"
-                >
-                    <Typography>
-                        Selected: {totalSelected} | Total Dispatch Qty: {totalDispatchQty}
-                    </Typography>
+                            {/* TABS */}
+                            <Box px={3}>
+                                <TabList
+                                    onChange={handleChange}
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                >
+                                    {data.map((item, index) => (
+                                        <Tab
+                                            key={index}
+                                            value={index}
+                                            label={
+                                                <Box display="flex" gap={1} alignItems="center">
+                                                    <span>{item.poNumber}</span>
 
-                    <Box display="flex" gap={2}>
-                        <Button variant="outlined" onClick={toggleModal}>
-                            Cancel
-                        </Button>
+                                                    {getSelectedCountByPo(index) > 0 && (
+                                                    <Chip
+                                                        label={getSelectedCountByPo(index)}
+                                                        size="small"
+                                                        color="primary"
+                                                    />
+                                                )}
+                                                </Box>
+                                            }
+                                        />
+                                    ))}
+                                </TabList>
+                            </Box>
 
-                        <Button
-                            variant="contained"
-                            onClick={handleSave}
-                            disabled={!hasValidSelection}
-                        >
-                            Save
-                        </Button>
+                            {/* SCROLLABLE TABLE AREA */}
+                            <TabPanel
+                                value={selectedPo}
+                                sx={{
+                                    flex: 1,
+                                    overflow: 'auto',
+                                    minHeight: 0,
+                                    px: 3,
+                                    pb: 2,
+                                    pt: 0
+                                }}
+                            >
+                                <PoTable
+                                    data={data}
+                                    isCompanyAshok={isCompanyAshok}
+                                    selectedPo={selectedPo}
+                                    items={items}
+                                    selectedItems={selectedItems}
+                                    handleSelectItem={handleSelectItem}
+                                    handleQtyChange={handleQtyChange}
+                                    invoiceId={invoiceId}
+                                    getInvoiceListConnect={getInvoiceListConnect}
+                                />
+                            </TabPanel>
+
+                        </Box>
+                    </TabContext>
+                    }
+                    <Box
+                        px={3}
+                        py={2}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        borderTop="1px solid #eee"
+                    >
+                        <Typography>
+                            Selected: {totalSelected} | Total Dispatch Qty: {totalDispatchQty}
+                        </Typography>
+
+                        <Box display="flex" gap={2}>
+                            <Button variant="outlined" onClick={toggleModal}>
+                                Cancel
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={handleSave}
+                                disabled={!hasValidSelection}
+                            >
+                                Save
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
         </Modal>
     );
 };

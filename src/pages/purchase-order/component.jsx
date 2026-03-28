@@ -5,9 +5,9 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import { useNavigate, useParams } from 'react-router-dom';
 import CompanyTabs from '../../components/company-tabs';
 import SelectVendor from '../../components/select-vendor';
-import { FILTER_OPTION, getPOProgress, STATUS_FILTER, TABLE_HEAD } from './selector';
+import { FILTER_OPTION, getPOProgress, TABLE_HEAD } from './selector';
 import StatusFilter from '../../components/status-filter';
-import { COMPANY_TYPE } from '../../constants/app-constant';
+import { COMPANY_TYPE, STATUS_FILTER } from '../../constants/app-constant';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Chip,IconButton, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
@@ -123,6 +123,12 @@ const PurchaseOrder = ({
         updatedFilters.size = value;
         setFilters(updatedFilters);
     };
+
+    const onClear = () => {
+        let updatedFilters = { ...filters };
+        delete updatedFilters.size;
+        setFilters(updatedFilters)
+    }
 
     const deletePo = async(id) => {
         Swal.fire({
@@ -291,6 +297,7 @@ const PurchaseOrder = ({
                             ||
                             (company === COMPANY_TYPE.PADMA)) &&
                             <RollerFilter
+                                onClear={onClear}
                                 value={filters?.size || ""}
                                 onChange={onChangeRollerSizeFilter}
                             />
