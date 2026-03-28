@@ -167,7 +167,7 @@ td {
 
 .tabelCellElippis {
   max-width: 300px !important;
-  white-space: nowrap !important;
+  /* white-space: nowrap !important; */
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
