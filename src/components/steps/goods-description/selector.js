@@ -11,7 +11,10 @@ export const INPUTS = [
         type: "textField",
         key: "po",
         component: TextField,
-        span: true
+        span: {
+            show: true,
+            text: "Select PO"
+        }
     },
     {
         id: "serial",
@@ -28,23 +31,10 @@ export const INPUTS = [
         key: "HSN",
         type: "autocomplete",
         component: TextField,
-        options: [
-            {
-                label: "85049010"
-            },
-            {
-                label: "4407"
-            },
-            {
-                label: "6806"
-            },
-            {
-                label: "32089029"
-            },
-            {
-                label: "7204"
-            }
-        ]
+        span: {
+            show: true,
+            text: "Hsn Config"
+        }
     },
     {
         id: "type",

@@ -541,7 +541,7 @@ const GoodsDescription = ({
                                                         return (
                                                         <li {...rest}>
                                                             <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
-                                                                <span>{`${option.label} - ${option.desc}`}</span>
+                                                                <span>{`${option.label} - ${option.desc || ""}`}</span>
                                                                 {/* <ClearIcon
                                                                     onClick={(e) => {
                                                                         e.stopPropagation(); // ⛔ prevent option selection
