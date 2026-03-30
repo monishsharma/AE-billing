@@ -25,6 +25,7 @@ import CustomAutocomplete from "../../../shared/components/autocomplete";
 import { toast, Bounce } from "react-toastify";
 import ClearIcon from '@mui/icons-material/Clear';
 import PoSelection from "../../po-selection";
+import Swal from "sweetalert2";
 
 
 const GoodsDescription = ({
@@ -255,19 +256,33 @@ const GoodsDescription = ({
         }
     }
 
-    const deleteHSN = (item) => {
-        deleteHsnCodeConnect({
-            hsnId: item._id
-        })
-        .then(async() => {
-            await getHsnCodeListConnect()
-                showToast({
-                    type: "info",
-                    text: `HSN ${item.label} Deleted`,
-                });
-        })
-        .catch((err) => console.error("Error deleting HSN code:", err))
-    }
+    // const deleteHSN = (item) => {
+    //     Swal.fire({
+    //         title: "Are you sure?",
+    //         text: "Do You  Want to Delete the HSN Code",
+    //         icon: "question",
+    //         showCancelButton: true,
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             deleteHsnCodeConnect({
+    //                 hsnId: item._id
+    //             })
+    //             .then(async() => {
+    //                 await getHsnCodeListConnect();
+    //                     Swal.fire({
+    //                     title: "Successfuly Deleted",
+    //                     icon: "success"
+    //                 })
+    //             })
+    //             .catch(() => {
+    //                 Swal.fire({
+    //                     title: "Something Went Wrong",
+    //                     icon: "error"
+    //                 })
+    //             })
+    //         }
+    //     })
+    // }
 
     React.useEffect(() => {
         setTotalItems(items);
@@ -423,7 +438,7 @@ const GoodsDescription = ({
             const rate = isCompanyAshok ? item.bdsRate : item.rate;
             poSet.add(item.poNumber);
             const selectedRate = OPTIONS.filter(option => Number(option.rate) === Number(rate));
-            const resolvedRate = selectedRate?.[0]?.rate ? selectedRate[0].rate :  0;
+            const resolvedRate = selectedRate?.[0]?.rate ? selectedRate[0].rate :  rate;
             const resolvedDescription = selectedRate?.[0]?.description ?? item.description ?? "";
             mappedItems.push({
                 sno: isCompanyAshok ? item.itemNo : index + 1 ,
@@ -508,32 +523,36 @@ const GoodsDescription = ({
                                 }
                                 {
                                     input.type === "autocomplete" &&
-                                            <CustomAutocomplete
-                                            freeSolo
-                                            id={input.id}
-                                            name={input.id}
-                                            disableClearable={false}
-                                            value={invoiceFormDetail[input.key]}
-                                            onChange={(e, value) => onAutocompleteChange(e, value)}
-                                            onInputChange={(e, value, reason) => onAutocompleteChange(e, value, reason)}
-                                            options={HSNLIst || []}
-                                            textFieldLabel={input.placeholder}
-                                            onBlur={onBlur}
-                                            error={!invoiceFormValidation[input.key]}
-                                            renderOption={(props, option) => (
-                                                <li {...props}>
-                                                    <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
-                                                        <span>{option.label}</span>
-                                                        <ClearIcon
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // ⛔ prevent option selection
-                                                                deleteHSN(option)
-                                                            }}
-                                                        />
-                                                    </Box>
-                                                </li>
-                                            )}
-                                        />
+                                            <>
+                                                <CustomAutocomplete
+                                                    freeSolo
+                                                    id={input.id}
+                                                    name={input.id}
+                                                    disableClearable={false}
+                                                    value={invoiceFormDetail[input.key]}
+                                                    onChange={(e, value) => onAutocompleteChange(e, value)}
+                                                    onInputChange={(e, value, reason) => onAutocompleteChange(e, value, reason)}
+                                                    options={HSNLIst || []}
+                                                    textFieldLabel={input.placeholder}
+                                                    onBlur={onBlur}
+                                                    error={!invoiceFormValidation[input.key]}
+                                                    renderOption={(props, option) => {
+                                                        const {key, ...rest} = props;
+                                                        return (
+                                                        <li {...rest}>
+                                                            <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                                                                <span>{`${option.label} - ${option.desc}`}</span>
+                                                                {/* <ClearIcon
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // ⛔ prevent option selection
+                                                                        deleteHSN(option)
+                                                                    }}
+                                                                /> */}
+                                                            </Box>
+                                                        </li>
+                                                    )}}
+                                                />
+                                            </>
                                 }
                                 {
                                     input.type === "textField" &&
@@ -550,9 +569,9 @@ const GoodsDescription = ({
                                             fullWidth
                                         />
                                         {
-                                            input.span &&
-                                            <Typography variant="subtitle2" mt={1} ml={1} display="flex" onClick={toggleModal}>
-                                                Select PO
+                                            input?.span?.show &&
+                                            <Typography variant="caption" fontWeight={500}  ml={1} display="flex" onClick={toggleModal}>
+                                                {input?.span?.text}
                                             </Typography>
                                         }
                                     </>
