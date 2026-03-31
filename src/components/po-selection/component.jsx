@@ -54,6 +54,7 @@ const PoSelection = ({
     const [selectedItems, setSelectedItems] = useState({});
     const [filters, setFilters] = useState({
         company,
+        poStatus: "PENDING",
         ...(orderType && {
                 poType: orderType.toUpperCase()
         }),

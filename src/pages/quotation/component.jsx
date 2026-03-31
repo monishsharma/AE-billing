@@ -9,6 +9,8 @@ import { getColumns } from './selector';
 import { toast, Bounce } from "react-toastify";
 import Swal from 'sweetalert2';
 import { getNextInvoiceNo } from '../../helpers/get-invoice-no';
+import SelectVendor from '../../components/select-vendor';
+import { COMPANY_TYPE } from '../../constants/app-constant';
 
 const Quotation = ({
     getConfigConnect,
@@ -22,6 +24,9 @@ const Quotation = ({
     const { company } = useParams();
     const [quotationList, setQuotationList] = useState([])
     const [isLoading, setIsLoading] = useState(true);
+    const [filters, setFilters] = useState({
+        company
+    });
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
         pageSize: 20,
@@ -40,10 +45,10 @@ const Quotation = ({
                 ...rest,
         }), []);
 
-    const fetchQuotationList = useCallback(() => {
+    React.useEffect(() => {
         setIsLoading(true);
         setQuotationList([])
-        getQuotationConnect({company})
+        getQuotationConnect(filters)
         .then((res) => {
             setQuotationList(res.data);
             setIsLoading(false);
@@ -52,14 +57,13 @@ const Quotation = ({
             console.log(err)
             setIsLoading(false);
         })
-    }, [company, getQuotationConnect])
-
-    React.useEffect(() => {
-        setIsLoading(true);
-        fetchQuotationList();
-    }, [company])
+    }, [filters])
 
     const handleChange = (event, newValue) => {
+        setFilters({
+            ...filters,
+            company: newValue
+        })
         Navigate(`/quotation/${newValue}`);
         // setValue(newValue);
     };
@@ -196,6 +200,19 @@ const Quotation = ({
         });
     }
 
+    const selectVendorCallback = (selectedVendor) => {
+        setFilters(prev => {
+            const updated = { ...prev };
+            if (!selectedVendor) {
+                delete updated.vendorId;
+            } else {
+                updated.vendorId = selectedVendor.id;
+            }
+
+            return updated;
+        })
+    }
+
     const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation, makeQuotationCopy }), [ company, downloadQuotation]);
 
 
@@ -236,6 +253,9 @@ const Quotation = ({
                 <Box
                     sx={{
                         mt: 2,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                     }}
                 >
                     <Button
@@ -255,6 +275,14 @@ const Quotation = ({
                     >
                         New Quotation
                     </Button>
+                    {
+                        company === COMPANY_TYPE.PADMA &&
+                        <SelectVendor
+                            size={"small"}
+                            width={250}
+                            callback={(selectedVendor) => selectVendorCallback(selectedVendor)}
+                        />
+                    }
                 </Box>
             </div>
            <div className="mt-4">

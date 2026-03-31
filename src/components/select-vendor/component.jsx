@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 const SelectVendor = ({
     config,
     size,
+    width = 200,
     callback = () => {}
 }) => {
 
@@ -20,7 +21,7 @@ const SelectVendor = ({
 
     return (
         <Autocomplete
-            sx={{width: 200, flexShrink: 0}}
+            sx={{width, flexShrink: 0}}
             size={size}
             options={vendorOptions}
             getOptionLabel={(option) => option.label || ""}

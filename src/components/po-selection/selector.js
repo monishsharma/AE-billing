@@ -15,6 +15,7 @@
                         ...poItem,
                         poNumber: po.poNumber,
                         dispatchQty: selectedItem.qty,
+                        bdsRate: deductPercent(poItem.rate)
                     };
                 }
             })

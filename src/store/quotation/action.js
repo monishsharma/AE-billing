@@ -38,13 +38,19 @@ const setApiData = ({data}) => ({
     })
   }
 
-  const getQuotation = ({company}) => () => {
+  const getQuotation = (query) => dispatch => {
     return new Promise((resolve, reject) => {
-        QuotationService.getQuotation({company})
+        QuotationService.getQuotation(query)
         .then((res) => {
-            resolve(res.data);
+            if (query.id) {
+                resolve(res.data.data);
+                dispatch(setApiData({data: res.data?.data?.[0] || {}}))
+            } else {
+                resolve(res.data);
+            }
         })
         .catch((err) => {
+            console.log(err);
             reject(err);
             Swal.fire({
                 icon: "error",

@@ -8,8 +8,9 @@ export default (api) => {
         return api.put(`/quotation/update-quotation/${id}`, payload)
     };
 
-    const getQuotation = ({company, id}) => {
-        const url = id ? `quotation/get-quotation-by-id/${id}` : `/quotation/get-quotation/${company}`;
+    const getQuotation = (query) => {
+        const params = new URLSearchParams(query).toString();
+        const url =  `/quotation/get-quotation?${params}`;
         return api.get(url)
     };
 

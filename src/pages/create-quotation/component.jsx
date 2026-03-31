@@ -25,7 +25,7 @@ const CreateQuotation = ({
   getConfigConnect,
   saveQuotationConnect,
   updateQuotationConnect,
-  getQuotationByIdConnect
+  getQuotationConnect
 }) => {
   const {
     [QUOTATION_STEPPER_NAME.QUOTATION_DETAIL]: {
@@ -102,7 +102,8 @@ const CreateQuotation = ({
 
     async function fetchData() {
       setIsLoading(true);
-      await getQuotationByIdConnect({id});
+      const payload = {id}
+      await getQuotationConnect(payload);
       setIsLoading(false);
     }
     if (id) fetchData();
