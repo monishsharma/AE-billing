@@ -54,6 +54,7 @@ const CollapsibleItem = ({
                                     isPoForFrame &&
                                     <TableCell  align='center'>Work Order</TableCell>
                                 }
+                                <TableCell align='center'>Rate</TableCell>
                                 <TableCell align='center'>Total Qty</TableCell>
                                 <TableCell align='center'>Dispatched Qty</TableCell>
                                 <TableCell align='center'>Qty Left</TableCell>
@@ -79,6 +80,14 @@ const CollapsibleItem = ({
                                                 isPoForFrame &&
                                                 <TableCell align='center'>{item.workOrder}</TableCell>
                                             }
+                                            <TableCell align='center'>
+                                                {
+                                                    parseFloat(item.rate || 0).toLocaleString("en-IN", {
+                                                            minimumFractionDigits: 2,
+                                                            maximumFractionDigits: 2,
+                                                    })
+                                                }
+                                            </TableCell>
                                             <TableCell align='center'>{item.qty}</TableCell>
                                             <TableCell align='center'>{item.dispatchedQty}</TableCell>
                                             {/* <TableCell align='center'>{item.pendingQty}</TableCell> */}
