@@ -537,7 +537,7 @@ const Invoice = ({
       };
 
 
-      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, company }), [handleDownload, chekboxhandler, company]);
+      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value: company }), [handleDownload, chekboxhandler, company]);
 
     const renderInvoices = () => (
         <>
