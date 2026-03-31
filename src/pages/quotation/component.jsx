@@ -10,7 +10,8 @@ import { toast, Bounce } from "react-toastify";
 import Swal from 'sweetalert2';
 import { getNextInvoiceNo } from '../../helpers/get-invoice-no';
 import SelectVendor from '../../components/select-vendor';
-import { COMPANY_TYPE } from '../../constants/app-constant';
+import { COMPANY_TYPE, FILTER_OPTION } from '../../constants/app-constant';
+import { ButtonGroup } from '@mui/material';
 
 const Quotation = ({
     getConfigConnect,
@@ -24,6 +25,7 @@ const Quotation = ({
     const { company } = useParams();
     const [quotationList, setQuotationList] = useState([])
     const [isLoading, setIsLoading] = useState(true);
+    const [poType, setPoType] = useState(FILTER_OPTION[0])
     const [filters, setFilters] = useState({
         company
     });
@@ -71,6 +73,21 @@ const Quotation = ({
     const onClick = () => {
         resetReducerConnect();
         Navigate("/new/quotation");
+    };
+
+    const onPoTypeFilterClick = (selectedFilter) => {
+        setPoType(selectedFilter);
+        setFilters(prev => {
+            const updated = { ...prev };
+
+            if (selectedFilter.id === 1) {
+                delete updated.poType;
+            } else {
+                updated.poType = selectedFilter.label;
+            }
+
+            return updated;
+        });
     };
 
     const handleRowClick = ({row}) => {
@@ -218,31 +235,33 @@ const Quotation = ({
 
     const renderContent = () => {
         return (
-            <DataGrid
-                rows={isLoading ? [] : quotationList}
-                getRowId={(row) => row._id}
+                <Box sx={{ height: 470, width: '100%' }}>
+                    <DataGrid
+                    rows={isLoading ? [] : quotationList}
+                    getRowId={(row) => row._id}
 
-                columns={columns}
-                disableColumnMenu={true}
-                onRowClick={handleRowClick}
-                loading={isLoading}
-                disableRowSelectionOnClick
-                disableColumnResize
-                sx={{
-                    '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
-                    outline: 'none !important',
-                    },
-                    cursor: 'pointer',
-                }}
-                initialState={
-                    {
-                        pagination: {
-                            paginationModel,
+                    columns={columns}
+                    disableColumnMenu={true}
+                    onRowClick={handleRowClick}
+                    loading={isLoading}
+                    disableRowSelectionOnClick
+                    disableColumnResize
+                    sx={{
+                        '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
+                        outline: 'none !important',
                         },
+                        cursor: 'pointer',
+                    }}
+                    initialState={
+                        {
+                            pagination: {
+                                paginationModel,
+                            },
+                        }
                     }
-                }
-                // showToolbar
-            />
+                    // showToolbar
+                />
+            </Box>
         )
     }
 
@@ -275,6 +294,26 @@ const Quotation = ({
                     >
                         New Quotation
                     </Button>
+                    <Box mt={2} mb={2} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+                    <Box>
+                        {
+                            company === COMPANY_TYPE.ASHOK &&
+                            <ButtonGroup variant="outlined" aria-label="Basic button group" >
+                                {
+                                    FILTER_OPTION.map((option) => (
+                                        <Button
+                                            className={poType.id === option.id ? "customBtn" : "outlinedCustomBtn"}
+                                            key={option.id}
+                                            onClick={() => onPoTypeFilterClick(option)}
+                                        >
+                                            {option.label}
+                                        </Button>
+                                    ))
+                                }
+                            </ButtonGroup>
+                        }
+                    </Box>
+                </Box>
                     {
                         company === COMPANY_TYPE.PADMA &&
                         <SelectVendor
@@ -285,7 +324,7 @@ const Quotation = ({
                     }
                 </Box>
             </div>
-           <div className="mt-4">
+           <div className="mt-2">
              <CompanyTabs
                 value={company}
                 onChange={handleChange}

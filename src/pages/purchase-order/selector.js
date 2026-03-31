@@ -1,26 +1,3 @@
-export const PO_TYPES = ["FRAME", "ROLLER", "BAKELITE"]
-export const FILTER_OPTION = [
-    {
-        label: "ALL",
-        id: 1
-    },
-    {
-        label: "FRAME",
-        id: 2
-    },
-    {
-        label: "ROLLER",
-        id: 3
-    },
-    {
-        label: "BAKELITE",
-        id: 4
-    },
-    {
-        label: "OTHERS",
-        id: 5
-    }
-];
 
 
 

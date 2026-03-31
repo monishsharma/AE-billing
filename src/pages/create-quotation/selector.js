@@ -60,6 +60,19 @@ export const INPUTS = [
             },
         },
     },
+    {
+        id: QUOTATION_FIELDS.QUOTATION_TYPE,
+        name: QUOTATION_FIELDS.QUOTATION_TYPE,
+        placeholder: "Quotation Type",
+        type: "textField",
+        key: QUOTATION_FIELDS.QUOTATION_TYPE,
+        stepName: QUOTATION_STEPPER_NAME.QUOTATION_DETAIL,
+        component: TextField,
+        extraProps: {
+            select: true,
+        },
+        optionsFrom: "quotationTypeList"
+    },
 
 ];
 

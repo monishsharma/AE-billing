@@ -4,7 +4,7 @@ import Grid  from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
-import { COMPANY_TYPE, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from '../../constants/app-constant';
+import { COMPANY_TYPE, PO_TYPES, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from '../../constants/app-constant';
 import { getCustomerDetail } from '../../helpers/customer-detail';
 import Typography from '@mui/material/Typography';
 import QuotationItems from './items';
@@ -51,6 +51,10 @@ const CreateQuotation = ({
         value: COMPANY_TYPE[type],
         label: COMPANY_TYPE[type],
     })),
+    quotationTypeList: PO_TYPES.map((type) => ({
+        value: type,
+        label: type,
+    }))
   };
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -60,6 +64,7 @@ const CreateQuotation = ({
     [QUOTATION_FIELDS.QUOTATION_NO]: true,
     [QUOTATION_FIELDS.QUOTATION_COMPANY]: true,
     [QUOTATION_FIELDS.QUOTATION_DATE]: true,
+    [QUOTATION_FIELDS.QUOTATION_TYPE]: true,
     customer: true,
 
   });
@@ -214,7 +219,7 @@ const CreateQuotation = ({
       e?.preventDefault();
       e?.stopPropagation();
 
-    const {isValid, updatedValidation} = performValidation({...quotationDetail, customer:buyerDetail.customer});
+    const {isValid, updatedValidation} = performValidation({...quotationDetail, customer:buyerDetail.customer, quotationType: quotationDetail?.quotationType });
     setQuotationFormValidation(updatedValidation);
     if (validateAllItems(items) && isValid) {
       setIsLoading(true)
@@ -278,7 +283,7 @@ const CreateQuotation = ({
             const Component = input.component;
             const options = input.extraProps?.options || optionsMap[input.optionsFrom];
             return (
-              <Grid item size={{xs:12, md: 3}} key={input.id}>
+              <Grid item size={{xs:12, md: 2}} key={input.id}>
                 <div className="">
                   <Component
                     fullWidth
@@ -356,8 +361,9 @@ const CreateQuotation = ({
         </Box>
       <Box
         sx={{
-          height: "35%",
           display: "flex",
+          mt: 4,
+          mb: 4,
           flexDirection: "column",
         }}
       >
@@ -374,6 +380,7 @@ const CreateQuotation = ({
           <Button
             variant="contained"
             sx={{ ml: 2 }}
+            onClick={() => navigate(-1)}
             className="outlinedCustomBtn"
           >
             Cancel

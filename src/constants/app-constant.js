@@ -57,6 +57,7 @@ export const QUOTATION_FIELDS ={
     QUOTATION_DATE: "quotationDate",
     QUOTATION_COMPANY: "quotationCompany",
     QUOTATION_CUSTOMER: "customer",
+    QUOTATION_TYPE: "quotationType",
 };
 
 export const PURCHASE_ORDER_FIELDS = {
@@ -97,4 +98,28 @@ export const DEFAULT_TERMS_AND_CONDITION = `
         color: "#4caf50"
     },
 
+];
+
+export const PO_TYPES = ["FRAME", "ROLLER", "BAKELITE", "OTHERS"];
+export const FILTER_OPTION = [
+    {
+        label: "ALL",
+        id: 1
+    },
+    {
+        label: "FRAME",
+        id: 2
+    },
+    {
+        label: "ROLLER",
+        id: 3
+    },
+    {
+        label: "BAKELITE",
+        id: 4
+    },
+    {
+        label: "OTHERS",
+        id: 5
+    }
 ];
