@@ -71,7 +71,15 @@ const GoodsDescription = ({
 
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
     const selectedVendor = list.filter(item => item.id === customer || item.label === customerName) || {};
-    const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
+    const OPTIONS = (selectedVendor?.[0]?.supplyRate || [])
+    .filter(item => item.code?.toLowerCase() === orderType.toLowerCase())
+    .sort((a, b) => {
+        // Only sort if ROLLER
+        if (orderType.toLowerCase() === "roller") {
+        return (a.size || 0) - (b.size || 0);
+        }
+        return 0;
+    });
 
     const invoiceFormDetail = {
         po: poDisplay || po || "",
@@ -181,26 +189,18 @@ const GoodsDescription = ({
     const toggleModal = () => setShowModal(!showModal);
 
     const onFieldChange = (event) => {
-
         const { value = "", name = "" } = event.target;
-
-        let payload = { [name]: value.toUpperCase() };
-
-        if (name === "po") {
-
-        payload = normalizePOInput(value);
-        }
+        const payload = name === "po" ? normalizePOInput(value) : { [name]: value.toUpperCase() };
 
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
             data: payload
         });
 
-        setInvoiceFormValidation(prev => ({
+        setInvoiceFormValidation((prev) => ({
             ...prev,
-            [name]: !!value
+            [name]: !!value,
         }));
-
     };
 
     const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
@@ -374,22 +374,26 @@ const GoodsDescription = ({
         const { target: { id, value: inputValue } } = event;
         const finalValue = inputValue ? inputValue : value || "";
 
-
         // Split the value properly to handle long descriptions
         const parts = finalValue.split("-");
         let description = "";
         if (parts.length > 2) {
-            // Join all parts after the second one to get the full description
+            if (parts[4]) {
+                description = parts.slice(2, 4).join("-").trim();
+            } else {
+                // Join all parts after the second one to get the full description
             description = parts.slice(2).join("-").trim();
+            }
+
         }
 
         const selectedId = id.split("-")[0];
         const selectedValue = parts.length > 1 ? parts[1] : finalValue;
-
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
             itemType: inputValue ? "manual" : parts[0],
+            ...(parts[4] ? { size: parts[4] } : {size: ""}),
             ...((value) && {
                 description,
             }),
@@ -596,7 +600,7 @@ const GoodsDescription = ({
                                                 label={row.key}
                                                 value={item[row.key]}
                                                 onChange={(e,newValue) => onChangeAutoComplete({e,newValue,idx})}
-                                                options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}`) : []}
+                                                options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}${option.size ? `-${option.size}` : ""}`) : []}
                                                 getOptionLabel={(option) => (option && option.toString().split("-").length > 1 ? option.split("-")[1] : `${(option)}` )}
                                                 renderOption={(props, option) => {
                                                     const {key, ...restProps} = props;

@@ -81,13 +81,30 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
             setIsLoading(true);
             getVendorConnect(id)
             .then((res) => {
+                const priorityTypes = ["LPT", "Pauwels", "Channel"];
                 const selectedVendor = res.vendors[0];
                 const {supplyRate, isProductRateRequired = true,  ...rest} = selectedVendor;
+                const orderedSupplyRate = supplyRate ? supplyRate.sort((a, b) => {
+                    const aIsPriority = priorityTypes.includes(a.type);
+                    const bIsPriority = priorityTypes.includes(b.type);
+
+                    // 1. Priority items at top
+                    if (aIsPriority && !bIsPriority) return -1;
+                    if (!aIsPriority && bIsPriority) return 1;
+
+                    // 2. If both are rollers → sort by size
+                    if (a.code === "ROLLER" && b.code === "ROLLER") {
+                        return (b.size || 0) - (a.size || 0);
+                    }
+
+                    // 3. Keep rest as-is
+                    return 0;
+                }) : [];
                 setNewVendorList({
                     ...rest
                 })
                 setIsProductRateRequired(isProductRateRequired)
-                setRows(supplyRate || [createInitialValue()]);
+                setRows(orderedSupplyRate || [createInitialValue()]);
                 setIsLoading(false);
             })
             .catch(() => {
@@ -226,8 +243,8 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
         let vendorListCopy = [...vendorsList];
         const isInvoiceValid = performValidation();
         const validationResult = isProductRateRequired ?  validateAllRows(rows) : [true];
-        const isItemsValid = validationResult.every(validationObj =>
-            Object.values(validationObj).every(Boolean)
+        const isItemsValid = validationResult.every(item =>
+        item.type && item.rate && item.description
         );
         if (isInvoiceValid && isItemsValid) {
             setIsLoading(true);

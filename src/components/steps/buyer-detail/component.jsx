@@ -50,9 +50,9 @@ const BuyerDetail = ({
         customer: customer || "",
         vendorCode: vendorCode || "",
         materialCode: materialCode || "",
-        ...(selectedCompany === COMPANY_TYPE.ASHOK && {
+        // ...(selectedCompany === COMPANY_TYPE.ASHOK && {
             orderType: orderType || ""
-        }),
+        // }),
     };
 
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
@@ -144,7 +144,7 @@ const BuyerDetail = ({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
                     [name]: value,
-                    materialCode: selectedOption ? selectedOption.vCode : ""
+                    materialCode: selectedOption && selectedCompany === COMPANY_TYPE.ASHOK ? selectedOption.vCode : ""
                 }
             })
         } else {
@@ -162,15 +162,15 @@ const BuyerDetail = ({
         });
     };
 
-    const checkRenderStatus = (type) => {
-        if (selectedCompany === COMPANY_TYPE.PADMA) {
-            if ( type.name === "orderType") {
-                return false;
-            }
-            return true;
-        }
-        return true;
-    }
+    // const checkRenderStatus = (type) => {
+    //     if (selectedCompany === COMPANY_TYPE.PADMA) {
+    //         if ( type.name === "orderType") {
+    //             return false;
+    //         }
+    //         return true;
+    //     }
+    //     return true;
+    // }
 
     return (
         <>
@@ -186,7 +186,7 @@ const BuyerDetail = ({
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
                     return (
-                        checkRenderStatus(input) && <Grid key={index} item size={{xs:12, md: selectedCompany === COMPANY_TYPE.ASHOK ? 3 : 4}}>
+                         <Grid key={index} item size={{xs:12, md: 3}}>
                             {input.type === "select"  ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
