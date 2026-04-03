@@ -4,6 +4,7 @@ import {
     Chip,
     Modal,
     Tab,
+    TextField,
     Typography
 } from '@mui/material';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -52,6 +53,8 @@ const PoSelection = ({
     const [selectedPo, setSelectedPo] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
     const [selectedItems, setSelectedItems] = useState({});
+    const [search, setSearch] = useState("");
+    const [filteredData, setFilteredData] = useState([]);
     const [filters, setFilters] = useState({
         company,
         poStatus: "PENDING",
@@ -64,10 +67,15 @@ const PoSelection = ({
     })
 
     useEffect(() => {
-      if (items.length && data.length) {
-        setSelectedItems(preSelectItems({items, poData: data}))
+    setFilteredData(data);
+    }, [data]);
+
+
+    useEffect(() => {
+      if (items.length && filteredData.length) {
+        setSelectedItems(preSelectItems({items, poData: filteredData}))
       }
-    }, [items.length, data.length])
+    }, [items.length, filteredData.length])
 
 
 
@@ -128,6 +136,38 @@ const PoSelection = ({
         });
     };
 
+    const searchHandler = ({target: {value}}) => {
+        setSearch(value);
+        if (!value) setFilteredData(data);
+        const lower = value.toLowerCase();
+        const filtered = data.map(po => {
+            // match PO number
+            const isPoMatch = po.poNumber?.toLowerCase().includes(lower);
+
+            // match items
+            const matchedItems = po.items?.filter(item =>
+                item.workOrder?.toLowerCase().includes(lower)
+            );
+
+            // if PO matches → keep all items
+            if (isPoMatch) {
+                return po;
+            }
+
+            // if items match → return PO with filtered items
+            if (matchedItems.length > 0) {
+                return {
+                ...po,
+                items: matchedItems
+                };
+            }
+
+            return null;
+        }).filter(Boolean);
+
+        setFilteredData(filtered);
+    }
+
     const onChangeRollerSizeFilter = (selectedSize) => {
         const { target: { value } } = selectedSize;
         let updatedFilters = { ...filters };
@@ -142,7 +182,7 @@ const PoSelection = ({
     }
 
     const getSelectedCountByPo = (poIndex) => {
-        const poNumber = data[poIndex]?.poNumber;
+        const poNumber = filteredData[poIndex]?.poNumber;
 
         return Object.values(selectedItems).filter(
             item => item.poNumber === poNumber
@@ -176,7 +216,6 @@ const PoSelection = ({
         toggleModal();
     };
 
-
     return (
         <Modal open={open} onClose={toggleModal}>
                 <Box sx={style}>
@@ -196,14 +235,23 @@ const PoSelection = ({
                         />
                     </Box>
                     <Box m={2} display={"flex"} gap={2}>
-                        <Box >
-                            <RollerFilter
-                                    onClear={onClear}
-                                    value={filters?.size || ""}
-                                    onChange={onChangeRollerSizeFilter}
-                                />
+                        <TextField
+                            size="small"
+                            value={search}
+                            onChange={searchHandler}
+                            placeholder="Search by PO number or work order"
+                        />
+                        {
+                            orderType ===  "ROLLER" &&
+                            <Box >
+                                <RollerFilter
+                                        onClear={onClear}
+                                        value={filters?.size || ""}
+                                        onChange={onChangeRollerSizeFilter}
+                                    />
 
-                        </Box>
+                            </Box>
+                        }
                     </Box>
 
                     {
@@ -228,7 +276,7 @@ const PoSelection = ({
                                     variant="scrollable"
                                     scrollButtons="auto"
                                 >
-                                    {data.map((item, index) => (
+                                    {filteredData.map((item, index) => (
                                         <Tab
                                             key={index}
                                             value={index}
@@ -263,7 +311,7 @@ const PoSelection = ({
                                 }}
                             >
                                 <PoTable
-                                    data={data}
+                                    data={filteredData}
                                     isCompanyAshok={isCompanyAshok}
                                     selectedPo={selectedPo}
                                     items={items}
