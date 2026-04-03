@@ -393,7 +393,7 @@ const GoodsDescription = ({
         copyOfItems[index] = {
             ...copyOfItems[index],
             itemType: inputValue ? "manual" : parts[0],
-            ...(parts[4] ? { size: parts[4] } : {size: ""}),
+            ...(parts[4] ? { size: parts[4] } : {size: "00"}),
             ...((value) && {
                 description,
             }),
