@@ -12,6 +12,7 @@ import { getNextInvoiceNo } from '../../helpers/get-invoice-no';
 import SelectVendor from '../../components/select-vendor';
 import { COMPANY_TYPE, FILTER_OPTION } from '../../constants/app-constant';
 import { ButtonGroup } from '@mui/material';
+import PoTypeFilter from '../../components/potype-filter';
 
 const Quotation = ({
     getConfigConnect,
@@ -275,6 +276,10 @@ const Quotation = ({
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        flexDirection: {
+                            xs: "column",
+                            sm: "row"
+                        },
                     }}
                 >
                     <Button
@@ -296,22 +301,13 @@ const Quotation = ({
                     </Button>
                     <Box mt={2} mb={2} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
                     <Box>
-                        {
-                            company === COMPANY_TYPE.ASHOK &&
-                            <ButtonGroup variant="outlined" aria-label="Basic button group" >
-                                {
-                                    FILTER_OPTION.map((option) => (
-                                        <Button
-                                            className={poType.id === option.id ? "customBtn" : "outlinedCustomBtn"}
-                                            key={option.id}
-                                            onClick={() => onPoTypeFilterClick(option)}
-                                        >
-                                            {option.label}
-                                        </Button>
-                                    ))
-                                }
-                            </ButtonGroup>
-                        }
+                         {company === COMPANY_TYPE.ASHOK && (
+                            <PoTypeFilter
+                            options={FILTER_OPTION}
+                            selected={poType}
+                            onChange={onPoTypeFilterClick}
+                            />
+                        )}
                     </Box>
                 </Box>
                     {

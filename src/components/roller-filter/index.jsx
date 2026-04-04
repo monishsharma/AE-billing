@@ -21,7 +21,11 @@ const RollerFilter = ({
             <Select
                 sx={{
                     flexShrink: 0,
-                    width: 250,
+                    width: {
+                        xs: "100%",
+                        sm: 250
+                    },
+                    fontSize: '0.875rem'
                 }}
                 size={size}
                 value={value}

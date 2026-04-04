@@ -5,7 +5,6 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import { useNavigate, useParams } from 'react-router-dom';
 import CompanyTabs from '../../components/company-tabs';
 import SelectVendor from '../../components/select-vendor';
-import { getPOProgress, TABLE_HEAD } from './selector';
 import StatusFilter from '../../components/status-filter';
 import { COMPANY_TYPE, FILTER_OPTION, STATUS_FILTER } from '../../constants/app-constant';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -16,6 +15,8 @@ import CollapsibleItem from './collpasible-item';
 import TableSkeleton from './table-skeleton';
 import Swal from 'sweetalert2';
 import RollerFilter from '../../components/roller-filter';
+import { getPOProgress, TABLE_COLUMNS } from './selector';
+import PoTypeFilter from '../../components/potype-filter';
 
 
 const PurchaseOrder = ({
@@ -34,8 +35,7 @@ const PurchaseOrder = ({
     const [isLoading, setIsLoading] = useState(false)
 
     const [filters, setFilters] = useState({
-        company,
-        poStatus: STATUS_FILTER[1].value
+        company
     });
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
@@ -163,104 +163,48 @@ const PurchaseOrder = ({
                     <Table aria-label="collapsible table" >
                         <TableHead>
                             <TableRow>
-                                {/* <TableCell width={1}></TableCell> */}
-                                {
-                                    TABLE_HEAD.map((head, index) => (
-                                        <TableCell key={index}><strong>{head.value}</strong></TableCell>
-                                    ))
-                                }
-
+                                {TABLE_COLUMNS.map((col, i) => (
+                                <TableCell key={i}>
+                                    <strong>{col.label}</strong>
+                                </TableCell>
+                                ))}
                             </TableRow>
-                        </TableHead>
+                            </TableHead>
                         <TableBody>
-                            {
-                                isLoading ? <TableSkeleton /> : data.map((data, idx) => {
-                                    const isPoForFrame = data.poType === "FRAME";
-                                    const isOpen = openRow === data._id;
-                                    const isPending = data?.poStatus === "PENDING";
-                                    const index = vendorsList.findIndex(vendor => vendor.id === data.vendorId);
-                                    return (
-                                        <>
-                                            <TableRow key={idx}>
-                                                <TableCell width={10}>
-                                                    <IconButton
-                                                        aria-label="expand row"
-                                                        size="small"
-                                                        onClick={() => handleToggle(data._id)}
-                                                    >
-                                                        {isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                                                    </IconButton>
-                                                </TableCell>
-                                                <TableCell>{idx + 1}</TableCell>
-                                                <TableCell>{data.poNumber}</TableCell>
-                                                <TableCell>
-                                                    {
-                                                        company === "ASHOK" ?
-                                                        filteredVendorList[0]?.label
-                                                        :
-                                                        vendorsList[index]?.label
-                                                    }
-                                                </TableCell>
-                                                {/* <TableCell>{moment(data.poDate, "DD-MM-YYYY").format("ll")}</TableCell> */}
-                                                <TableCell>
-                                                    <div className="status-cell">
-                                                        <Chip
-                                                            label={isPending ? "Pending" : "Completed"}
-                                                            size="small"
-                                                            sx={{
-                                                                border: `1px solid ${isPending ? "#ED6C02" : "#4caf50"}`,
-                                                                background: isPending ? "#ED6C02" : "#4caf50",
-                                                                color: "white"
-                                                            }}
-                                                            className="status-chip"
-                                                        />
-                                                    </div>
-                                                </TableCell>
-                                                {!isPoForFrame && <TableCell width={220}>
-                                                    {(() => {
-                                                        const { percent, isComplete, totalQty, totalDispatched } = getPOProgress(data);
+                            {data.map((row, idx) => {
+                                const helpers = {
+                                    openRow,
+                                    handleToggle,
+                                    vendorsList,
+                                    filteredVendorList,
+                                    company,
+                                    getPOProgress
+                                };
 
-                                                        return (
-                                                        <Box>
-                                                            <LinearProgress
-                                                            variant="determinate"
-                                                            value={percent}
-                                                            sx={{
-                                                                height: 6,
-                                                                borderRadius: 5,
-                                                                backgroundColor: "#eee",
-                                                                "& .MuiLinearProgress-bar": {
-                                                                backgroundColor: isComplete ? "#4caf50" : "#ED6C02",
-                                                                },
-                                                            }}
-                                                            />
+                                return (
+                                <React.Fragment key={row._id}>
+                                    <TableRow>
+                                    {TABLE_COLUMNS.map((col, i) => {
+                                        if (col.hide && col.hide(row)) return null;
 
-                                                            <Box display="flex" justifyContent="space-between" mt={0.5}>
-                                                            <Typography variant="caption">
-                                                                {totalDispatched} / {totalQty}
-                                                            </Typography>
+                                        return (
+                                        <TableCell key={i} sx={col.sx}>
+                                            {col.render(row, idx, helpers)}
+                                        </TableCell>
+                                        );
+                                    })}
+                                    </TableRow>
 
-                                                            <Typography variant="caption">
-                                                                {Math.round(percent)}%
-                                                            </Typography>
-                                                            </Box>
-                                                        </Box>
-                                                        );
-                                                    })()}
-                                                </TableCell>}
-                                            </TableRow>
-                                            <CollapsibleItem
-                                                data={data}
-                                                isOpen={isOpen}
-                                                detailRef={detailRef}
-                                                deletePoHandler={(id) => deletePo(id)}
-                                            />
-                                        </>
-
-                                    )
-                                })
-                            }
-                        </TableBody>
+                                    <CollapsibleItem
+                                    data={row}
+                                    isOpen={openRow === row._id}
+                                    detailRef={detailRef}
+                                    deletePoHandler={deletePo}
+                                    />
+                                </React.Fragment>
+                                );
+                            })}
+                            </TableBody>
                     </Table>
                 </TableContainer>
             </>
@@ -271,27 +215,41 @@ const PurchaseOrder = ({
         <div>
             <div className="mt-2">
                 <h2 className="fw-bold">Purchase Order</h2>
-                <Box mt={2} mb={2} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-                    <Box>
-                        {
-                            company === COMPANY_TYPE.ASHOK &&
-                            <ButtonGroup variant="outlined" aria-label="Basic button group" >
-                                {
-                                    FILTER_OPTION.map((option) => (
-                                        <Button
-                                            className={poType.id === option.id ? "customBtn" : "outlinedCustomBtn"}
-                                            key={option.id}
-                                            onClick={() => onPoTypeFilterClick(option)}
-                                        >
-                                            {option.label}
-                                        </Button>
-                                    ))
-                                }
-                            </ButtonGroup>
-                        }
-                    </Box>
+                <Box sx={{
+                    mt: 2,
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: {
+                        xs: "column",
+                        sm: "row"
+                    },
+                    gap: 2
+                }}>
+                <Box width="100%">
+                    {company === COMPANY_TYPE.ASHOK && (
+                        <PoTypeFilter
+                        options={FILTER_OPTION}
+                        selected={poType}
+                        onChange={onPoTypeFilterClick}
+                        />
+                    )}
+                </Box>
 
-                    <Box display={"flex"} gap={2} alignContent={"flex-end"}>
+                    <Box sx={{
+                            display: "flex",
+                            gap: 2,
+                            flexDirection:{
+                                xs: "column",
+                                sm: "row"
+                            },
+                            width: {
+                                xs: "100%",
+                                sm: "auto"
+                            }
+                        }}
+                    >
                         {
                             ((company === COMPANY_TYPE.ASHOK && poType.id === FILTER_OPTION[2].id)
                             ||
@@ -313,7 +271,7 @@ const PurchaseOrder = ({
 
                         <StatusFilter
                             size={"small"}
-                            defaultStatus={STATUS_FILTER[1]}
+                            defaultStatus={STATUS_FILTER[0]}
                             options={STATUS_FILTER}
                             onchange={onChangeStatusFilter}
                         />

@@ -21,7 +21,7 @@ const SelectVendor = ({
 
     return (
         <Autocomplete
-            sx={{width, flexShrink: 0}}
+            sx={{width: {xs: "100%", sm: width}, flexShrink: 0}}
             size={size}
             options={vendorOptions}
             getOptionLabel={(option) => option.label || ""}
