@@ -242,7 +242,7 @@ const PoSelection = ({
                             placeholder="Search by PO number or work order"
                         />
                         {
-                            orderType ===  "ROLLER" &&
+                            orderType ===  "Roller" &&
                             <Box >
                                 <RollerFilter
                                         onClear={onClear}
