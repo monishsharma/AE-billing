@@ -182,26 +182,29 @@ const PurchaseOrder = ({
                                 };
 
                                 return (
-                                <React.Fragment key={row._id}>
-                                    <TableRow>
-                                    {TABLE_COLUMNS.map((col, i) => {
-                                        if (col.hide && col.hide(row)) return null;
+                                    isLoading ?
+                                    <TableSkeleton />
+                                    :
+                                    <React.Fragment key={row._id}>
+                                        <TableRow>
+                                        {
+                                            TABLE_COLUMNS.map((col, i) => {
+                                                if (col.hide && col.hide(row)) return null;
+                                                return (
+                                                <TableCell key={i} sx={col.sx}>
+                                                    {col.render(row, idx, helpers)}
+                                                </TableCell>
+                                                );
+                                        }   )}
+                                        </TableRow>
 
-                                        return (
-                                        <TableCell key={i} sx={col.sx}>
-                                            {col.render(row, idx, helpers)}
-                                        </TableCell>
-                                        );
-                                    })}
-                                    </TableRow>
-
-                                    <CollapsibleItem
-                                    data={row}
-                                    isOpen={openRow === row._id}
-                                    detailRef={detailRef}
-                                    deletePoHandler={deletePo}
-                                    />
-                                </React.Fragment>
+                                        <CollapsibleItem
+                                            data={row}
+                                            isOpen={openRow === row._id}
+                                            detailRef={detailRef}
+                                            deletePoHandler={deletePo}
+                                            />
+                                    </React.Fragment>
                                 );
                             })}
                             </TableBody>

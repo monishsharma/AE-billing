@@ -8,6 +8,7 @@ const StatusFilter = ({
     size,
     defaultStatus,
     options,
+    width = 200,
     onchange = () => {}
 }) => {
 
@@ -16,7 +17,10 @@ const StatusFilter = ({
         <Select
             sx={{
                 flexShrink: 0,
-                width: 200,
+                width: {
+                    xs: "100%",
+                    sm: width
+                },
             }}
             size={size}
             defaultValue={defaultStatus.value}
