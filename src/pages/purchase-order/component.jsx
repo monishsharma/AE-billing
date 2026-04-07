@@ -23,6 +23,7 @@ const PurchaseOrder = ({
     config,
     purchaseOrder,
     deletePoConnect,
+    getInvoiceListConnect,
     getPoListConnect
 }) => {
 
@@ -203,6 +204,7 @@ const PurchaseOrder = ({
                                             isOpen={openRow === row._id}
                                             detailRef={detailRef}
                                             deletePoHandler={deletePo}
+                                            getInvoiceListConnect={getInvoiceListConnect}
                                             />
                                     </React.Fragment>
                                 );

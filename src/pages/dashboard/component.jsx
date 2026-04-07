@@ -37,14 +37,22 @@ import AccessDenied from "../../components/access-denied";
 import PaymentConfirmationModal from "../../components/payment-confirmation-modal";
 import { useNavigate, useParams } from "react-router-dom";
 import CompanyTabs from "../../components/company-tabs";
+import FYSelect from "../../components/FY-Select";
 
 const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVConnect, getUnpaidInvoicesConnect, updateInvoiceConnect }) => {
 
-      const Navigate = useNavigate();
+  const Navigate = useNavigate();
+  const getCurrentFY = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0–11
+    return month >= 3 ? year : year - 1; // April = 3
+  };
   const [reportType, setReportType] = useState(DASHBOARD_TAB_TYPE.MONTHLY);
   const [isLoading, setIsLoading] = useState(true);
   const [dateValue, setDateValue] = useState(new Date());
   const [financialYear, setFinancialYear] = useState("");
+  const [value, setValue] = useState(getCurrentFY()); // ✅ default selected
   const [runEffect, setRunEffect] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -197,6 +205,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
     setIsLoading(true);
     getReportConnect({
       company,
+      type: reportType,
       month: dateValue.getMonth() + 1,
       year: dateValue.getFullYear(),
     })
@@ -204,12 +213,13 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setReportStat(res);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err)
         setIsLoading(false);
         setReportStat({});
       });
 
-  }, [company, dateValue]);
+  }, [company, dateValue, reportType]);
 
 
   useEffect(() => {
@@ -217,7 +227,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
     getUnpaidInvoicesConnect({
       company,
       month: dateValue.getMonth() + 1,
-      year: dateValue.getFullYear(),
+      year:value,
     })
       .then((res) => {
         setUnpaidInvoices(res);
@@ -228,7 +238,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         setUnpaidInvoicesLoading(false);
       });
 
-  }, [company,dateValue, runEffect]);
+  }, [company,dateValue, runEffect,reportType ,value]);
 
   const handleChange = (event, newValue) => {
     Navigate(`/dashboard/${newValue}`);
@@ -537,6 +547,23 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         }
     };
 
+    const onFYChange = (fy) => {
+        setIsLoading(true);
+        getReportConnect({
+            company,
+            type: reportType,
+            year: fy,
+            month: 4, // default to April for FY
+        }).then((res) => {
+            setReportStat(res);
+             setIsLoading(false);
+        }).catch((err) => {
+            console.log(err)
+             setReportStat({});
+             setIsLoading(false);
+        })
+    }
+
    if (!isAdmin) {
     return <AccessDenied />
   }
@@ -586,10 +613,10 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
               </Button>
               <Button
              fullWidth
-                className={reportType === DASHBOARD_TAB_TYPE.YEARLY ? "customBtn" : "outlinedCustomBtn"}
-                onClick={() => setReportType(DASHBOARD_TAB_TYPE.YEARLY)}
+                className={reportType === DASHBOARD_TAB_TYPE.FINANCIAL_YEAR ? "customBtn" : "outlinedCustomBtn"}
+                onClick={() => setReportType(DASHBOARD_TAB_TYPE.FINANCIAL_YEAR)}
               >
-                Yearly
+                YEARLY
               </Button>
             </ButtonGroup>
             <Box className={`m-1`} sx={{
@@ -598,26 +625,20 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
                     sm: "auto",
                 },
             }}  >
-            <DatePicker
-              selected={dateValue}
               {
-                ...(reportType === DASHBOARD_TAB_TYPE.MONTHLY ?
-                  {
-                    showMonthYearPicker: true,
-                    dateFormat: "MMMM, yyyy",
-                  } :
-                  {
-                    showYearPicker: true,
-                    dateFormat: "yyyy",
-                    minDate:new Date(2025, 0, 1)
-
-                  }
-                )
+                reportType === DASHBOARD_TAB_TYPE.MONTHLY ?
+                  <DatePicker
+                    selected={dateValue}
+                    showMonthYearPicker ={true}
+                    dateFormat={"MMMM, yyyy"}
+                    withPortal
+                    onChange={handleDateChange}
+                    customInput={<ExampleCustomInput className="customBtn" />}
+                  />
+                  :
+                  <FYSelect value={value} setValue={setValue}  onChange={onFYChange} />
               }
-              withPortal
-              onChange={handleDateChange}
-              customInput={<ExampleCustomInput className="customBtn" />}
-            />
+
             </Box>
           </Grid>
         </Grid>

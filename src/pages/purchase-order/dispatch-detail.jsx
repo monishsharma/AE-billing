@@ -5,7 +5,8 @@ import React from 'react'
 import { calculateDispatchedItemQty } from './selector';
 
 const DispatchDetail = ({
-    data
+    data,
+    getInvoiceListConnect
 }) => {
 
 
@@ -31,10 +32,16 @@ const DispatchDetail = ({
                                     <TableCell align='center'>{itemIndex + 1}</TableCell>
                                     <TableCell>
                                         <Link
-                                            href={`/edit/invoice/${item.invoiceId}`}
+                                            // href={`/edit/invoice/${item.invoiceId}`}
                                             target="_blank"
                                             rel="noopener"
                                             underline="hover"
+                                            sx={{ cursor: "pointer" }}
+                                            onClick={async() => {
+                                                await getInvoiceListConnect({id: item.invoiceId});
+                                                window.open(`/edit/invoice/${item.invoiceId}`, "_blank");
+                                                // resetReducerConnect()
+                                            }}
                                         >
                                             {item.invoiceNo}
                                         </Link>

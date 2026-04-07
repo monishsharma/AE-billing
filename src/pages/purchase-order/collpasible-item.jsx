@@ -7,7 +7,8 @@ const CollapsibleItem = ({
     isOpen,
     data,
     detailRef,
-    deletePoHandler
+    deletePoHandler,
+    getInvoiceListConnect
 }) => {
 
     const isPoForFrame = data.poType === "FRAME";
@@ -111,7 +112,7 @@ const CollapsibleItem = ({
                         </TableBody>
                     </Table>
                     {
-                        !!(data.dispatchedInvoices.length) && <DispatchDetail data={data} />
+                        !!(data.dispatchedInvoices.length) && <DispatchDetail getInvoiceListConnect={getInvoiceListConnect} data={data} />
                     }
                 </Box>
             </Collapse>

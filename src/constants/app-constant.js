@@ -5,7 +5,7 @@ export const COMPANY_TYPE = {
 
 export const DASHBOARD_TAB_TYPE = {
     MONTHLY: "MONTHLY",
-    YEARLY: "YEARLY",
+    FINANCIAL_YEAR: "YEARLY",
 }
 
 export const VENDOR_NAME = {
