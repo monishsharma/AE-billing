@@ -15,6 +15,7 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import { Navigate } from "react-router-dom";
 import PurchaseOrder from "../pages/purchase-order";
+import HsnCode from "../pages/hsn-code";
 
 
 
@@ -107,6 +108,11 @@ const routes = [
           {
             path: "payment",
             element: <Payment />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings/config",
+            element: <HsnCode />,
             errorElement: <ErrorPage />,
           }
         ],

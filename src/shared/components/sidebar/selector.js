@@ -77,8 +77,8 @@ export const PAGES = [
     icon: SettingsIcon,
     children: [
       {
-        title: "HSN Codes",
-        path: "/settings/hsn-codes",
+        title: "Config",
+        path: "/settings/config",
       },
     ],
   },

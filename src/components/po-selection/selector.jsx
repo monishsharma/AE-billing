@@ -78,7 +78,7 @@ export const columns = ({ isCompanyAshok, isEditMode, getStatus }) => [
     key: "description",
     label: "Description",
     render: ({ poItem }) => poItem.description,
-    sx: { minWidth: 200 }
+    sx: { maxWidth: 450, textAlign: "justify" }
   },
   {
   key: "status",
