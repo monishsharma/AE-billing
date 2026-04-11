@@ -8,7 +8,7 @@ import {
   TextField
 } from '@mui/material';
 import React from 'react';
-import { deductPercent } from './selector';
+import { columns, deductPercent } from './selector';
 
 const PoTable = ({
   data,
@@ -23,9 +23,18 @@ const PoTable = ({
 
   const poItems = data?.[selectedPo]?.items || [];
 
-
-
   const isEditMode = Boolean(invoiceId); // 🔥 key condition
+
+  const getStatus = (availableQty, remainingQty) => {
+    if (remainingQty === availableQty) return "Pending";
+    if (remainingQty === 0) return "Completed";
+    return "Partial";
+  };
+
+  const cols = columns({ isCompanyAshok, isEditMode, getStatus  });
+
+
+
 
   const [invoiceQtyMap, setInvoiceQtyMap] = React.useState({});
 
@@ -52,30 +61,16 @@ const PoTable = ({
     <Table stickyHeader>
       <TableHead>
         <TableRow>
-          <TableCell />
-          <TableCell align='center'>Sno</TableCell>
-          <TableCell>Description</TableCell>
-          <TableCell align='center'>Work Order</TableCell>
-          <TableCell align='center'>Unit</TableCell>
-          <TableCell align='center'>Rate</TableCell>
-
-          {isCompanyAshok && (
-            <TableCell align='center'>Rate (-BDS)</TableCell>
-          )}
-
-          <TableCell align="center">
-            {isEditMode ? "Available" : "Pending"}
-          </TableCell>
-
-          <TableCell align="center">Dispatch</TableCell>
-          <TableCell align="center">Remaining</TableCell>
+          {cols.map((col) => (
+            <TableCell key={col.key} align={col.align || "left"}>
+              {col.label}
+            </TableCell>
+          ))}
         </TableRow>
       </TableHead>
 
       <TableBody>
         {poItems.map((poItem, index) => {
-
-
           const key = poItem.itemId;
           const selected = selectedItems?.[key];
 
@@ -86,101 +81,36 @@ const PoTable = ({
             : poItem.pendingQty;
 
           const dispatchQty = selected?.dispatchQty;
-
           const remainingQty = availableQty - (Number(dispatchQty) || 0);
 
+
+
+          const rowData = {
+            poItem,
+            index,
+            selected,
+            dispatchQty,
+            availableQty,
+            remainingQty,
+            handleQtyChange,
+            handleSelectItem,
+            data,
+            totalQty: poItem.qty,
+            selectedPo
+          };
+
           return (
-            <TableRow key={key}>
-
-              {/* Checkbox */}
-              <TableCell>
-                <Checkbox
-                  checked={!!selected}
-                  disabled={poItem.pendingQty <= 0 && !selected}
-                  onChange={() =>
-                    handleSelectItem({
-                      ...poItem,
-                      poNumber: data[selectedPo].poNumber
-                    })
-                  }
-                />
-              </TableCell>
-
-              {/* Sno */}
-              <TableCell align='center'>
-                {poItem.itemNo || index + 1}
-              </TableCell>
-
-              {/* Description */}
-              <TableCell className='tabelCellElippis' sx={{minWidth: 200}}>
-                {poItem.description}
-              </TableCell>
-
-              {/* Work Order */}
-              <TableCell align='center' sx={{minWidth: 200}}>
-                {poItem.workOrder}
-              </TableCell>
-
-              {/* Unit */}
-              <TableCell align='center'>
-                {poItem.unit}
-              </TableCell>
-
-              {/* Rate */}
-              <TableCell align='center'>
-                {poItem.rate}
-              </TableCell>
-
-              {/* BDS */}
-              {isCompanyAshok && (
-                <TableCell align='center'>
-                  {deductPercent(poItem.rate)}
+            <TableRow key={key}
+            >
+              {cols.map((col) => (
+                <TableCell
+                  key={col.key}
+                  align={col.align || "left"}
+                  sx={col.getSx ? col.getSx(rowData) : col.sx}
+                >
+                  {col.render(rowData)}
                 </TableCell>
-              )}
-
-              {/* 🔥 Available / Pending */}
-              <TableCell align="center">
-                {availableQty}
-              </TableCell>
-
-              {/* Dispatch */}
-              <TableCell align="center">
-                {selected ? (
-                  <TextField
-                    size="small"
-                    type="number"
-                    value={dispatchQty}
-                    sx={{
-                      width: 60
-                    }}
-                    variant="standard"
-                    onChange={(e) =>
-                        handleQtyChange({
-                          key: poItem.itemId,
-                          value: e.target.value || ""
-                        })
-                    }
-                  />
-                ) : (
-                  "-"
-                )}
-              </TableCell>
-
-              {/* Remaining */}
-              <TableCell
-                align="center"
-                sx={{
-                  color:
-                    remainingQty === 0
-                      ? 'green'
-                      : remainingQty < 0
-                      ? 'red'
-                      : 'inherit'
-                }}
-              >
-               {remainingQty}
-              </TableCell>
-
+              ))}
             </TableRow>
           );
         })}

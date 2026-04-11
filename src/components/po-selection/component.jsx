@@ -211,7 +211,7 @@ const PoSelection = ({
     const handleSave = () => {
         const finalItems = Object.values(selectedItems).filter(
             item => item.dispatchQty > 0
-        );
+        ).sort((a, b) => a.itemNo - b.itemNo);
         onSave(finalItems);
         toggleModal();
     };

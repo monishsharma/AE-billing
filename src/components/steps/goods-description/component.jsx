@@ -378,8 +378,8 @@ const GoodsDescription = ({
         const parts = finalValue.split("-");
         let description = "";
         if (parts.length > 2) {
-            if (parts[4]) {
-                description = parts.slice(2, 4).join("-").trim();
+            if (parts[3]) {
+                description = parts.slice(2, 3).join("-").trim();
             } else {
                 // Join all parts after the second one to get the full description
             description = parts.slice(2).join("-").trim();

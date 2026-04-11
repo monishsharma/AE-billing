@@ -55,16 +55,17 @@ const generateSummary = (items, state) => {
 const resettableValues = (state, data, stepName) => {
     const initialState = state[stepName];
     let isDataChanged = false;
-    if (data.company || data.customer) {
+    if (data.company || data.customer || data.orderType) {
         isDataChanged = Object.keys(data).some(key => {
             if (key === "company") {
-            // if (key === "company" || key=== "customer") {
-                return data[key] !== initialState[key]
+                if (key === "company" || key=== "customer") {
+                    return data[key] !== initialState[key]
+                }
             }
         });
-        // isDataChanged = Object.keys(data).some(
-        //     key => data[key] !== initialState[key]
-        // );
+        isDataChanged = Object.keys(data).some(
+            key => data[key] !== initialState[key]
+        );
     }
     if (isDataChanged) {
         return {
