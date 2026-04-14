@@ -55,11 +55,14 @@ const BuyerDetail = ({
         // }),
     };
 
+    const getIntialValdiationStatus = (key) => {
+        return !!invoiceFormDetail[key];
+    }
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
-        customer: true,
-        vendorCode: true,
-        orderType: true,
-        materialCode: true,
+        customer: getIntialValdiationStatus("customer") || true,
+        vendorCode: getIntialValdiationStatus("vendorCode") || true,
+        orderType: getIntialValdiationStatus("orderType") || true,
+        materialCode: getIntialValdiationStatus("materialCode") || true,
     });
 
     React.useEffect(() => {
@@ -83,6 +86,14 @@ const BuyerDetail = ({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
                     ...customerDetail
+                }
+            })
+        }
+        if (selectedCompany === COMPANY_TYPE.PADMA) {
+            saveDataConnect({
+                stepName: STEPPER_NAME.BUYER_DETAIL,
+                data: {
+                    orderType: "Roller",
                 }
             })
         }
@@ -126,12 +137,10 @@ const BuyerDetail = ({
     };
 
 
-    const onFieldChange = (event) => {
-        const { value, name } = event.target;
-        if (name === "customer") {
-            const index = OPTIONS.findIndex(option => option.id === value);
-            const selectedCustomer = OPTIONS[index];
-            const customerDetail = getCustomerDetail({selectedCustomer});
+    const onFieldChange = (event, selectedCustomer = null) => {
+        const { value = "", name = "" } = event?.target || {};
+        if (name === "customer" && selectedCustomer) {
+            const customerDetail = getCustomerDetail({selectedCustomer, selectedCompany });
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
@@ -158,7 +167,11 @@ const BuyerDetail = ({
 
         setInvoiceFormValidation({
             ...invoiceFormValidation,
-            [name]: !!value
+            ...(name === "customer" ? {
+                    customer: selectedCustomer ? true : false
+            } : {
+                [name]: !!value
+            }),
         });
     };
 
@@ -200,12 +213,12 @@ const BuyerDetail = ({
                                         // disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
 
                                     >
-                                        {
+                                        {/* {
                                             input.name === "customer" &&
                                             OPTIONS.map((option) => (
                                                 <MenuItem key={option.id} value={`${option.id}`}>{option.label}</MenuItem>
                                             ))
-                                        }
+                                        } */}
                                         {
                                             input.name === "orderType" &&
                                             input.extraProps.options.map((option, idx) => (
@@ -222,10 +235,19 @@ const BuyerDetail = ({
                             ) : ( input.type === "textField" ) && (
                                 <Component
                                     {...input.extraProps}
+                                    {...(input.name === "customer") && {
+                                        callback: onFieldChange,
+                                        disableClearable: true,
+                                        width: "100%",
+                                        selectedCompany
+
+                                    }}
                                     name={input.id}
                                     label={input.placeholder}
                                     variant='outlined'
                                     onChange={onFieldChange}
+                                    // callback={onFieldChange}
+                                    // disableClearable={true}
                                     value={invoiceFormDetail[input.key]}
                                     disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
                                     error={!invoiceFormValidation[input.key]}

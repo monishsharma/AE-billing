@@ -94,7 +94,7 @@ const PurchaseOrder = ({
         });
     };
 
-    const selectVendorCallback = (selectedVendor) => {
+    const selectVendorCallback = (event, selectedVendor) => {
         setFilters(prev => {
             const updated = { ...prev };
             if (!selectedVendor) {
@@ -270,7 +270,7 @@ const PurchaseOrder = ({
                             company === COMPANY_TYPE.PADMA &&
                             <SelectVendor
                                 size={"small"}
-                                callback={(selectedVendor) => selectVendorCallback(selectedVendor)}
+                                callback={(event,selectedVendor) => selectVendorCallback(event,selectedVendor)}
                             />
                         }
 

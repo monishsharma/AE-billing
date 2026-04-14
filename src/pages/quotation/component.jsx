@@ -218,7 +218,7 @@ const Quotation = ({
         });
     }
 
-    const selectVendorCallback = (selectedVendor) => {
+    const selectVendorCallback = (event, selectedVendor) => {
         setFilters(prev => {
             const updated = { ...prev };
             if (!selectedVendor) {
@@ -315,7 +315,7 @@ const Quotation = ({
                         <SelectVendor
                             size={"small"}
                             width={250}
-                            callback={(selectedVendor) => selectVendorCallback(selectedVendor)}
+                            callback={(event, selectedVendor) => selectVendorCallback(event, selectedVendor)}
                         />
                     }
                 </Box>

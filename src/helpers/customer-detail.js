@@ -1,9 +1,12 @@
+import { COMPANY_TYPE } from "../constants/app-constant";
+
 export const getCustomerDetail = ({
     selectedCustomer,
+    selectedCompany,
     ...rest
 }) => {
     const materialCode = rest.materialCode || selectedCustomer.materialCode || "";
-    const orderType = rest.orderType || selectedCustomer.orderType || "";
+    const orderType = selectedCompany === COMPANY_TYPE.PADMA ? "Roller" : rest.orderType || selectedCustomer.orderType || ""
     const {
         id,
         address,

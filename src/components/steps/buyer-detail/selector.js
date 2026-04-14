@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField';
 import { Select } from '@mui/material';
+import SelectVendor from "../../select-vendor"
 import { COMPANY_TYPE } from "../../../constants/app-constant";
 
 // Define the INPUTS array with each field's configuration
@@ -15,15 +16,11 @@ export const INPUTS = [
         id: "customer",
         name: "customer",
         placeholder: "Customer",
-        type: "select",
+        type: "textField",
         key: "customer",
-        component: Select,
+        component: SelectVendor,
         extraProps: {
             disabledOnEdit: true,
-            options: Object.keys(COMPANY_TYPE).map((type) => ({
-                value: type,
-                label: COMPANY_TYPE[type]
-            }))
         }
     },
     {
