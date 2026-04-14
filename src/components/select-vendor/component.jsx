@@ -48,7 +48,7 @@ const SelectVendor = ({
             isOptionEqualToValue={(option, value) => option.id == value.id}
             onChange={(event, newValue) => {onInputChange(event,newValue)}}
             renderInput={(params) => (
-                <TextField {...params} {...rest}  label="Select Customer" />
+                <TextField {...params}   label="Select Customer" />
             )}
         />
     )
