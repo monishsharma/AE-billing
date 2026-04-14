@@ -10,6 +10,7 @@ const SelectVendor = ({
     value = "",
     selectedCompany = "",
     callback = () => {},
+    allowPreset = false,
     disableClearable = false,
     ...rest
 }) => {
@@ -20,6 +21,13 @@ const SelectVendor = ({
     const filteredVendorList = vendorsList?.filter((vendor) => vendor.type === (company || selectedCompany));
     const vendorOptions = filteredVendorList;
     // const selectedVendor = vendorOptions.find(v => v.id === value) || null;
+
+    React.useEffect(() => {
+        if (allowPreset && vendorOptions.length === 1) {
+            setSelectedVendor(vendorOptions[0])
+            callback({target: {name: rest.name, value: vendorOptions[0].id}}, vendorOptions[0])
+        }
+    }, [allowPreset, vendorOptions.length])
 
     const onInputChange = (event, newValue) => {
         const updatedEvent = {

@@ -239,7 +239,8 @@ const BuyerDetail = ({
                                         callback: onFieldChange,
                                         disableClearable: true,
                                         width: "100%",
-                                        selectedCompany
+                                        selectedCompany,
+                                        allowPreset: true,
 
                                     }}
                                     name={input.id}
