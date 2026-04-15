@@ -72,7 +72,7 @@ const PoSelection = ({
 
 
     useEffect(() => {
-      if (items.length && filteredData.length) {
+      if (items.length && filteredData.length && search === "") {
         setSelectedItems(preSelectItems({items, poData: filteredData}))
       }
     }, [items.length, filteredData.length])
@@ -138,7 +138,10 @@ const PoSelection = ({
 
     const searchHandler = ({target: {value}}) => {
         setSearch(value);
-        if (!value) setFilteredData(data);
+        if (!value) {
+            setFilteredData(data)
+            return;
+        };
         const lower = value.toLowerCase();
         const filtered = data.map(po => {
             // match PO number
@@ -197,7 +200,7 @@ const PoSelection = ({
     const totalDispatchQty = useMemo(
         () =>
             Object.values(selectedItems).reduce(
-                (sum, item) => sum + (item.dispatchQty || 0),
+                (sum, item) => sum + Number(item.dispatchQty || 0),
                 0
             ),
         [selectedItems]
