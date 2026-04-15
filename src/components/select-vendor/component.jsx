@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom';
 
 const SelectVendor = ({
+    id,
     config,
     size,
     width = 200,
@@ -23,11 +24,11 @@ const SelectVendor = ({
     // const selectedVendor = vendorOptions.find(v => v.id === value) || null;
 
     React.useEffect(() => {
-        if (allowPreset && vendorOptions.length === 1) {
+        if (allowPreset && vendorOptions.length === 1 && !id) {
             setSelectedVendor(vendorOptions[0])
             callback({target: {name: rest.name, value: vendorOptions[0].id}}, vendorOptions[0])
         }
-    }, [allowPreset, vendorOptions.length])
+    }, [allowPreset, vendorOptions.length, id])
 
     const onInputChange = (event, newValue) => {
         const updatedEvent = {

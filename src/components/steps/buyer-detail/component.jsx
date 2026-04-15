@@ -235,18 +235,21 @@ const BuyerDetail = ({
                             ) : ( input.type === "textField" ) && (
                                 <Component
                                     {...input.extraProps}
-                                    {...(input.name === "customer") && {
+                                    {...(input.name === "customer") ? {
                                         callback: onFieldChange,
                                         disableClearable: true,
                                         width: "100%",
                                         selectedCompany,
                                         allowPreset: true,
+                                        id
 
+                                    } :{
+                                        onChange: onFieldChange,
                                     }}
                                     name={input.id}
                                     label={input.placeholder}
                                     variant='outlined'
-                                    onChange={onFieldChange}
+                                    // onChange={onFieldChange}
                                     // callback={onFieldChange}
                                     // disableClearable={true}
                                     value={invoiceFormDetail[input.key]}
