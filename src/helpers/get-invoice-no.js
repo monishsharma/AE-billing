@@ -1,11 +1,11 @@
-export const getNextInvoiceNo = (data) => {
+export const getNextInvoiceNo = (data, key="nextInvoiceNo") => {
     if (!data)return "";
-    const {prefix, year, nextInvoiceNo} = data || {};
-    return `${prefix}/${year}-${nextInvoiceNo}`
+    const {prefix, year} = data || {};
+    return `${prefix}/${year}-${data[key] || ""}`
 }
 
 export const getPreviousInvoiceNo = (data) => {
     if (!data)return "";
     const {prefix, year, lastInvoiceNo} = data || {};
-    return `${prefix}/${year}-${lastInvoiceNo}`
+    return `${prefix}/${year}-${lastInvoiceNo || ""}`
 }

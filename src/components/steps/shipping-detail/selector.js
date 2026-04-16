@@ -27,15 +27,12 @@ export const INPUTS = [
 const formatDate = (dateStr) => moment(dateStr, "YYYY-MM-DD").format("DD MMM YYYY");
 
 
-export const getPayloadForASN = ({invoiceDetail, asnNumber = ""}) => {
+export const getPayloadForASN = ({invoiceDetail, asnNumber = "", poNumber}) => {
 
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: {
             invoiceNO,
             invoiceDate
-        },
-        [STEPPER_NAME.GOODS_DESCRIPTION]: {
-            po
         },
         [STEPPER_NAME.SHIPMENT_DETAIL]: {
             vehicleNo,
@@ -49,7 +46,7 @@ export const getPayloadForASN = ({invoiceDetail, asnNumber = ""}) => {
             "ASN": asnNumber ?  asnNumber : "0",
             "INVOICE_NO": invoiceNO,
             "dtINVOICE": formatDate(invoiceDate),
-            "PONumber": po,
+            "PONumber": poNumber,
             "TRANSPORT_NAME": "N/A",
             "DRIVER_NAME": "N/A",
             "DRIVER_CONTNO": "N/a",

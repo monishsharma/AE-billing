@@ -1,0 +1,46 @@
+export const FILTER = [
+  {
+    label: "100MM",
+    value: "100MM",
+  },
+  {
+    label: "125MM",
+    value: "125MM",
+  },
+  {
+    label: "150MM",
+    value: "150MM",
+  },
+  {
+    label: "200MM - PLAIN",
+    value: "200MM-PLAIN",
+  },
+  {
+    label: "200MM - FLANGE",
+    value: "200MM-FLANGE",
+  },
+  {
+    label: "250MM - PLAIN",
+    value: "250MM-PLAIN",
+  },
+  {
+    label: "250MM - FLANGE",
+    value: "250MM-FLANGE",
+  },
+  {
+    label: "270MM",
+    value: "270MM",
+  },
+  {
+    label: "300MM - FLANGE",
+    value: "300MM-FLANGE",
+  },
+  {
+    label: "320MM",
+    value: "320MM",
+  },
+  {
+    label: "380MM",
+    value: "380MM",
+  },
+];

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {getCustomerDetail, INPUTS, orderTypeOptions} from "./selector";
+import {INPUTS, orderTypeOptions} from "./selector";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -7,8 +7,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import StepperButton from '../stepper-button';
-import { COMPANY, COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from "../../../constants/app-constant";
+import { COMPANY_TYPE, STEPPER_NAME } from "../../../constants/app-constant";
 import { useParams } from "react-router-dom";
+import { getCustomerDetail } from "../../../helpers/customer-detail";
 
 
 const BuyerDetail = ({
@@ -49,16 +50,19 @@ const BuyerDetail = ({
         customer: customer || "",
         vendorCode: vendorCode || "",
         materialCode: materialCode || "",
-        ...(selectedCompany === COMPANY_TYPE.ASHOK && {
+        // ...(selectedCompany === COMPANY_TYPE.ASHOK && {
             orderType: orderType || ""
-        }),
+        // }),
     };
 
+    const getIntialValdiationStatus = (key) => {
+        return !!invoiceFormDetail[key];
+    }
     const [invoiceFormValidation, setInvoiceFormValidation] = useState({
-        customer: true,
-        vendorCode: true,
-        orderType: true,
-        materialCode: true,
+        customer: getIntialValdiationStatus("customer") || true,
+        vendorCode: getIntialValdiationStatus("vendorCode") || true,
+        orderType: getIntialValdiationStatus("orderType") || true,
+        materialCode: getIntialValdiationStatus("materialCode") || true,
     });
 
     React.useEffect(() => {
@@ -82,6 +86,14 @@ const BuyerDetail = ({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
                     ...customerDetail
+                }
+            })
+        }
+        if (selectedCompany === COMPANY_TYPE.PADMA) {
+            saveDataConnect({
+                stepName: STEPPER_NAME.BUYER_DETAIL,
+                data: {
+                    orderType: "Roller",
                 }
             })
         }
@@ -125,12 +137,10 @@ const BuyerDetail = ({
     };
 
 
-    const onFieldChange = (event) => {
-        const { value, name } = event.target;
-        if (name === "customer") {
-            const index = OPTIONS.findIndex(option => option.id === value);
-            const selectedCustomer = OPTIONS[index];
-            const customerDetail = getCustomerDetail({selectedCustomer});
+    const onFieldChange = (event, selectedCustomer = null) => {
+        const { value = "", name = "" } = event?.target || {};
+        if (name === "customer" && selectedCustomer) {
+            const customerDetail = getCustomerDetail({selectedCustomer, selectedCompany });
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
@@ -143,7 +153,7 @@ const BuyerDetail = ({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
                     [name]: value,
-                    materialCode: selectedOption ? selectedOption.vCode : ""
+                    materialCode: selectedOption && selectedCompany === COMPANY_TYPE.ASHOK ? selectedOption.vCode : ""
                 }
             })
         } else {
@@ -157,19 +167,23 @@ const BuyerDetail = ({
 
         setInvoiceFormValidation({
             ...invoiceFormValidation,
-            [name]: !!value
+            ...(name === "customer" ? {
+                    customer: selectedCustomer ? true : false
+            } : {
+                [name]: !!value
+            }),
         });
     };
 
-    const checkRenderStatus = (type) => {
-        if (selectedCompany === COMPANY_TYPE.PADMA) {
-            if ( type.name === "orderType") {
-                return false;
-            }
-            return true;
-        }
-        return true;
-    }
+    // const checkRenderStatus = (type) => {
+    //     if (selectedCompany === COMPANY_TYPE.PADMA) {
+    //         if ( type.name === "orderType") {
+    //             return false;
+    //         }
+    //         return true;
+    //     }
+    //     return true;
+    // }
 
     return (
         <>
@@ -185,7 +199,7 @@ const BuyerDetail = ({
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
                     return (
-                        checkRenderStatus(input) && <Grid key={index} item size={{xs:12, md: selectedCompany === COMPANY_TYPE.ASHOK ? 3 : 4}}>
+                         <Grid key={index} item size={{xs:12, md: 3}}>
                             {input.type === "select"  ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
@@ -199,12 +213,12 @@ const BuyerDetail = ({
                                         // disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
 
                                     >
-                                        {
+                                        {/* {
                                             input.name === "customer" &&
                                             OPTIONS.map((option) => (
                                                 <MenuItem key={option.id} value={`${option.id}`}>{option.label}</MenuItem>
                                             ))
-                                        }
+                                        } */}
                                         {
                                             input.name === "orderType" &&
                                             input.extraProps.options.map((option, idx) => (
@@ -221,10 +235,23 @@ const BuyerDetail = ({
                             ) : ( input.type === "textField" ) && (
                                 <Component
                                     {...input.extraProps}
+                                    {...(input.name === "customer") ? {
+                                        callback: onFieldChange,
+                                        disableClearable: true,
+                                        width: "100%",
+                                        selectedCompany,
+                                        allowPreset: true,
+                                        id
+
+                                    } :{
+                                        onChange: onFieldChange,
+                                    }}
                                     name={input.id}
                                     label={input.placeholder}
                                     variant='outlined'
-                                    onChange={onFieldChange}
+                                    // onChange={onFieldChange}
+                                    // callback={onFieldChange}
+                                    // disableClearable={true}
                                     value={invoiceFormDetail[input.key]}
                                     disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
                                     error={!invoiceFormValidation[input.key]}

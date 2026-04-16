@@ -9,9 +9,16 @@ const Dashboard = React.lazy(() => import("../pages/dashboard"));
 const Login = React.lazy(() => import("../components/login"));
 const NotFound = React.lazy(() => import("../components/not-found"));
 const Payment = React.lazy(() => import("../pages/payment"));
+const Quotation = React.lazy(() => import("../pages/quotation"));
+const NewQuotation = React.lazy(() => import("../pages/create-quotation"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import AddVendorsV2 from "../pages/add-vendor-v2";
+import { Navigate } from "react-router-dom";
+import PurchaseOrder from "../pages/purchase-order";
+import HsnCode from "../pages/hsn-code";
+
+
 
 const routes = [
   {
@@ -23,11 +30,25 @@ const routes = [
         children: [
           {
             index: true,
+            element: <Navigate to="/dashboard/ASHOK" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <Navigate to="/dashboard/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "dashboard/:company",
             element: <Dashboard />,
             errorElement: <ErrorPage />,
           },
           {
             path: "invoice",
+            element: <Navigate to="/invoice/ASHOK" replace />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "invoice/:company",
             element: <Invoice />,
             errorElement: <ErrorPage />,
           },
@@ -42,7 +63,35 @@ const routes = [
             errorElement: <ErrorPage />,
           },
           {
-            path: "vendors",
+            path: "quotation",
+            element: <Navigate to="/quotation/ASHOK" replace />,
+          },
+          {
+            path: "quotation/:company",
+            element: <Quotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "new/quotation",
+            element: <NewQuotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "edit/quotation/:id",
+            element: <NewQuotation />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "purchase-order",
+            element: <Navigate to="/purchase-order/ASHOK" replace />,
+          },
+          {
+            path: "purchase-order/:company",
+            element: <PurchaseOrder />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "customers",
             element: <Vendors />,
             errorElement: <ErrorPage />,
           },
@@ -50,16 +99,24 @@ const routes = [
             path: "add/vendor",
             element: <AddVendorsV2 />,
             // element: <AddVendor />,
+            path: "add/customers",
+            // element: <AddVendorsV2 />,
+            // element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
           {
-            path: "edit/vendor/:id",
+            path: "edit/customers/:id",
             element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
           {
             path: "payment",
             element: <Payment />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings/config",
+            element: <HsnCode />,
             errorElement: <ErrorPage />,
           }
         ],

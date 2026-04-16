@@ -5,7 +5,7 @@ export const COMPANY_TYPE = {
 
 export const DASHBOARD_TAB_TYPE = {
     MONTHLY: "MONTHLY",
-    YEARLY: "YEARLY",
+    FINANCIAL_YEAR: "YEARLY",
 }
 
 export const VENDOR_NAME = {
@@ -46,3 +46,80 @@ export const STEPPER_NAME = {
     GENERATE_ASN: "GENERATE_ASN"
 }
 
+export const QUOTATION_STEPPER_NAME = {
+    QUOTATION_DETAIL: "quotationDetail",
+    GOODS_DESCRIPTION: "goodsDescription",
+    BUYER_DETAIL: "buyerDetail",
+}
+
+export const QUOTATION_FIELDS ={
+    QUOTATION_NO: "quotationNo",
+    QUOTATION_DATE: "quotationDate",
+    QUOTATION_COMPANY: "quotationCompany",
+    QUOTATION_CUSTOMER: "customer",
+    QUOTATION_TYPE: "quotationType",
+};
+
+export const PURCHASE_ORDER_FIELDS = {
+    PO_NUMBER: "poNumber",
+    PO_DATE: "poDate",
+    PO_COMPANY: "company",
+    PO_CUSTOMER: "customer",
+    TOTAL_VALUE: "totalValue"
+
+}
+
+export const DEFAULT_TERMS_AND_CONDITION = `
+    <ol>
+      <li>RATES ARE EX-GO DOWN GWALIOR</li>
+      <li>ALL MEASUREMENT AS PER I.S METHOD</li>
+      <li>GST AS PER ACTUAL (18% EXTRA)</li>
+      <li>VALIDITY OF OFFER 10 DAYS</li>
+    </ol>
+  `;
+
+  export const STATUS_FILTER = [
+    {
+        label: "All",
+        value: "ALL",
+        id: 1,
+        color: "#1a237e"
+    },
+    {
+        label: "Pending",
+        value: "PENDING",
+        id: 2,
+        color: "#ED6C02"
+    },
+    {
+        label: "Completed",
+        value: "COMPLETED",
+        id: 3,
+        color: "#4caf50"
+    },
+
+];
+
+export const PO_TYPES = ["FRAME", "ROLLER", "BAKELITE", "OTHERS"];
+export const FILTER_OPTION = [
+    {
+        label: "ALL",
+        id: 1
+    },
+    {
+        label: "FRAME",
+        id: 2
+    },
+    {
+        label: "ROLLER",
+        id: 3
+    },
+    {
+        label: "BAKELITE",
+        id: 4
+    },
+    {
+        label: "OTHERS",
+        id: 5
+    }
+];

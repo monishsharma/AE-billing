@@ -96,6 +96,7 @@ const App = ({ getVendorListConnect }) => {
               justifyContent={"space-between"}
               gap={2}
               marginLeft={"20px"}
+              sx={{cursor: "pointer"}}
             >
               <MenuIcon className="menuIcon" onClick={toggleNavigation} />
             </Box>

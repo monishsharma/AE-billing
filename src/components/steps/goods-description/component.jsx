@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 
-import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE } from './selector';
+import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE, normalizePOInput, formatPoDisplay } from './selector';
 import StepperButton from '../stepper-button';
 import { COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from '../../../constants/app-constant';
 import Items from "../../items";
@@ -24,6 +24,8 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import CustomAutocomplete from "../../../shared/components/autocomplete";
 import { toast, Bounce } from "react-toastify";
 import ClearIcon from '@mui/icons-material/Clear';
+import PoSelection from "../../po-selection";
+import Swal from "sweetalert2";
 
 
 const GoodsDescription = ({
@@ -42,10 +44,9 @@ const GoodsDescription = ({
 
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
-        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "" },
-        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "" },
+        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType },
+        [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "", poDisplay = "" },
     } = invoiceForm;
-
     const {vendorsList = [], hsn: HSNLIst = []} = config;
 
     const { id: invoiceId } = useParams();
@@ -70,10 +71,18 @@ const GoodsDescription = ({
 
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
     const selectedVendor = list.filter(item => item.id === customer || item.label === customerName) || {};
-    const OPTIONS = selectedVendor && selectedVendor[0]?.supplyRate || [];
+    const OPTIONS = (selectedVendor?.[0]?.supplyRate || [])
+    .filter(item => item.code?.toLowerCase() === orderType.toLowerCase())
+    .sort((a, b) => {
+        // Only sort if ROLLER
+        if (orderType.toLowerCase() === "roller") {
+        return (a.size || 0) - (b.size || 0);
+        }
+        return 0;
+    });
 
     const invoiceFormDetail = {
-        po: po || "",
+        po: poDisplay || po || "",
         serial: serial || "",
         HSN: HSN || "",
         type: type || ""
@@ -88,11 +97,15 @@ const GoodsDescription = ({
 
     const [itemsValidation, setItemsValidation] = useState([]);
 
+    const [showModal, setShowModal] = useState(false);
+
     const [isFetchingPO, setIsFetchingPO] = useState(true);
 
     const [totalItems, setTotalItems] = useState([]);
 
     const [localItems, setLocalItems] = useState([]);
+
+    const originalItemsRef = useRef([]);
 
     const [poDetail, setPoDetail] = useState(null);
 
@@ -107,9 +120,20 @@ const GoodsDescription = ({
     }, [items]);
 
     React.useEffect(() => {
-        if (po && po.length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
+        // Capture original items only once (on invoice edit load).
+        if (!invoiceId) return;
+        if (originalItemsRef.current.length > 0) return;
+
+        const hasRealQty = Array.isArray(items) && items.some((it) => Number(it?.qty) > 0);
+        if (hasRealQty) {
+            originalItemsRef.current = items;
+        }
+    }, [invoiceId, items]);
+
+    React.useEffect(() => {
+        if (po && po.length && po[0] && po[0].length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
             setIsFetchingPO(true);
-            getPODetailConnect({ poNumber: po })
+            getPODetailConnect({ poNumber: po[0] })
             .then((res) => {
                 setPoDetail(res.poDetail);
                 setIsFetchingPO(false);
@@ -129,7 +153,9 @@ const GoodsDescription = ({
             if (!isEqual) {
                 saveDataConnect({
                     stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-                    data: { items: localItems },
+                    data: {
+                        items: localItems
+                     },
                 });
                 lastSavedItemsRef.current = localItems;
             }
@@ -160,50 +186,53 @@ const GoodsDescription = ({
 
     }, [invoiceId, po, poDetail, selectedCompany, items.length]);
 
+    const toggleModal = () => setShowModal(!showModal);
+
     const onFieldChange = (event) => {
         const { value = "", name = "" } = event.target;
+        const payload = name === "po" ? normalizePOInput(value) : { [name]: value.toUpperCase() };
+
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-            data: {
-                [name]: value.toUpperCase(),
-            }
-        })
-        setInvoiceFormValidation(prev => ({
+            data: payload
+        });
+
+        setInvoiceFormValidation((prev) => ({
             ...prev,
-            [name]: !!value
+            [name]: !!value,
         }));
     };
 
-const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
-    // Detect if this is from onInputChange (3 args) or onChange (2 args)
-    let value;
+    const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
+        // Detect if this is from onInputChange (3 args) or onChange (2 args)
+        let value;
 
-    // If 3rd argument exists, this is onInputChange
-    if (typeof reasonOrUndefined === 'string') {
-        value = valueOrInput; // it's a string typed in
-    } else {
-        // It's from onChange
-        const newValue = valueOrInput;
-        if (newValue && typeof newValue === 'object' && newValue.label) {
-            value = newValue.label;
+        // If 3rd argument exists, this is onInputChange
+        if (typeof reasonOrUndefined === 'string') {
+            value = valueOrInput; // it's a string typed in
         } else {
-            value = newValue; // may be string if user entered manually
+            // It's from onChange
+            const newValue = valueOrInput;
+            if (newValue && typeof newValue === 'object' && newValue.label) {
+                value = newValue.label;
+            } else {
+                value = newValue; // may be string if user entered manually
+            }
         }
-    }
 
-    // Now safe to use `value`
-    saveDataConnect({
-        stepName: STEPPER_NAME.GOODS_DESCRIPTION,
-        data: {
-            HSN: value,
-        }
-    });
+        // Now safe to use `value`
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                HSN: value,
+            }
+        });
 
-    setInvoiceFormValidation(prev => ({
-        ...prev,
-        HSN: !!value
-    }));
-};
+        setInvoiceFormValidation(prev => ({
+            ...prev,
+            HSN: !!value
+        }));
+    };
 
 
     const onBlur = (event) => {
@@ -227,19 +256,33 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         }
     }
 
-    const deleteHSN = (item) => {
-        deleteHsnCodeConnect({
-            hsnId: item._id
-        })
-        .then(async() => {
-            await getHsnCodeListConnect()
-                showToast({
-                    type: "info",
-                    text: `HSN ${item.label} Deleted`,
-                });
-        })
-        .catch((err) => console.error("Error deleting HSN code:", err))
-    }
+    // const deleteHSN = (item) => {
+    //     Swal.fire({
+    //         title: "Are you sure?",
+    //         text: "Do You  Want to Delete the HSN Code",
+    //         icon: "question",
+    //         showCancelButton: true,
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             deleteHsnCodeConnect({
+    //                 hsnId: item._id
+    //             })
+    //             .then(async() => {
+    //                 await getHsnCodeListConnect();
+    //                     Swal.fire({
+    //                     title: "Successfuly Deleted",
+    //                     icon: "success"
+    //                 })
+    //             })
+    //             .catch(() => {
+    //                 Swal.fire({
+    //                     title: "Something Went Wrong",
+    //                     icon: "error"
+    //                 })
+    //             })
+    //         }
+    //     })
+    // }
 
     React.useEffect(() => {
         setTotalItems(items);
@@ -331,22 +374,26 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         const { target: { id, value: inputValue } } = event;
         const finalValue = inputValue ? inputValue : value || "";
 
-
         // Split the value properly to handle long descriptions
         const parts = finalValue.split("-");
         let description = "";
         if (parts.length > 2) {
-            // Join all parts after the second one to get the full description
+            if (parts[3]) {
+                description = parts.slice(2, 3).join("-").trim();
+            } else {
+                // Join all parts after the second one to get the full description
             description = parts.slice(2).join("-").trim();
+            }
+
         }
 
         const selectedId = id.split("-")[0];
         const selectedValue = parts.length > 1 ? parts[1] : finalValue;
-
         const copyOfItems = [...items];
         copyOfItems[index] = {
             ...copyOfItems[index],
             itemType: inputValue ? "manual" : parts[0],
+            ...(parts[4] ? { size: parts[4] } : {size: "00"}),
             ...((value) && {
                 description,
             }),
@@ -386,8 +433,62 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
         });
     }
 
+    const onSave = (selectedItem) => {
+        const mappedItems = [];
+        const poSet = new Set();
+        const isCompanyAshok = selectedCompany === COMPANY_TYPE.ASHOK;
+        const selectedItemCopy = [...selectedItem];
+        selectedItemCopy.map((item, index) => {
+            const rate = isCompanyAshok ? item.bdsRate : item.rate;
+            poSet.add(item.poNumber);
+            const selectedRate = OPTIONS.filter(option => Number(option.rate) === Number(rate));
+            const resolvedRate = selectedRate?.[0]?.rate ? selectedRate[0].rate :  rate;
+            const resolvedDescription = selectedRate?.[0]?.description ?? item.description ?? "";
+            mappedItems.push({
+                sno: isCompanyAshok ? item.itemNo : index + 1 ,
+                description: resolvedDescription,
+                wo: item.workOrder || "-",
+                qty: item.dispatchQty,
+                rate: resolvedRate,
+                value: Number(resolvedRate) * Number(item.dispatchQty),
+                itemId: item.itemId,
+                poNumber: item.poNumber
+            });
+        });
+        const poArray = Array.from(poSet);
+        const poDisplay = formatPoDisplay(poArray);
+
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                items: mappedItems
+            }
+        });
+        saveDataConnect({
+            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+            data: {
+                po: poArray,
+                poDisplay
+            }
+        });
+    };
+
     return (
         <>
+            {/* //modal */}
+            {showModal && <PoSelection
+                open={showModal}
+                items={items}
+                company={selectedCompany}
+                toggleModal={toggleModal}
+                orderType={orderType}
+                customer={customer}
+                onSave={onSave}
+                invoiceId={invoiceId}
+                preselectedItems={localItems}
+                originalItems={originalItemsRef.current.length ? originalItemsRef.current : localItems}
+                selectedPoNumbers={Array.isArray(po) ? po : (po ? [po] : [])}
+            />}
             <Box
                 component="form"
                 sx={{ '& > :not(style)': { m: 1, width: '100%',height: "100%" } }}
@@ -426,32 +527,36 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                 }
                                 {
                                     input.type === "autocomplete" &&
-                                            <CustomAutocomplete
-                                            freeSolo
-                                            id={input.id}
-                                            name={input.id}
-                                            disableClearable={false}
-                                            value={invoiceFormDetail[input.key]}
-                                            onChange={(e, value) => onAutocompleteChange(e, value)}
-                                            onInputChange={(e, value, reason) => onAutocompleteChange(e, value, reason)}
-                                            options={HSNLIst || []}
-                                            textFieldLabel={input.placeholder}
-                                            onBlur={onBlur}
-                                            error={!invoiceFormValidation[input.key]}
-                                            renderOption={(props, option) => (
-                                                <li {...props}>
-                                                    <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
-                                                        <span>{option.label}</span>
-                                                        <ClearIcon
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // ⛔ prevent option selection
-                                                                deleteHSN(option)
-                                                            }}
-                                                        />
-                                                    </Box>
-                                                </li>
-                                            )}
-                                        />
+                                            <>
+                                                <CustomAutocomplete
+                                                    freeSolo
+                                                    id={input.id}
+                                                    name={input.id}
+                                                    disableClearable={false}
+                                                    value={invoiceFormDetail[input.key]}
+                                                    onChange={(e, value) => onAutocompleteChange(e, value)}
+                                                    onInputChange={(e, value, reason) => onAutocompleteChange(e, value, reason)}
+                                                    options={HSNLIst || []}
+                                                    textFieldLabel={input.placeholder}
+                                                    onBlur={onBlur}
+                                                    error={!invoiceFormValidation[input.key]}
+                                                    renderOption={(props, option) => {
+                                                        const {key, ...rest} = props;
+                                                        return (
+                                                        <li {...rest}>
+                                                            <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                                                                <span>{`${option.label} - ${option.desc || ""}`}</span>
+                                                                {/* <ClearIcon
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // ⛔ prevent option selection
+                                                                        deleteHSN(option)
+                                                                    }}
+                                                                /> */}
+                                                            </Box>
+                                                        </li>
+                                                    )}}
+                                                />
+                                            </>
                                 }
                                 {
                                     input.type === "textField" &&
@@ -467,12 +572,12 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                             helperText={invoiceFormValidation[input.key] ? "" : `${input.placeholder} is required`}
                                             fullWidth
                                         />
-                                        {/* {
-                                            input.span &&
-                                            <a href=""  style={{fontSize: "9px",   color: "blue"}} onClick={(e) => e.preventDefault()}>
-                                                {po}
-                                            </a>
-                                        } */}
+                                        {
+                                            input?.span?.show &&
+                                            <Typography variant="caption" fontWeight={500}  ml={1} display="flex" onClick={toggleModal}>
+                                                {input?.span?.text}
+                                            </Typography>
+                                        }
                                     </>
                                 }
 
@@ -495,7 +600,7 @@ const onAutocompleteChange = (event, valueOrInput, reasonOrUndefined) => {
                                                 label={row.key}
                                                 value={item[row.key]}
                                                 onChange={(e,newValue) => onChangeAutoComplete({e,newValue,idx})}
-                                                options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}`) : []}
+                                                options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}${option.size ? `-${option.size}` : ""}`) : []}
                                                 getOptionLabel={(option) => (option && option.toString().split("-").length > 1 ? option.split("-")[1] : `${(option)}` )}
                                                 renderOption={(props, option) => {
                                                     const {key, ...restProps} = props;

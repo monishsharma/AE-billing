@@ -155,9 +155,9 @@ export const getUnpaidInvoices = ({month, year, company}) => () => {
     })
 }
 
-export const getReport = ({company, month, year}) => () => {
+export const getReport = ({company, month, year, type}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.getReport({company, month, year})
+        BillingService.getReport({company, month, year, type})
         .then((res) => {
             resolve(res.data);
         })

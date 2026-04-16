@@ -8,8 +8,16 @@
   box-sizing: border-box;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
 :root {
-  --blue: #0C0C0C;
+  --blue: #0c0c0c;
   --white: #fff;
   --gray: #f5f5f5;
   --black1: #222;
@@ -22,33 +30,34 @@ body {
   background-color: var(--blue) !important;
 }
 
-ol, ul {
+ol,
+ul {
   list-style: none;
   outline: none;
   padding-left: 0 !important;
 }
 
 /* ===== Scrollbar CSS ===== */
-  /* Firefox */
-  * {
-    scrollbar-width: auto;
-    scrollbar-color: #000000 #ffffff;
-  }
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #000000 #ffffff;
+}
 
-  /* Chrome, Edge, and Safari */
-  *::-webkit-scrollbar {
-    width: 16px;
-  }
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 16px;
+}
 
-  *::-webkit-scrollbar-track {
-    background: #ffffff;
-  }
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
 
-  *::-webkit-scrollbar-thumb {
-    background-color: #000000;
-    border-radius: 10px;
-    border: 3px solid #ffffff;
-  }
+*::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
+}
 
 .scrollableDiv {
   position: relative;
@@ -71,8 +80,8 @@ ol, ul {
 }
 
 .main.active {
-  left: 80px;
-  width: calc(100% - 80px);
+  left: 10px;
+  width: calc(100% - 20px);
 }
 
 .bigmain {
@@ -88,7 +97,7 @@ ol, ul {
 }
 .customBtn {
   outline: none !important;
-  color: white  !important;
+  color: white !important;
   background-color: var(--blue) !important;
   border: 1px solid var(--blue) !important;
   min-width: 150px;
@@ -98,6 +107,15 @@ ol, ul {
   color: var(--blue) !important;
   border: 1px solid var(--blue) !important;
   min-width: 150px;
+}
+
+.hoverBtn {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.MuiDataGrid-row:hover .hoverBtn {
+  opacity: 1;
 }
 
 .react-datepicker__portal .react-datepicker {
@@ -112,7 +130,7 @@ td {
   width: 3.5rem !important;
 }
 @media only screen and (max-width: 1024px) {
- .react-datepicker-wrapper {
+  .react-datepicker-wrapper {
     width: 100%;
   }
 }
@@ -133,3 +151,23 @@ td {
   }
 }
 
+.poRow {
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.poLabel {
+  width: 120px;
+  font-weight: 600;
+}
+
+.poValue {
+  flex: 1;
+}
+
+.tabelCellElippis {
+  max-width: 300px !important;
+  /* white-space: nowrap !important; */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}

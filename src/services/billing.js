@@ -40,6 +40,10 @@ export default (api) => {
         return api.post(`/billing/hsn-codes`, payload)
     };
 
+    const editHSNCode = (id, payload) => {
+        return api.patch(`/billing/hsn-codes/${id}`, payload)
+    };
+
     const deleteHsnCode = ({hsnId}) => {
         return api.delete(`/billing/hsn-codes/${hsnId}`)
     };
@@ -63,8 +67,8 @@ export default (api) => {
         return api.get(`/billing/vendor/${id}`);
     };
 
-    const getReport = ({company, month, year}) => {
-        return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}`);
+    const getReport = ({company, month, year, type}) => {
+        return api.get(`/billing/get/invoice/report/${company}?month=${month}&year=${year}&type=${type}`);
     };
 
     const getUnpaidInvoices = ({ month, year, company}) => {
@@ -84,6 +88,7 @@ export default (api) => {
     };
 
     return {
+        editHSNCode,
         getReport,
         getConfig,
         getVendor,

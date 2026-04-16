@@ -1,3 +1,3 @@
-export const isMobileDevice = () => {
-    return window.innerWidth <= 767;
+export const isMobileDevice = (innerWidth = 767) => {
+    return window.innerWidth <= innerWidth;
 };

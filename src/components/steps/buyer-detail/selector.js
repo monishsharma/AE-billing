@@ -1,5 +1,6 @@
 import TextField from '@mui/material/TextField';
 import { Select } from '@mui/material';
+import SelectVendor from "../../select-vendor"
 import { COMPANY_TYPE } from "../../../constants/app-constant";
 
 // Define the INPUTS array with each field's configuration
@@ -8,22 +9,18 @@ export const orderTypeOptions = [
                 { value: "Roller", label: "Roller", vCode: "280000052" },
                 { value: "Frame", label: "Frame", vCode: "283051012" },
                 { value: "Bakelite", label: "Bakelite", vCode: "320007177" },
-                { value: "Other", label: "Other", vCode: "" },
+                { value: "Others", label: "Others", vCode: "" },
 ]
 export const INPUTS = [
     {
         id: "customer",
         name: "customer",
         placeholder: "Customer",
-        type: "select",
+        type: "textField",
         key: "customer",
-        component: Select,
+        component: SelectVendor,
         extraProps: {
             disabledOnEdit: true,
-            options: Object.keys(COMPANY_TYPE).map((type) => ({
-                value: type,
-                label: COMPANY_TYPE[type]
-            }))
         }
     },
     {
@@ -46,7 +43,6 @@ export const INPUTS = [
         component: Select,
         extraProps: {
             disabledOnEdit: true,
-
             options: [
                 ...orderTypeOptions
             ]
@@ -63,39 +59,3 @@ export const INPUTS = [
     }
 ];
 
-export const getCustomerDetail = ({
-    selectedCustomer,
-    ...rest
-}) => {
-    const materialCode = rest.materialCode || selectedCustomer.materialCode || "";
-    const orderType = rest.orderType || selectedCustomer.orderType || "";
-    const {
-        id,
-        address,
-        isInterState,
-        vendorCode,
-        GSTIN,
-        PAN,
-        name,
-        type,
-        state,
-        city,
-    } = selectedCustomer;
-
-    return {
-            materialCode,
-            orderType,
-            customer: id,
-            customerName: selectedCustomer.label,
-            address,
-            isInterState,
-            vendorCode,
-            GSTIN,
-            PAN,
-            name,
-            type,
-            city,
-            state,
-
-    }
-}

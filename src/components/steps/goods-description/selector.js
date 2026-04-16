@@ -11,7 +11,10 @@ export const INPUTS = [
         type: "textField",
         key: "po",
         component: TextField,
-        span: true
+        span: {
+            show: true,
+            text: "Select PO"
+        }
     },
     {
         id: "serial",
@@ -28,23 +31,10 @@ export const INPUTS = [
         key: "HSN",
         type: "autocomplete",
         component: TextField,
-        options: [
-            {
-                label: "85049010"
-            },
-            {
-                label: "4407"
-            },
-            {
-                label: "6806"
-            },
-            {
-                label: "32089029"
-            },
-            {
-                label: "7204"
-            }
-        ]
+        span: {
+            show: true,
+            text: "Hsn Config"
+        }
     },
     {
         id: "type",
@@ -167,3 +157,67 @@ export const ASN_INITIAL_STATE = {
     totalQty: 0,
     qtyLeft: 0,
 }
+
+export const normalizePOInput = (raw = "") => {
+
+    const cleaned = raw
+        .toUpperCase()
+        .replace(/\s+/g, "")
+        .replace(/,+/g, ",");
+
+    const parts = cleaned
+        .split(",")
+        .map(p => p.trim())
+        .filter(Boolean);
+
+    let prefix = "";
+
+    // detect prefix from first full PO
+    if (parts[0] && parts[0].includes("/")) {
+        prefix = parts[0].substring(0, parts[0].lastIndexOf("/") + 1);
+    }
+
+    const poArray = parts.map((p, index) => {
+
+        // if already full PO keep it
+        if (p.includes("/")) return p;
+
+        // otherwise attach prefix
+        return prefix ? `${prefix}${p}` : p;
+
+    });
+
+    const uniquePO = [...new Set(poArray)];
+
+    return {
+        poDisplay: raw.toUpperCase(),
+        po: uniquePO
+    };
+};
+
+export const formatPoDisplay = (poArray = []) => {
+    if (!poArray.length) return "";
+
+    const first = poArray[0];
+
+    // detect last separator (/ or -)
+    const lastSlash = first.lastIndexOf("/");
+    const lastDash = first.lastIndexOf("-");
+
+    const lastIndex = Math.max(lastSlash, lastDash);
+
+    // if no separator found → return normal join
+    if (lastIndex === -1) return poArray.join(",");
+
+    const prefix = first.substring(0, lastIndex + 1);
+
+    return poArray
+        .map((po, index) => {
+            if (index === 0) return po;
+
+            return po.startsWith(prefix)
+                ? po.substring(prefix.length)
+                : po;
+        })
+        .join(",");
+};

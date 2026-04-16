@@ -143,7 +143,7 @@ export default function InvoiceStepper({
       return `${buyerDetail.customerName || buyerDetail.customer}`;
     }
     if (stepName === STEPPER_NAME.GOODS_DESCRIPTION) {
-      return `PO - ${goodsDescription.po}`;
+      return `PO - ${goodsDescription?.poDisplay || goodsDescription.po}`;
     }
   }
 

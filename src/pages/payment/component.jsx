@@ -54,7 +54,7 @@ export default function Payment({
   const [dateValue, setDateValue] = React.useState(new Date());
   const [accordionOpen, setAccordionOpen] = React.useState(true);
   const [tabValue, setTabValue] = React.useState("summary_0"); // keep tab state per accordion
-  const [totalSales, setTotalSales] = React.useState(0);
+  // const [totalSales, setTotalSales] = React.useState(0);
 
   const {user: {isAdmin} = {}} = auth || {};
 
@@ -70,13 +70,13 @@ export default function Payment({
         month: dateValue.getMonth() + 1,
         year: dateValue.getFullYear(),
       });
-      const report = await getReportConnect({
-        company: "ASHOK",
-        month: dateValue.getMonth() + 1,
-        year: dateValue.getFullYear(),
-      });
+      // const report = await getReportConnect({
+      //   company: "ASHOK",
+      //   month: dateValue.getMonth() + 1,
+      //   year: dateValue.getFullYear(),
+      // });
       setResponse(payments || []);
-      setTotalSales(report?.totalInvoiceAmount || 0);
+      // setTotalSales(report?.totalInvoiceAmount || 0);
 
       // fetch report (await) for total amount
 

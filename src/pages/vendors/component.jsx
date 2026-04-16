@@ -42,21 +42,21 @@ const Vendors = ({ config }) => {
 
 
   const addVendor = () => {
-    navigate("/add/vendor");
+    navigate("/add/customers");
   };
 
   const onTableRowClick = (id) => {
-    navigate(`/edit/vendor/${id}`);
+    navigate(`/edit/customers/${id}`);
   };
 
   if (isLoading) return <PageLoader />;
 
   return (
     <div className="mt-4">
-      <h2 className="fw-bold">Vendors List</h2>
+      <h2 className="fw-bold">Customer Lists</h2>
       <div className="mt-4">
         <Button variant="contained" onClick={addVendor} className="customBtn">
-          Add Vendor
+          Add Customer
         </Button>
       </div>
       <div className="mt-4">

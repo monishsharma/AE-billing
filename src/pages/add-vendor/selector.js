@@ -146,7 +146,10 @@ export const intialState = [
     {
         label: "Description",
         key: "description",
-        intialValue: ""
+        intialValue: "",
+        extraProps: {
+            multiline: true
+        }
     },
     {
         label: "Rate",
