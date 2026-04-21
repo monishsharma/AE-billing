@@ -13,6 +13,7 @@ const Quotation = React.lazy(() => import("../pages/quotation"));
 const NewQuotation = React.lazy(() => import("../pages/create-quotation"));
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import AddVendorsV2 from "../pages/add-vendor-v2";
 import { Navigate } from "react-router-dom";
 import PurchaseOrder from "../pages/purchase-order";
 import HsnCode from "../pages/hsn-code";
@@ -95,9 +96,12 @@ const routes = [
             errorElement: <ErrorPage />,
           },
           {
+            path: "add/vendor",
+            element: <AddVendorsV2 />,
+            // element: <AddVendor />,
             path: "add/customers",
             // element: <AddVendorsV2 />,
-            element: <AddVendor />,
+            // element: <AddVendor />,
             errorElement: <ErrorPage />,
           },
           {

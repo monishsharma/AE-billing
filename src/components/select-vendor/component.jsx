@@ -9,6 +9,7 @@ const SelectVendor = ({
     size,
     width = 200,
     value = "",
+    selectedCustomer,
     selectedCompany = "",
     callback = () => {},
     allowPreset = false,
@@ -18,14 +19,18 @@ const SelectVendor = ({
 
     const { company } = useParams();
     const {vendorsList = []} = config;
-    const [selectedVendor, setSelectedVendor] = useState(null)
+    // const [selectedVendor, setSelectedVendor] = useState(selectedCustomer || null)
     const filteredVendorList = vendorsList?.filter((vendor) => vendor.type === (company || selectedCompany));
     const vendorOptions = filteredVendorList;
-    // const selectedVendor = vendorOptions.find(v => v.id === value) || null;
+    const selectedVendor = vendorOptions.find(v => v.id === value) || null;
+
+    // React.useEffect(() => {
+    //     setSelectedVendor(selectedCustomer || null)
+    // }, [selectedCustomer])
 
     React.useEffect(() => {
         if (allowPreset && vendorOptions.length === 1 && !id) {
-            setSelectedVendor(vendorOptions[0])
+            // setSelectedVendor(vendorOptions[0])
             callback({target: {name: rest.name, value: vendorOptions[0].id}}, vendorOptions[0])
         }
     }, [allowPreset, vendorOptions.length, id])
@@ -34,7 +39,7 @@ const SelectVendor = ({
         const updatedEvent = {
             target: {...rest}
         }
-        setSelectedVendor(newValue)
+        // setSelectedVendor(newValue)
         callback(updatedEvent, newValue)
     }
 
