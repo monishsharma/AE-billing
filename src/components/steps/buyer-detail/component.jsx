@@ -97,8 +97,7 @@ const BuyerDetail = ({
                 }
             })
         }
-    }, [])
-
+    }, []);
 
     // React.useEffect(() => {
     //     if (selectedCompany === COMPANY_TYPE.PADMA && !!(OPTIONS.length)) {
@@ -241,7 +240,8 @@ const BuyerDetail = ({
                                         width: "100%",
                                         selectedCompany,
                                         allowPreset: true,
-                                        id
+                                        id,
+                                        value: invoiceFormDetail["customer"],
 
                                     } :{
                                         onChange: onFieldChange,
