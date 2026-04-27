@@ -7,7 +7,8 @@ const AddVendorStepper = ({
     config,
     saveDataConnect,
     updateVendorConnect,
-    setCurrentStepConnect
+    setCurrentStepConnect,
+    updateVendorListConnect
 }) => {
 
     const {id = ""} = useParams();
@@ -38,7 +39,8 @@ const AddVendorStepper = ({
             >
                 {STEPS.map((step, index) => (
                     <Step key={step.id}>
-                        <StepLabel onClick={() => jumpToStep(index)}>
+                        <StepLabel >
+                        {/* <StepLabel onClick={() => jumpToStep(index)}> */}
                             <Typography  variant="h5">{step.label}</Typography>
                         </StepLabel>
                         <StepContent>
@@ -52,6 +54,7 @@ const AddVendorStepper = ({
                                 vendorForm={vendorForm}
                                 saveData={saveDataConnect}
                                 updateVendorConnect={updateVendorConnect}
+                                updateVendorList={updateVendorListConnect}
                                 setCurrentStepConnect={setCurrentStepConnect}
                             />
                         </StepContent>

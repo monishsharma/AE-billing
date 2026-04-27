@@ -20,6 +20,7 @@ const VendorSupplyRates = ({
     vendorForm,
     nextStep,
     saveData,
+    updateVendorList,
     setCurrentStepConnect,
     updateVendorConnect
 ,}) => {
@@ -93,7 +94,8 @@ const VendorSupplyRates = ({
         const hasError = validateRows();
         if (hasError) return;
         setIsLoading(true);
-        updateVendorConnect(id, vendorForm)
+        const action = id ? () => updateVendorConnect(id, vendorForm) : () => updateVendorList(vendorForm)
+        action()
         .then(() => {
             // reset currentstep and navigate to vendor list page
             setCurrentStepConnect(0);
