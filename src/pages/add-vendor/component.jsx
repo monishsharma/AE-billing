@@ -6,6 +6,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import PageLoader from '../../components/page-loader';
 import { useNavigate, useParams } from 'react-router-dom';
 import {isMobileDevice} from "../../helpers/is-mobile-device";
+import AddVendorV2 from '../add-vendor-v2';
 
 
 const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getVendorListConnect}) => {
@@ -302,7 +303,7 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
 
 
     if (isLoading) return <PageLoader />
-
+    return <AddVendorV2 />;
     return (
         <div>
             <div className="mt-4">

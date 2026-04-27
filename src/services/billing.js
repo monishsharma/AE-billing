@@ -32,6 +32,10 @@ export default (api) => {
         return api.post(`/billing/update/vendor/list`, payload)
     };
 
+    const updateVendor = (id, payload) => {
+        return api.patch(`/billing/update/vendor/${id}`, payload)
+    };
+
     const getHsnCodeList = () => {
         return api.get(`/billing/hsn-codes`)
     };
@@ -105,6 +109,7 @@ export default (api) => {
         getPaymentInfo,
         getUnpaidInvoices,
         updateVendorList,
+        updateVendor,
         uploadPaymentFile
     };
 };

@@ -4,15 +4,32 @@ import  Types from './actionTypes';
 
 
 
-const setData = ({data}) => ({
+const setData = ({data, detail = null}) => ({
     type: Types.SET_VENDORS,
-    data
+    data,
+    detail
 });
 
 const saveHSNList = ({data}) => ({
     type: Types.SAVE_HSN_LIST,
     data
 });
+
+const saveData = ({ stepName, data }) => ({
+    type: Types.SAVE_DATA,
+    stepName,
+    data
+})
+
+const setCurrentStep = ({step}) => ({
+    type: Types.SET_ACTIVE_STEP,
+    step
+});
+
+const setVendorDetail = ({data}) => ({
+    type: Types.SAVE_VENDOR_DETAIL,
+    data
+})
 
 
 export const getVendorList = () => (dispatch) => {
@@ -51,15 +68,33 @@ export const updateVendorList = (payload) => (dispatch) => {
     })
 }
 
-export const getVendor = (id) => (dispatch) => {
+export const updateVendor = (id, payload) => (dispatch) => {
     return new Promise((resolve, reject) => {
-        BillingService.getVendor(id)
+        BillingService.updateVendor(id, payload)
         .then((res) => {
             // dispatch(setData({data: res.data.vendors}));
             resolve(res.data);
         })
         .catch((err) => {
             dispatch(setData({data: []}));
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const getVendor = (id) => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        BillingService.getVendor(id)
+        .then((res) => {
+            dispatch(setVendorDetail({data: res.data.vendors?.[0]}));
+            resolve(res.data);
+        })
+        .catch((err) => {
+            dispatch(setVendorDetail({data: []}));
             reject(err);
             Swal.fire({
                 icon: "error",
@@ -132,4 +167,9 @@ export const editHSNCode = (id, payload) => () => {
             })
         })
     })
+}
+
+export {
+    saveData,
+    setCurrentStep
 }

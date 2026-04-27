@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {INPUTS, orderTypeOptions} from "./selector";
+import {INPUTS, orderTypeOptions, SELECT_BRANCH} from "./selector";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -30,6 +30,7 @@ const BuyerDetail = ({
             company: selectedCompany
         },
         buyerDetail: {
+            branch,
             customer,
             vendorCode,
             materialCode,
@@ -45,11 +46,19 @@ const BuyerDetail = ({
     };
 
     const OPTIONS = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
+    const selectedCustomerObj = OPTIONS.find(opt => opt.id === customer);
+    const branchOptions = selectedCustomerObj?.plantRows
+    ? selectedCustomerObj.plantRows.map(plant => ({
+        value: plant.id,
+        label: plant.label
+    }))
+    : [];
 
     const invoiceFormDetail = {
         customer: customer || "",
         vendorCode: vendorCode || "",
         materialCode: materialCode || "",
+        branch: branch || "",
         // ...(selectedCompany === COMPANY_TYPE.ASHOK && {
             orderType: orderType || ""
         // }),
@@ -63,10 +72,24 @@ const BuyerDetail = ({
         vendorCode: getIntialValdiationStatus("vendorCode") || true,
         orderType: getIntialValdiationStatus("orderType") || true,
         materialCode: getIntialValdiationStatus("materialCode") || true,
+        branch: getIntialValdiationStatus("branch") || true,
     });
 
+    // auto select branch if only one branch is available for selected customer
     React.useEffect(() => {
-        if (OPTIONS.length === 1 && selectedCompany === COMPANY_TYPE.ASHOK) {
+        if (branchOptions.length === 1 && !branch) {
+            saveDataConnect({
+                stepName: STEPPER_NAME.BUYER_DETAIL,
+                data: {
+                    branch: branchOptions[0].value
+                }
+            });
+        }
+    }, [branchOptions, branch]);
+
+    // auto select customer if only one customer is availble
+    React.useEffect(() => {
+        if (OPTIONS.length === 1 && !id) {
             const selectedCustomer = OPTIONS[0];
             setInvoiceFormValidation({
                 ...invoiceFormValidation,
@@ -78,7 +101,8 @@ const BuyerDetail = ({
             const customerDetail = getCustomerDetail({
                 selectedCustomer,
                 orderType: orderType || invoiceFormDetail.orderType || "",
-                materialCode: materialCode || invoiceFormDetail.materialCode || ""
+                materialCode: materialCode || invoiceFormDetail.materialCode || "",
+                branch: branch || invoiceFormDetail.branch || "",
             });
 
 
@@ -100,23 +124,30 @@ const BuyerDetail = ({
     }, []);
 
     // React.useEffect(() => {
-    //     if (selectedCompany === COMPANY_TYPE.PADMA && !!(OPTIONS.length)) {
-    //         const index = OPTIONS.findIndex(option =>( option.id === customer || option.label === customer ));
-    //         const selectedCustomer = OPTIONS[index];
-    //         const customerDetail = getCustomerDetail({
-    //             selectedCustomer,
-    //             orderType: orderType || invoiceFormDetail.orderType || "",
-    //             materialCode: materialCode || invoiceFormDetail.materialCode || ""
-    //         });
-    //         invoiceFormDetail["customer"] = selectedCustomer.id;
-    //         saveDataConnect({
-    //             stepName: STEPPER_NAME.BUYER_DETAIL,
-    //             data: {
-    //                 ...customerDetail
-    //             }
-    //         })
+    //     // add options as per selected customer
+    //     const selectedCustomer = OPTIONS.find(option => option.id === customer);
+    //     if (selectedCustomer) {
+    //         setInputs(prev =>
+    //             prev.map(input =>
+    //                 input.key === "branch"
+    //                     ? {
+    //                         ...input,
+    //                         extraProps: {
+    //                             ...input.extraProps,
+    //                             options: selectedCustomer.plantRows ? selectedCustomer.plantRows.map(plant => {
+    //                                 return {
+    //                                     value: plant.id,
+    //                                     label: plant.label
+    //                                 }
+    //                             }) : [],
+    //                         }
+    //                     }
+    //                     : input
+    //             )
+    //         );
     //     }
-    // }, [OPTIONS.length])
+    // }, [])
+
 
 
     const performValidation = () => {
@@ -145,8 +176,25 @@ const BuyerDetail = ({
                 data: {
                     ...customerDetail
                 }
-            })
-        } else if (name === "orderType") {
+            });
+            return;
+        }
+
+        if (name === "branch") {
+            // find the obj with selelcted branch from vendor detial and spread remaining valuable keys  like address gstin
+            const selectedBranchObj = selectedCustomerObj?.plantRows?.find(plant => plant.id === value);
+            const {id, ...rest} = selectedBranchObj || {};
+            saveDataConnect({
+                stepName: STEPPER_NAME.BUYER_DETAIL,
+                data: {
+                    branch: value,
+                    ...rest
+                }
+            });
+            return;
+        }
+
+        if (name === "orderType") {
             const selectedOption = orderTypeOptions.find(input => input.label === value);
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
@@ -159,7 +207,7 @@ const BuyerDetail = ({
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
-                    [name]: value.toUpperCase(),
+                    [name]: name === "materialCode" ? value.toUpperCase() : value,
                 }
             })
         }
@@ -197,8 +245,9 @@ const BuyerDetail = ({
             <Grid container spacing={2}>
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
+                    const options = input.key === "branch" ? branchOptions : input.extraProps.options || [];
                     return (
-                         <Grid key={index} item size={{xs:12, md: 3}}>
+                         <Grid key={index} item size={{xs:12, md: 2.4}}>
                             {input.type === "select"  ? (
                                 <FormControl fullWidth error={!invoiceFormValidation[input.key]}>
                                     <InputLabel id={`${input.id}-label`}>{input.placeholder}</InputLabel>
@@ -212,16 +261,9 @@ const BuyerDetail = ({
                                         // disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
 
                                     >
-                                        {/* {
-                                            input.name === "customer" &&
-                                            OPTIONS.map((option) => (
-                                                <MenuItem key={option.id} value={`${option.id}`}>{option.label}</MenuItem>
-                                            ))
-                                        } */}
                                         {
-                                            input.name === "orderType" &&
-                                            input.extraProps.options.map((option, idx) => (
-                                                <MenuItem key={idx} value={option.label}>{option.label}</MenuItem>
+                                            options.map((option, idx) => (
+                                                <MenuItem key={idx} value={option.value}>{option.label}</MenuItem>
                                             ))
                                         }
                                     </Select>

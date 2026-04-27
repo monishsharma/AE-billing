@@ -123,3 +123,71 @@ export const FILTER_OPTION = [
         id: 5
     }
 ];
+
+export const orderTypeOptions = [
+                { value: "Roller", label: "Roller", vCode: "280000052" },
+                { value: "Frame", label: "Frame", vCode: "283051012" },
+                { value: "Bakelite", label: "Bakelite", vCode: "320007177" },
+                { value: "Others", label: "Others", vCode: "" },
+]
+
+export const VENDOR_STEPS = {
+    VENDOR_DETAIL: "vendorDetail",
+    PLANT_DETAIL: "plantDetail",
+    SUPPLY_RATE: "supplyRate"
+};
+
+
+export const gstinStateCodes = [
+    { code: '01', state: 'Jammu & Kashmir' },
+    { code: '02', state: 'Himachal Pradesh' },
+    { code: '03', state: 'Punjab' },
+    { code: '04', state: 'Chandigarh' },
+    { code: '05', state: 'Uttarakhand' },
+    { code: '06', state: 'Haryana' },
+    { code: '07', state: 'Delhi' },
+    { code: '08', state: 'Rajasthan' },
+    { code: '09', state: 'Uttar Pradesh' },
+    { code: '10', state: 'Bihar' },
+    { code: '11', state: 'Sikkim' },
+    { code: '12', state: 'Arunachal Pradesh' },
+    { code: '13', state: 'Nagaland' },
+    { code: '14', state: 'Manipur' },
+    { code: '15', state: 'Mizoram' },
+    { code: '16', state: 'Tripura' },
+    { code: '17', state: 'Meghalaya' },
+    { code: '18', state: 'Assam' },
+    { code: '19', state: 'West Bengal' },
+    { code: '20', state: 'Jharkhand' },
+    { code: '21', state: 'Odisha' },
+    { code: '22', state: 'Chhattisgarh' },
+    { code: '23', state: 'Madhya Pradesh' },
+    { code: '24', state: 'Gujarat' },
+    { code: '25', state: 'Daman and Diu' },
+    { code: '26', state: 'Dadra and Nagar Haveli' },
+    { code: '27', state: 'Maharashtra' },
+    { code: '28', state: 'Andhra Pradesh (Old)' },
+    { code: '29', state: 'Karnataka' },
+    { code: '30', state: 'Goa' },
+    { code: '31', state: 'Lakshadweep' },
+    { code: '32', state: 'Kerala' },
+    { code: '33', state: 'Tamil Nadu' },
+    { code: '34', state: 'Puducherry' },
+    { code: '35', state: 'Andaman and Nicobar Islands' },
+    { code: '36', state: 'Telangana' },
+    { code: '37', state: 'Andhra Pradesh (New)' },
+    { code: '38', state: 'Ladakh' },
+    { code: '97', state: 'Other Territory' }
+  ];
+
+
+  // get gstin details based on state code
+  export const getCustomerGSTINDetail = (gstin) => {
+    const stateCode = gstin.substring(0, 2);
+    const stateDetail = gstinStateCodes.find(item => item.code === stateCode);
+    return {
+        state: stateDetail ? stateDetail.state : "",
+        PAN: gstin.substring(2, 12),
+        code: stateCode
+     }
+  }

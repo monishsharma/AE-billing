@@ -6,7 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 export default function CustomAutocomplete({
     options = [],
     textFieldLabel = "",
-    onBlur,
+    onBlur = () => {},
     disableClearable,
     ...rest
 }) {
