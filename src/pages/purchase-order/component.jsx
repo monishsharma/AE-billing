@@ -42,7 +42,7 @@ const PurchaseOrder = ({
         page: 0,
         pageSize: 20,
     });
-    const [poType, setPoType] = useState(FILTER_OPTION[1])
+    const [poType, setPoType] = useState(FILTER_OPTION[2])
     const [openRow, setOpenRow] = React.useState(null);
 
 
