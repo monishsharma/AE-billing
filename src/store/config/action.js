@@ -36,7 +36,7 @@ export const getVendorList = () => (dispatch) => {
     return new Promise((resolve, reject) => {
         BillingService.getVendorList()
         .then((res) => {
-            dispatch(setData({data: res.data.vendors}));
+            dispatch(setData({data: res.data}));
             resolve(res.data);
         })
         .catch((err) => {
@@ -90,7 +90,7 @@ export const getVendor = (id) => (dispatch) => {
     return new Promise((resolve, reject) => {
         BillingService.getVendor(id)
         .then((res) => {
-            dispatch(setVendorDetail({data: res.data.vendors?.[0]}));
+            dispatch(setVendorDetail({data: res.data}));
             resolve(res.data);
         })
         .catch((err) => {

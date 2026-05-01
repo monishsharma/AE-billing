@@ -6,10 +6,12 @@ export const getCustomerDetail = ({
     selectedCompany,
     ...rest
 }) => {
-    const materialCode = rest.materialCode || selectedCustomer.materialCode || "";
-    const orderType = selectedCompany === COMPANY_TYPE.PADMA ? "Roller" : rest.orderType || selectedCustomer.orderType || ""
+    const materialCode = rest.materialCode || selectedCustomer?.materialCode || "";
+    const orderType = selectedCompany === COMPANY_TYPE.PADMA ? "Roller" : rest.orderType || selectedCustomer?.orderType || ""
+    const branchID = selectedCustomer?.plantRows?.length === 1 ? selectedCustomer.plantRows[0].id : branch || "";
     const {
-        id,
+        id = "",
+        _id = "",
         address,
         isInterState,
         vendorCode,
@@ -19,13 +21,16 @@ export const getCustomerDetail = ({
         type,
         state,
         city,
-    } = selectedCustomer;
+        plantRows,
+    } = selectedCustomer || {};
+
+
 
     return {
             materialCode,
             orderType,
-            customer: id,
-            customerName: selectedCustomer.label,
+            customer: _id || id,
+            customerName: selectedCustomer?.label,
             address,
             isInterState,
             vendorCode,
@@ -35,7 +40,7 @@ export const getCustomerDetail = ({
             type,
             city,
             state,
-            branch: branch  || "",
+            branch: branchID  || "",
 
     }
 }

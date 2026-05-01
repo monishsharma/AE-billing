@@ -46,7 +46,7 @@ const BuyerDetail = ({
     };
 
     const OPTIONS = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
-    const selectedCustomerObj = OPTIONS.find(opt => opt.id === customer);
+    const selectedCustomerObj = OPTIONS.find(opt => opt._id === customer);
     const branchOptions = selectedCustomerObj?.plantRows
     ? selectedCustomerObj.plantRows.map(plant => ({
         value: plant.id,
@@ -113,7 +113,7 @@ const BuyerDetail = ({
                 }
             })
         }
-        if (selectedCompany === COMPANY_TYPE.PADMA) {
+        if (selectedCompany === COMPANY_TYPE.PADMA && !orderType) {
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {

@@ -19,18 +19,20 @@ const SelectVendor = ({
 
     const { company } = useParams();
     const {vendorsList = []} = config;
-    // const [selectedVendor, setSelectedVendor] = useState(selectedCustomer || null)
+    const [selectedVendor, setSelectedVendor] = useState(selectedCustomer || null)
     const filteredVendorList = vendorsList?.filter((vendor) => vendor.type === (company || selectedCompany));
-    const vendorOptions = filteredVendorList;
-    const selectedVendor = vendorOptions.find(v => v.id === value) || null;
-
+    const vendorOptions = filteredVendorList.map(v => ({
+        ...v,
+        id: v.id || v._id
+    }));
+    const selectedVendorValue = vendorOptions.find(v => v.id == value) || selectedVendor || null;
     // React.useEffect(() => {
     //     setSelectedVendor(selectedCustomer || null)
     // }, [selectedCustomer])
 
     React.useEffect(() => {
         if (allowPreset && vendorOptions.length === 1 && !id) {
-            // setSelectedVendor(vendorOptions[0])
+            setSelectedVendor(vendorOptions[0])
             callback({target: {name: rest.name, value: vendorOptions[0].id}}, vendorOptions[0])
         }
     }, [allowPreset, vendorOptions.length, id])
@@ -39,7 +41,7 @@ const SelectVendor = ({
         const updatedEvent = {
             target: {...rest}
         }
-        // setSelectedVendor(newValue)
+        setSelectedVendor(newValue)
         callback(updatedEvent, newValue)
     }
 
@@ -47,11 +49,11 @@ const SelectVendor = ({
         <Autocomplete
             sx={{width: {xs: "100%", sm: width}, flexShrink: 0}}
             size={size}
-            value={selectedVendor}
+            value={selectedVendorValue}
             options={vendorOptions}
-            disableClearable={disableClearable}
+            // disableClearable={disableClearable}
             getOptionLabel={(option) => option.label || ""}
-            isOptionEqualToValue={(option, value) => option.id == value.id}
+            isOptionEqualToValue={(option, value) => option?.id == value?.id}
             onChange={(event, newValue) => {onInputChange(event,newValue)}}
             renderInput={(params) => (
                 <TextField {...params}   label="Select Customer" />

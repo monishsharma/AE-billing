@@ -63,9 +63,9 @@ const resettableValues = (state, data, stepName) => {
                 }
             }
         });
-        isDataChanged = Object.keys(data).some(
-            key => data[key] !== initialState[key]
-        );
+        // isDataChanged = Object.keys(data).some(
+        //     key => data[key] !== initialState[key]
+        // );
     }
     if (isDataChanged) {
         return {

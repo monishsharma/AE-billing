@@ -42,9 +42,10 @@ const CreateQuotation = ({
   const navigate = useNavigate();
   const vendorList = useSelector((state) => state.config.vendorsList);
   const filteredVendorList = vendorList?.filter((vendor) => vendor.type === quotationCompany);
+  const branchOptions = buyerDetail?.customer ? filteredVendorList.find(vendor => vendor._id === buyerDetail.customer)?.plantRows || [] : [];
   const optionsMap = {
     vendorList: filteredVendorList?.map((v) => ({
-      value: v.id,
+      value: v._id,
       label: v.label,
     })),
     companyType: Object.keys(COMPANY_TYPE).map((type) => ({
@@ -54,6 +55,10 @@ const CreateQuotation = ({
     quotationTypeList: PO_TYPES.map((type) => ({
         value: type,
         label: type,
+    })),
+    branches: branchOptions.map((branch) => ({
+        value: branch.id,
+        label: branch.label,
     }))
   };
 
@@ -65,6 +70,7 @@ const CreateQuotation = ({
     [QUOTATION_FIELDS.QUOTATION_COMPANY]: true,
     [QUOTATION_FIELDS.QUOTATION_DATE]: true,
     [QUOTATION_FIELDS.QUOTATION_TYPE]: true,
+    [QUOTATION_FIELDS.QUOTATION_BRANCH]: true,
     customer: true,
 
   });
@@ -127,7 +133,7 @@ const CreateQuotation = ({
       saveDataConnect({
         stepName: QUOTATION_STEPPER_NAME.BUYER_DETAIL,
         data: {
-          ...selectedVendor
+          ...selectedVendor,
         }
       });
     }
@@ -146,8 +152,8 @@ const CreateQuotation = ({
 
     // for customer detail auto fill //
 
-    if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL) {
-      const index = vendorList.findIndex((vendor) => vendor.id === value);
+    if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL && name === "customer") {
+      const index = vendorList.findIndex((vendor) => vendor._id === value);
       if (index !== -1) vendorDetail = vendorList[index];
       customValue = getCustomerDetail({selectedCustomer: vendorDetail});
       data = {
@@ -219,7 +225,12 @@ const CreateQuotation = ({
       e?.preventDefault();
       e?.stopPropagation();
 
-    const {isValid, updatedValidation} = performValidation({...quotationDetail, customer:buyerDetail.customer, quotationType: quotationDetail?.quotationType });
+    const {isValid, updatedValidation} = performValidation({
+      ...quotationDetail,
+      customer:buyerDetail.customer,
+      quotationType: quotationDetail?.quotationType ,
+      branch: buyerDetail?.branch
+    });
     setQuotationFormValidation(updatedValidation);
     if (validateAllItems(items) && isValid) {
       setIsLoading(true)

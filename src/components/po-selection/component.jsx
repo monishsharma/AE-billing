@@ -39,6 +39,7 @@ const PoSelection = ({
     company,
     orderType,
     customer,
+    branch,
     preselectedItems = [],
     selectedPoNumbers = [],
     purchaseOrder,
@@ -63,6 +64,9 @@ const PoSelection = ({
         }),
         ...(customer && !isCompanyAshok && {
             vendorId: customer
+        }),
+        ...(branch && {
+            branchId: branch
         })
     })
 

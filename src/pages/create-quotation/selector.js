@@ -44,6 +44,21 @@ export const INPUTS = [
         optionsFrom: "vendorList"
     },
     {
+        id: QUOTATION_FIELDS.QUOTATION_BRANCH,
+        name: "branch",
+        placeholder: "Branch",
+        type: "select",
+        key: QUOTATION_FIELDS.QUOTATION_BRANCH,
+        stepName: QUOTATION_STEPPER_NAME.BUYER_DETAIL,
+        component: TextField,
+        disabledProp: true,
+        extraProps: {
+            select: true,
+        },
+        optionsFrom: "branches"
+    },
+
+    {
         id: QUOTATION_FIELDS.QUOTATION_DATE,
         name: QUOTATION_FIELDS.QUOTATION_DATE,
         placeholder: "Invoice Date",

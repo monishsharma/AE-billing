@@ -57,6 +57,7 @@ export const QUOTATION_FIELDS ={
     QUOTATION_DATE: "quotationDate",
     QUOTATION_COMPANY: "quotationCompany",
     QUOTATION_CUSTOMER: "customer",
+    QUOTATION_BRANCH:"branch",
     QUOTATION_TYPE: "quotationType",
 };
 

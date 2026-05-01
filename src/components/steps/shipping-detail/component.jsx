@@ -114,7 +114,7 @@ const ShippingDetails = ({
 
     const handleNextHandler = () => {
         if (performValidation()) {
-          setIsLoading(true);
+        //   setIsLoading(true);
 
           const { config, ...rest } = invoiceForm;
           delete rest.currentStep;
@@ -126,7 +126,28 @@ const ShippingDetails = ({
             })
           };
 
-          const action = id ? () => updateInvoiceConnect(id, payload) : () => postInvoiceConnect(payload);
+            const poNumber = payload.goodsDescription.po?.[0];
+
+            const updatedItems = payload.goodsDescription.items.map(item => {
+            if (!item.itemId || item.itemId === "") {
+                if (poNumber && item.sno) {
+                return {
+                    ...item,
+                    itemId: `${poNumber}_${Number(item.sno)}`
+                };
+                }
+            }
+            return item;
+            });
+
+            const payloadFinal = {
+            ...payload,
+            goodsDescription: {
+                ...payload.goodsDescription,
+                items: updatedItems
+            }
+            };
+          const action = id ? () => updateInvoiceConnect(id, payloadFinal) : () => postInvoiceConnect(payloadFinal);
 
           action()
             .then(async (res) => {

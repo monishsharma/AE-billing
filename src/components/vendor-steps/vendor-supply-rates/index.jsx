@@ -94,7 +94,8 @@ const VendorSupplyRates = ({
         const hasError = validateRows();
         if (hasError) return;
         setIsLoading(true);
-        const action = id ? () => updateVendorConnect(id, vendorForm) : () => updateVendorList(vendorForm)
+        const {currentStep, ...rest} = vendorForm;
+        const action = id ? () => updateVendorConnect(id, rest) : () => updateVendorList(rest)
         action()
         .then(() => {
             // reset currentstep and navigate to vendor list page

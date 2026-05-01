@@ -44,7 +44,7 @@ const GoodsDescription = ({
 
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
-        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType },
+        [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType, branch= "" },
         [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "", poDisplay = "" },
     } = invoiceForm;
     const {vendorsList = [], hsn: HSNLIst = []} = config;
@@ -483,6 +483,7 @@ const GoodsDescription = ({
                 toggleModal={toggleModal}
                 orderType={orderType}
                 customer={customer}
+                branch={branch}
                 onSave={onSave}
                 invoiceId={invoiceId}
                 preselectedItems={localItems}

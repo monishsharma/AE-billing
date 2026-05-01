@@ -9,7 +9,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
 
 
-export const getColumns = ({ toggleRow,expandedRow, chekboxhandler, value, vendorsList }) => {
+export const getColumns = ({ toggleRow,expandedRow, chekboxhandler, value }) => {
     return [
          {
             field: "expand",
@@ -49,7 +49,6 @@ export const getColumns = ({ toggleRow,expandedRow, chekboxhandler, value, vendo
             sortable: false,
             scrollbarsize: false,
             renderCell: (params) => {
-                const index = vendorsList.findIndex(vendor => vendor.id === params.row.vendorId);
                 return (
                     <Typography
                         sx={{
@@ -58,7 +57,7 @@ export const getColumns = ({ toggleRow,expandedRow, chekboxhandler, value, vendo
                             alignItems: "center"
                         }}
                     >
-                        {vendorsList[index]?.label}
+                        {params?.row?.vendorDetail?.branchLabel}
                     </Typography>
                 )
             }

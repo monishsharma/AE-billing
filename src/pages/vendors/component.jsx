@@ -84,7 +84,7 @@ const Vendors = ({ config }) => {
                         },
                       }}
                       key={index}
-                      onClick={() => onTableRowClick(vendor.id)}
+                      onClick={() => onTableRowClick(vendor._id)}
                     >
                       <TableCell component="th" scope="row">
                         {index + 1}

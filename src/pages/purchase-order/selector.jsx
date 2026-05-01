@@ -27,11 +27,9 @@ export const TABLE_COLUMNS = [
   {
     label: "Customer",
     sx: { minWidth: 175 },
-    render: (row, _, helpers) => {
-      const index = helpers.vendorsList.findIndex(v => v.id === row.vendorId);
-      return helpers.company === "ASHOK"
-        ? helpers.filteredVendorList[0]?.label
-        : helpers.vendorsList[index]?.label;
+    render: (row) => {
+
+      return row?.vendorDetail?.branchLabel
     }
   },
   {
