@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 
 const StepperButton = ({ handleNext = () => {}, index, steps, handleBack = () => {} }) => {
-  console.log(steps.length, index, "steppper button")
   return (
     <Box sx={{ mb: 2 }}>
       <Button variant="contained" onClick={handleNext} sx={{ mt: 1, mr: 1 }} className="customBtn">

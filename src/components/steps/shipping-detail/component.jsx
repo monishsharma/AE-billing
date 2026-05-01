@@ -114,7 +114,7 @@ const ShippingDetails = ({
 
     const handleNextHandler = () => {
         if (performValidation()) {
-        //   setIsLoading(true);
+          setIsLoading(true);
 
           const { config, ...rest } = invoiceForm;
           delete rest.currentStep;

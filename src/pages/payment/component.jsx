@@ -102,7 +102,6 @@ export default function Payment({
     const index = parseInt(tabValue.split("_")[1], 10);
     return response[index]?.updates.length || 0
   }
-  console.log(response)
   const upload = (e) => {
     const file = e.target.files[0];
 

@@ -31,7 +31,6 @@ const Table = forwardRef(({
         const copySearchData = [...data];
         setSearch(value);
         const filteredData = copySearchData.filter(item => item.name.toLowerCase().includes(value));
-        console.log(filteredData);
         setSearchData(filteredData);
     };
 

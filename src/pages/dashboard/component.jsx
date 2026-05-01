@@ -261,7 +261,6 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
 
       const fy = `${fyStartYear}-${fyEndYear}`;
 
-      console.log("Selected FY:", fy);
 
       setDateValue(selectedDate);
       setFinancialYear(fy); // <- store FY string

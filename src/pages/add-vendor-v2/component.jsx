@@ -1,21 +1,9 @@
 import React from 'react';
-import { getCustomerGSTINDetail } from '../../helpers/customer-detail';
 import AddVendorStepper from '../add-vendor-stepper';
 
 
 const AddVendorV2 = () => {
 
-
-    const onFieldChange = ({ event }) => {
-        const { name, value } = event.target;
-        if (name === "GSTIN") {
-            const {GSTIN,PAN} = getCustomerGSTINDetail(value);
-            console.log(GSTIN, PAN)
-        }
-        console.log(name, value);
-
-        // setVendorFormData((prevData) => ({
-    }
 
     return (
         <div>

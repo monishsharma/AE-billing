@@ -188,7 +188,6 @@ const Quotation = ({
             showCancelButton: true,
         }).then((result) => {
 
-            console.log(row)
             if (result.isConfirmed) {
               setIsLoading(true);
                 // Call API to copy quotation
