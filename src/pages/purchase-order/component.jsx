@@ -233,6 +233,7 @@ const PurchaseOrder = ({
                     gap: 2
                 }}>
                 <Box width="100%">
+                    <input type="file" onChange={upload} />
                     {company === COMPANY_TYPE.ASHOK && (
                         <PoTypeFilter
                         options={FILTER_OPTION}
@@ -276,7 +277,7 @@ const PurchaseOrder = ({
 
                         <StatusFilter
                             size={"small"}
-                            defaultStatus={STATUS_FILTER[0]}
+                            defaultStatus={STATUS_FILTER[1]}
                             options={STATUS_FILTER}
                             onchange={onChangeStatusFilter}
                         />
