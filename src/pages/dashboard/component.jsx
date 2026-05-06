@@ -207,7 +207,7 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
       company,
       type: reportType,
       month: dateValue.getMonth() + 1,
-      year: dateValue.getFullYear(),
+      year: reportType === DASHBOARD_TAB_TYPE.MONTHLY ? dateValue.getFullYear() :  value,
     })
       .then((res) => {
         setReportStat(res);
