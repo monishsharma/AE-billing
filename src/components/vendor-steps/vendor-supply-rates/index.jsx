@@ -8,7 +8,8 @@ import { isMobileDevice } from '../../../helpers/is-mobile-device'
 import StepperButton from '../../steps/stepper-button'
 import { VENDOR_STEPS } from '../../../constants/app-constant'
 import { useNavigate } from 'react-router-dom';
-import PageLoader from "../../page-loader"
+import PageLoader from "../../page-loader";
+
 
 
 
@@ -136,6 +137,7 @@ const VendorSupplyRates = ({
                                         <span>Product Description</span>
                                         <span>Description</span>
                                         <span>Rate</span>
+                                        <span>Drg No</span>
                                         <span>Product Type</span>
                                     </>
                                     :
@@ -187,6 +189,7 @@ const VendorSupplyRates = ({
                                                                 id={item.label}
                                                                 label={item.label}
                                                                 name={item.key}
+                                                                sx={{minHeight: "100%"}}
                                                                 value={vendorSupplyRateRows[rowIndex]?.[item.key] || ""}
                                                                 onChange={(event) => onFieldChange(event, rowIndex)}
                                                                 error={errors[rowIndex] && errors[rowIndex][item.key]}
@@ -203,7 +206,7 @@ const VendorSupplyRates = ({
                                         ))
                                     }
                                     {vendorSupplyRateRows.length > 1 && <span className='mt-2' >
-                                                <Button fullWidth color="error" variant="outlined" onClick={() => deleteRow({ index })}>
+                                                <Button fullWidth color="error" variant="text" onClick={() => deleteRow({ index })}>
                                                     Delete
                                                 </Button>
                                     </span>}

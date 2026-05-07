@@ -279,9 +279,15 @@ const PoSelection = ({
                             {/* TABS */}
                             <Box px={3}>
                                 <TabList
+                                    textColor="black"
                                     onChange={handleChange}
                                     variant="scrollable"
                                     scrollButtons="auto"
+                                    sx={{
+                                        "& .MuiTabs-indicator": {
+                                        backgroundColor: "#000",
+                                        },
+                                    }}
                                 >
                                     {filteredData.map((item, index) => (
                                         <Tab
@@ -295,7 +301,10 @@ const PoSelection = ({
                                                     <Chip
                                                         label={getSelectedCountByPo(index)}
                                                         size="small"
-                                                        color="primary"
+                                                        sx={{
+                                                            color: "#fff",
+                                                            background: "#000"
+                                                        }}
                                                     />
                                                 )}
                                                 </Box>
@@ -346,11 +355,12 @@ const PoSelection = ({
                         </Typography>
 
                         <Box display="flex" gap={2}>
-                            <Button variant="outlined" onClick={toggleModal}>
+                            <Button variant="outlined" onClick={toggleModal} className='outlinedCustomBtn'>
                                 Cancel
                             </Button>
 
                             <Button
+                                className='customBtn'
                                 variant="contained"
                                 onClick={handleSave}
                                 disabled={!hasValidSelection}
