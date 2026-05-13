@@ -72,7 +72,7 @@ const GoodsDescription = ({
     const list = vendorsList.filter(vendor => vendor.type === getValueByKey(COMPANY_TYPE, selectedCompany));
     const selectedVendor = list.filter(item => item.id === customer || item.label === customerName) || {};
     const OPTIONS = (selectedVendor?.[0]?.supplyRate || [])
-    .filter(item => item.code?.toLowerCase() === orderType.toLowerCase())
+    .filter(item => item.code?.toLowerCase() === orderType?.toLowerCase?.() || "")
     .sort((a, b) => {
         // Only sort if ROLLER
         if (orderType.toLowerCase() === "roller") {
