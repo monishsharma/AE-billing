@@ -26,7 +26,6 @@ export const intialState = [
         placeholder: "Drg No",
         key: "drg",
         intialValue: "-",
-        name: "Drg No"
     },
     {
         label: "code",
