@@ -20,12 +20,21 @@ export const intialState = [
         name: "rate"
     },
     {
+        label: "Drg No",
+        id : "drg",
+        name: "drg",
+        placeholder: "Drg No",
+        key: "drg",
+        intialValue: "-",
+        name: "Drg No"
+    },
+    {
         label: "code",
         id: "code",
         name: "code",
         placeholder: "Product Type",
         key: "code",
-        intialStateValue: "",
+        intialValue: "",
         type: "select",
         extraProps: {
             options: [...orderTypeOptions]
@@ -36,7 +45,7 @@ export const intialState = [
 
 export const createInitialValue = () => {
     return intialState.reduce((acc, item) => {
-        acc[item.key] = "";
+        acc[item.key] = item.intialValue ||  "";
         return acc;
     }, {});
 }
