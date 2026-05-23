@@ -206,7 +206,7 @@ const VendorSupplyRates = ({
                                         ))
                                     }
                                     {vendorSupplyRateRows.length > 1 && <span className='mt-2' >
-                                                <Button fullWidth color="error" variant="text" onClick={() => deleteRow({ index })}>
+                                                <Button fullWidth color="error" variant="text" onClick={() => deleteRow({ rowIndex })}>
                                                     Delete
                                                 </Button>
                                     </span>}

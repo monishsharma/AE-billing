@@ -155,7 +155,9 @@ const Dashboard = ({ auth, getReportConnect, resetReducerConnect, generateCSVCon
         label: "₹ Sales",
         data: reportType === DASHBOARD_TAB_TYPE.MONTHLY ? monthlyData : yearlyData,
         backgroundColor: "rgb(0, 0, 0)",
-        barThickness: 10,
+        barThickness: 15,
+        Bounce: 5.5,
+
       },
     ],
   };
