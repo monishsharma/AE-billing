@@ -388,15 +388,21 @@ const GoodsDescription = ({
     }) => {
 
         const copyOfItems = [...items];
-
-        copyOfItems[index] = {
-            ...copyOfItems[index],
-            rate: value?.rate || "",
-            description: value?.description || "",
-            itemType: value?.type || "manual",
-            wo: value?.drg || "",
-            size: value?.size || "",
-        };
+        if (value === null) {
+            copyOfItems[index] = {
+                ...copyOfItems[index],
+                rate: ""
+            }
+        } else {
+            copyOfItems[index] = {
+                ...copyOfItems[index],
+                rate: value?.rate || "",
+                description: value?.description || "",
+                itemType: value?.type || "manual",
+                wo: value?.drg || "",
+                size: value?.size || "-",
+            };
+        }
 
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
@@ -610,8 +616,7 @@ const GoodsDescription = ({
                                                             ...copyOfItems[idx],
                                                             rate: newInputValue,
                                                             itemType: "manual",
-                                                            size: "",
-                                                            wo: ""
+                                                            size: "-",
                                                         };
 
                                                         saveDataConnect({
