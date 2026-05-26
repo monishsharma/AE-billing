@@ -54,11 +54,11 @@ const GoodsDescription = ({
     const showToast = ({ type, text, ...rest }) =>
             toast[type](text, {
                 position: "bottom-right",
-                autoClose: 3000,
+                autoClose: 1500,
                 hideProgressBar: false,
                 closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
+                pauseOnHover: false,
+                draggable: false,
                 progress: undefined,
                 theme: "colored",
                 transition: Bounce,
@@ -133,15 +133,26 @@ const GoodsDescription = ({
     React.useEffect(() => {
         if (po && po.length && po[0] && po[0].length === 10 && selectedCompany === COMPANY_TYPE.ASHOK) {
             setIsFetchingPO(true);
+            showToast({
+                type: "info",
+                text: "Fetching PO Detail...",
+            });
             getPODetailConnect({ poNumber: po[0] })
             .then((res) => {
                 setPoDetail(res.poDetail);
+                showToast({
+                    type: "success",
+                    text: "PO Detail Fetched Successfully",
+                });
                 setIsFetchingPO(false);
 
             })
             .catch((error) => {
                 setPoDetail([]);
-                console.error("Error fetching PO details:", error);
+                showToast({
+                    type: "error",
+                    text: error.error,
+                });
                 setIsFetchingPO(false);
             });
         }
@@ -165,9 +176,9 @@ const GoodsDescription = ({
     }, [localItems]);
 
     React.useEffect(() => {
-        if (invoiceId && selectedCompany === COMPANY_TYPE.ASHOK && po && po.length === 10 && poDetail && poDetail.items) {
+        if (selectedCompany === COMPANY_TYPE.ASHOK && po && po[0] && po[0].length === 10 && poDetail && poDetail.items) {
             const updatedAsnQty = items.map((item) => {
-                const matchedPoItem = poDetail.items.find(poItem => poItem.itemNo === item.sno);
+                const matchedPoItem = poDetail.items.find(poItem => poItem.itemNo == item.sno);
                 if (matchedPoItem) {
                     return {
                         totalQty: matchedPoItem.totalQty,
@@ -184,7 +195,7 @@ const GoodsDescription = ({
             setAsnQty(updatedAsnQty);
         }
 
-    }, [invoiceId, po, poDetail, selectedCompany, items.length]);
+    }, [po, poDetail, selectedCompany, items.length]);
 
     const toggleModal = () => setShowModal(!showModal);
 
@@ -370,35 +381,24 @@ const GoodsDescription = ({
         }
     };
 
-    const onChangeAutoComplete = ({e: event, newValue: value, idx: index}) => {
-        const { target: { id, value: inputValue } } = event;
-        const finalValue = inputValue ? inputValue : value || "";
+    const onChangeAutoComplete = ({
+        e: event,
+        newValue: value,
+        idx: index
+    }) => {
 
-        // Split the value properly to handle long descriptions
-        const parts = finalValue.split("-");
-        let description = "";
-        if (parts.length > 2) {
-            if (parts[3]) {
-                description = parts.slice(2, 3).join("-").trim();
-            } else {
-                // Join all parts after the second one to get the full description
-            description = parts.slice(2).join("-").trim();
-            }
-
-        }
-
-        const selectedId = id.split("-")[0];
-        const selectedValue = parts.length > 1 ? parts[1] : finalValue;
         const copyOfItems = [...items];
+
         copyOfItems[index] = {
             ...copyOfItems[index],
-            itemType: inputValue ? "manual" : parts[0],
-            ...(parts[4] ? { size: parts[4] } : {size: "00"}),
-            ...((value) && {
-                description,
-            }),
-            [selectedId || "rate"]: selectedValue || "",
+            rate: value?.rate || "",
+            description: value?.description || "",
+            selectedRateObj: value,
+            itemType: value?.type || "manual",
+            wo: value?.drg || "",
+            size: value?.size || "",
         };
+
         saveDataConnect({
             stepName: STEPPER_NAME.GOODS_DESCRIPTION,
             data: {
@@ -598,14 +598,57 @@ const GoodsDescription = ({
                                                 id={row.key}
                                                 name={row.key}
                                                 fullWidth
-                                                label={row.key}
-                                                value={item[row.key]}
-                                                onChange={(e,newValue) => onChangeAutoComplete({e,newValue,idx})}
-                                                options={OPTIONS ? OPTIONS.map((option) => `${option.type}-${option.rate}-${option.description}${option.size ? `-${option.size}` : ""}`) : []}
-                                                getOptionLabel={(option) => (option && option.toString().split("-").length > 1 ? option.split("-")[1] : `${(option)}` )}
+                                                options={OPTIONS}
+                                                value={item}
+                                                onInputChange={(event, newInputValue, reason) => {
+
+                                                    // user typing manually
+                                                    if (reason === "input") {
+
+                                                        const copyOfItems = [...items];
+
+                                                        copyOfItems[idx] = {
+                                                            ...copyOfItems[idx],
+                                                            rate: newInputValue,
+                                                            selectedRateObj: null,
+                                                            itemType: "manual",
+                                                            size: "",
+                                                            wo: ""
+                                                        };
+
+                                                        saveDataConnect({
+                                                            stepName: STEPPER_NAME.GOODS_DESCRIPTION,
+                                                            data: {
+                                                                items: copyOfItems
+                                                            }
+                                                        });
+                                                    }
+                                                }}
+                                                onChange={(e, newValue) =>
+                                                    onChangeAutoComplete({
+                                                        e,
+                                                        newValue,
+                                                        idx
+                                                    })
+                                                }
+                                                getOptionLabel={(option) => {
+                                                    return option?.rate || "";
+                                                }}
+                                                isOptionEqualToValue={(option, value) =>
+                                                    option?.type === value?.type
+                                                }
                                                 renderOption={(props, option) => {
-                                                    const {key, ...restProps} = props;
-                                                    return <li key={`${key}_${props.id}`} {...restProps} style={{fontSize: "12px"}}>{option.split("-")[0]}</li>
+                                                    const { key, ...restProps } = props;
+
+                                                    return (
+                                                        <li
+                                                            key={`${key}_${props.id}`}
+                                                            {...restProps}
+                                                            style={{ fontSize: "12px" }}
+                                                        >
+                                                            {option.type}
+                                                        </li>
+                                                    );
                                                 }}
                                                 renderInput={(params) => (
                                                     <TextField
@@ -615,14 +658,11 @@ const GoodsDescription = ({
                                                         id={row.key}
                                                         placeholder={row.label}
                                                         name={row.key}
-                                                        value={item[row.key] || ''}
                                                         error={!itemsValidation[idx][row.key]}
-                                                        onChange={(e) => onChangeAutoComplete({e, idx})}
                                                         inputProps={{
                                                             ...params.inputProps,
                                                             style: {
-                                                                textAlign: 'left',
-                                                                // padding: '8px 0'
+                                                                textAlign: "left",
                                                             }
                                                         }}
                                                     />
@@ -651,7 +691,7 @@ const GoodsDescription = ({
                                                     {...row.extraProps}
                                                 />
                                                 {
-                                                    row.span && item["sno"].length >= 2 && selectedCompany === COMPANY_TYPE.ASHOK && poDetail && poDetail.items &&
+                                                    row.span && item["sno"].toString().length >= 2 && selectedCompany === COMPANY_TYPE.ASHOK && poDetail && poDetail.items &&
                                                     <Typography variant="caption" display="block" color="secondary" style={{fontSize: "10px", marginTop: "5px"}} >
                                                         {
                                                             isFetchingPO ? <Skeleton variant="text"  animation="wave" /> :

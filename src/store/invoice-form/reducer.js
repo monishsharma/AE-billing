@@ -57,11 +57,11 @@ const resettableValues = (state, data, stepName) => {
     let isDataChanged = false;
     if (data.company || data.customer || data.orderType) {
         isDataChanged = Object.keys(data).some(key => {
-            if (key === "company") {
+            // if (key === "company") {
                 if (key === "company" || key=== "customer") {
                     return data[key] !== initialState[key]
                 }
-            }
+            // }
         });
         // isDataChanged = Object.keys(data).some(
         //     key => data[key] !== initialState[key]

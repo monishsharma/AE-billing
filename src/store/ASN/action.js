@@ -43,10 +43,6 @@ export const getPODetail = ({poNumber}) => () => {
         })
         .catch((err) => {
             reject(err);
-            Swal.fire({
-                icon: "error",
-                text: err.error,
-            })
         })
     })
 }
