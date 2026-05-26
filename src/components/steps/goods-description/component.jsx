@@ -393,7 +393,6 @@ const GoodsDescription = ({
             ...copyOfItems[index],
             rate: value?.rate || "",
             description: value?.description || "",
-            selectedRateObj: value,
             itemType: value?.type || "manual",
             wo: value?.drg || "",
             size: value?.size || "",
