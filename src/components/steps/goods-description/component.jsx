@@ -609,7 +609,6 @@ const GoodsDescription = ({
                                                         copyOfItems[idx] = {
                                                             ...copyOfItems[idx],
                                                             rate: newInputValue,
-                                                            selectedRateObj: null,
                                                             itemType: "manual",
                                                             size: "",
                                                             wo: ""
