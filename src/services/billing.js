@@ -36,6 +36,22 @@ export default (api) => {
         return api.patch(`/billing/update/vendor/${id}`, payload)
     };
 
+    const getBakeliteRates = () => {
+        return api.get(`/billing/bakelite-rates`)
+    };
+
+    const postBakeliteRate = (payload) => {
+        return api.post(`/billing/bakelite-rates`, payload)
+    };
+
+    const editBakeliteRate = (id, payload) => {
+        return api.patch(`/billing/bakelite-rates/${id}`, payload)
+    };
+
+    const deleteBakeliteRate = ({id}) => {
+        return api.delete(`/billing/bakelite-rates/${id}`)
+    };
+
     const getHsnCodeList = () => {
         return api.get(`/billing/hsn-codes`)
     };
@@ -48,8 +64,8 @@ export default (api) => {
         return api.patch(`/billing/hsn-codes/${id}`, payload)
     };
 
-    const deleteHsnCode = ({hsnId}) => {
-        return api.delete(`/billing/hsn-codes/${hsnId}`)
+    const deleteHsnCode = ({id}) => {
+        return api.delete(`/billing/hsn-codes/${id}`)
     };
 
     const getBillPdf = (payload, config = {}) => {
@@ -110,6 +126,10 @@ export default (api) => {
         getUnpaidInvoices,
         updateVendorList,
         updateVendor,
-        uploadPaymentFile
+        uploadPaymentFile,
+        getBakeliteRates,
+        postBakeliteRate,
+        editBakeliteRate,
+        deleteBakeliteRate
     };
 };

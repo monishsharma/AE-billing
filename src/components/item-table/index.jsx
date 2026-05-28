@@ -3,13 +3,16 @@ import ItemModal from '../item-modal';
 import { Box, Paper, Table, TableCell, TableHead, TableRow, Typography, Button, TableBody } from '@mui/material'
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
-
+import AddIcon from "@mui/icons-material/Add";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
 
 const ItemTable = ({
     data,
     title,
     onSave,
+    itemType,
     columns = [],
     btnTitle,
     modalInput,
@@ -31,15 +34,24 @@ const ItemTable = ({
         toggleModal();
     };
 
-    const onSaveHandler = (item) => {
-        if (!item.label || !item.desc) {
-           toast.error("Please fill all the fields", {
-            position: "top-right",
-            autoClose: 2000,
-           });
-           return;
+    const onSaveHandler = (item, inputs) => {
+       // Check if any required field is empty
+        const hasEmptyField = inputs.some(
+            ({ key }) => !item[key]?.toString().trim()
+        );
+
+        if (hasEmptyField) {
+            toast.error("Please fill all the fields", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            return;
         }
-        onSave(item);
+        const updatedItems = {
+            ...item,
+            itemType
+        }
+        onSave(updatedItems);
         toggleModal()
     }
 
@@ -52,7 +64,7 @@ const ItemTable = ({
             }).then((result) => {
                 if (result.isConfirmed) {
                     deleteItem({
-                        hsnId: item._id
+                        id: item._id
                     })
                     .then(async() => {
                         await getItem();
@@ -87,42 +99,40 @@ const ItemTable = ({
                         setSelectedItem={setSelectedItem}
                     />
                 }
-                <Box mt={4}>
+                <Box mt={2} mb={4} >
                             <Paper
+                                elevation={8}
                                 sx={(theme) => ({
-                                    backgroundColor: '#fff',
-                                    ...theme.typography.body2,
+                                    width: "100%",
+                                    minHeight: "325px",
+                                    backgroundColor: "#ffffff",
                                     p: 2,
-                                    maxHeight: "auto",
                                     overflow: "auto",
-                                    // textAlign: 'center',
-                                    color: (theme.vars ?? theme).palette.text.secondary,
-                                    ...(theme.palette.mode === 'dark' && {
-                                    backgroundColor: '#1A2027',
-                                    }),
+
                                 })}
                             >
-                                <Box mb={2}>
-                                        <Typography variant='h6' color='black' mb={2}>
+                                <Box mb={4} sx={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <Typography variant='h6' color='black' >
                                             {title}
                                         </Typography>
                                         <Button
-                                            size='small'
+                                            size='medium'
                                             className='customBtn'
                                             onClick={() => {
                                                 setSelectedItem({})
                                                 toggleModal();
                                             }}
+                                            startIcon={<AddIcon />}
                                         >
                                             {btnTitle}
                                         </Button>
                                 </Box>
-                                    <Table size="small">
+                                    <Table size="small" sx={{ width: "100%" }}>
                                         <TableHead>
                                             <TableRow>
                                                 {
                                                     columns.map((column, index) => (
-                                                        <TableCell sx={{minWidth: "100px"}} key={index} align='center'>
+                                                        <TableCell  key={index} align='center'>
                                                             {column.field}
                                                         </TableCell>
                                                     ))
@@ -139,7 +149,7 @@ const ItemTable = ({
                                                             // handle special columns
                                                             if (col.key === "sno") {
                                                                 return (
-                                                                    <TableCell sx={{width: "fit-content"}} key={colIndex} align="center">
+                                                                    <TableCell  key={colIndex} align="center">
                                                                         {index + 1}
                                                                     </TableCell>
                                                                 );
@@ -147,9 +157,9 @@ const ItemTable = ({
 
                                                             if (col.key === "action") {
                                                                 return (
-                                                                    <TableCell align='center' key={colIndex} sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-                                                                        <Button size="small" onClick={() => editItem(item)}>Edit</Button>
-                                                                        <Button size="small" color="error" onClick={() => deleteHandler(item)}>Delete</Button>
+                                                                    <TableCell align='center' key={colIndex} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                                                                        <EditOutlinedIcon sx={{cursor: "pointer"}} color="primary" onClick={() => editItem(item)} />
+                                                                        <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item)} />
                                                                     </TableCell>
                                                                 );
                                                             }

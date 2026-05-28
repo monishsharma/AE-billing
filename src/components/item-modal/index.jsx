@@ -37,7 +37,7 @@ const ItemModal = ({
     }
 
     const onSaveHandler = () => {
-        onSave(selectedItem);
+        onSave(selectedItem, INPUT);
     }
 
     return (

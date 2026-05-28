@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ITEMS_INPUT } from './selector';
 import styles from "./style.module.css";
 // import Items from '../../components/items'
@@ -12,6 +12,9 @@ import Button from '@mui/material/Button';
 // import FileCopyIcon from '@mui/icons-material/FileCopy';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditableItems from '../../components/items/editableItems';
+import { Typography } from '@mui/material';
+import BakeliteRateConfig from '../../components/bakelite-rate-costing';
+
 
 const QuotationItems = ({
     columns,
@@ -20,13 +23,21 @@ const QuotationItems = ({
     deleteItem,
     onFieldChange,
     itemsValidation,
+    quotationDetail,
     handleHeaderChange
 }) => {
 
+  const { quotationType } = quotationDetail || {}
+  const [showModal, setShowModal] = useState(false);
 
+  const toggleModal = () => setShowModal(!showModal);
 
   return (
     <div>
+        <BakeliteRateConfig
+          open={showModal}
+          toggleModal={toggleModal}
+        />
         <EditableItems columns={columns} gridRepeat="repeat(13, 1fr)" onHeaderChange={handleHeaderChange}>
             {
               items.map((_, itemIndex) => {
@@ -69,7 +80,11 @@ const QuotationItems = ({
           </EditableItems>
           {
             // items.length <= 9 && (
-                <Box display="flex" justifyContent="center" alignItems="center">
+                <Box display="flex" justifyContent="center" gap={2} alignItems="center">
+                    {quotationType === "BAKELITE" &&
+                    <Button color="primary"  onClick={toggleModal} className="outlinedCustomBtn">
+                        Calulate Rate
+                    </Button>}
                     <Button color="primary"  onClick={addItem} className="outlinedCustomBtn">
                         Add More Item
                     </Button>

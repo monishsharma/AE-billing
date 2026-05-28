@@ -8,6 +8,7 @@ import { createInitialValue } from "../../components/vendor-steps/vendor-supply-
 export const INITIAL_STATE = {
    vendorsList: [],
    hsn: [],
+   bakeliteRates: [],
    vendorForm: {
         name: "",
         GSTIN: "",
@@ -36,6 +37,15 @@ export const saveHsnList = (state = INITIAL_STATE, {data}) => {
     return {
         ...state,
         hsn: [
+            ...data
+        ]
+    }
+};
+
+export const saveBakeliteRatesList = (state = INITIAL_STATE, {data}) => {
+    return {
+        ...state,
+        bakeliteRates: [
             ...data
         ]
     }
@@ -96,6 +106,7 @@ export const setVendorDetail = (state = INITIAL_STATE, {data}) => {
 export const HANDLERS = {
     [Types.SET_VENDORS]: setVendorList,
     [Types.SAVE_HSN_LIST]: saveHsnList,
+    [Types.SAVE_BAKELITES_RATE_LIST]: saveBakeliteRatesList,
     [Types.SAVE_DATA]: saveData,
     [Types.SET_ACTIVE_STEP]: setCurrentStep,
     [Types.SAVE_VENDOR_DETAIL]: setVendorDetail

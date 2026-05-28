@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import React  from 'react';
 import Swal from 'sweetalert2';
-import { COLUMNS, MODAL_INPUT } from './selector';
+import { BAKELITE_RATE_COLUMN, BAKELITE_RATE_MODAL_INPUTS, BAKELITE_RATE_OPTIONS, COLUMNS, ITEM_TYPE, MODAL_INPUT } from './selector';
 import ItemTable from '../../components/item-table';
 
 const HsnCodes = ({
@@ -9,23 +9,44 @@ const HsnCodes = ({
     postHsnCodeConnect,
     editHSNCodeConnect,
     deleteHsnCodeConnect,
-    getHsnCodeListConnect
+    getHsnCodeListConnect,
+    postBakeliteRateConnect,
+    editBakeliteRateConnect,
+    deleteBakeliteRateConnect,
+    getBakeliteRatesConnect
 }) => {
 
-    const {hsn} = config || {};
+    const {hsn, bakeliteRates} = config || {};
+    const handler = {
+        [ITEM_TYPE.HSN_CODE]: {
+            post: postHsnCodeConnect,
+            edit: editHSNCodeConnect,
+            delete: deleteHsnCodeConnect,
+            get: getHsnCodeListConnect
+        },
+        [ITEM_TYPE.BAKELITE_RATE]: {
+            post: postBakeliteRateConnect,
+            edit: editBakeliteRateConnect,
+            delete: deleteBakeliteRateConnect,
+            get: getBakeliteRatesConnect
+        }
+    }
 
 
     React.useEffect(() => {
         getHsnCodeListConnect();
+        getBakeliteRatesConnect()
     }, [])
 
 
     const onSave = (updatedItem) => {
         const {_id, ...rest} = updatedItem;
         if (_id) {
-            editHSNCodeConnect(_id, rest)
+            const { edit } = handler[updatedItem.itemType] || {};
+            edit(_id, rest)
             .then(async() => {
-                await getHsnCodeListConnect();
+                const { get } = handler[updatedItem.itemType] || {};
+                await get();
                 Swal.fire({
                     title: "Successfuly Edited",
                     icon: "success"
@@ -39,9 +60,11 @@ const HsnCodes = ({
                 })
             })
         } else {
-            postHsnCodeConnect(rest)
+            const { post } = handler[updatedItem.itemType] || {};
+            post(rest)
             .then(async(res) => {
-                await getHsnCodeListConnect()
+                const { get } = handler[updatedItem.itemType] || {};
+                await get();
                 Swal.fire({
                     title: "Successfuly Added",
                     icon: "success"
@@ -60,17 +83,19 @@ const HsnCodes = ({
             <div className="mt-2">
                 <h2 className="fw-bold">Config</h2>
             </div>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid size={{
-                    lg: 6,
-                    sm: 12,
-                    xs: 12
-                }}>
+            <Grid container spacing={2}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md:6
+                    }}
+                >
                     <ItemTable
                         data={hsn}
                         columns={COLUMNS}
-                        title="HSN Code LIST"
-                        swalText={"Do You  Want to Delete the HSN Code"}
+                        itemType={ITEM_TYPE.HSN_CODE}
+                        title="HSN Code"
+                        swalText={"Do You Want to Delete the HSN Code"}
                         btnTitle={"ADD HSN CODE"}
                         modalInput={MODAL_INPUT}
                         onSave={onSave}
@@ -78,6 +103,27 @@ const HsnCodes = ({
                         deleteItem={deleteHsnCodeConnect}
                     />
                 </Grid>
+
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 6
+                    }}
+                >
+                    <ItemTable
+                        data={bakeliteRates}
+                        itemType={ITEM_TYPE.BAKELITE_RATE}
+                        columns={BAKELITE_RATE_COLUMN}
+                        title="Bakelite Rate Config"
+                        swalText={"Do You Want to Delete the Rate Config"}
+                        btnTitle={"ADD Bakelite Rate"}
+                        modalInput={BAKELITE_RATE_MODAL_INPUTS}
+                        onSave={onSave}
+                        getItem={getBakeliteRatesConnect}
+                        deleteItem={deleteBakeliteRateConnect}
+                    />
+                </Grid>
+
             </Grid>
         </>
     )

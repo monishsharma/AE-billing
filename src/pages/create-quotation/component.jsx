@@ -25,7 +25,8 @@ const CreateQuotation = ({
   getConfigConnect,
   saveQuotationConnect,
   updateQuotationConnect,
-  getQuotationConnect
+  getQuotationConnect,
+  getBakeliteRatesConnect
 }) => {
   const {
     [QUOTATION_STEPPER_NAME.QUOTATION_DETAIL]: {
@@ -77,6 +78,9 @@ const CreateQuotation = ({
 
   const [itemsValidation, setItemsValidation] = React.useState([]);
 
+  React.useEffect(() => {
+    getBakeliteRatesConnect();
+  },[])
 
   React.useEffect(() => {
     if (quotationCompany && !id) {
@@ -346,6 +350,7 @@ const CreateQuotation = ({
               columns={columns}
               deleteItem={deleteItem}
               onFieldChange={onFieldChange}
+              quotationDetail={quotationDetail}
               handleHeaderChange={handleHeaderChange}
               itemsValidation={itemsValidation}
             />

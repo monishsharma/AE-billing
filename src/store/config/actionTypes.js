@@ -4,6 +4,7 @@ export default createTypes(
 `
     SET_VENDORS
     SAVE_HSN_LIST
+    SAVE_BAKELITES_RATE_LIST
     SET_CONFIG
     SAVE_DATA
     SAVE_VENDOR_DETAIL

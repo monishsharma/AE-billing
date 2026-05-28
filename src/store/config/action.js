@@ -15,6 +15,11 @@ const saveHSNList = ({data}) => ({
     data
 });
 
+const saveBakeliteRatesList = ({data}) => ({
+    type: Types.SAVE_BAKELITES_RATE_LIST,
+    data
+});
+
 const saveData = ({ stepName, data }) => ({
     type: Types.SAVE_DATA,
     stepName,
@@ -104,6 +109,72 @@ export const getVendor = (id) => (dispatch) => {
     })
 }
 
+
+export const getBakeliteRates = () => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        BillingService.getBakeliteRates()
+        .then((res) => {
+            dispatch(saveBakeliteRatesList({data: res.data}));
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const postBakeliteRate = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.postBakeliteRate(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const deleteBakeliteRate = ({id}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.deleteBakeliteRate({id})
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const editBakeliteRate = (id, payload) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.editBakeliteRate(id, payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 export const getHsnCodeList = () => (dispatch) => {
     return new Promise((resolve, reject) => {
         BillingService.getHsnCodeList()
@@ -137,9 +208,9 @@ export const postHsnCode = (payload) => () => {
     })
 }
 
-export const deleteHsnCode = ({hsnId}) => () => {
+export const deleteHsnCode = ({id}) => () => {
     return new Promise((resolve, reject) => {
-        BillingService.deleteHsnCode({hsnId})
+        BillingService.deleteHsnCode({id})
         .then((res) => {
             resolve(res.data);
         })
