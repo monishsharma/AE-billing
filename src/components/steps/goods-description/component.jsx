@@ -452,7 +452,7 @@ const GoodsDescription = ({
             mappedItems.push({
                 sno: isCompanyAshok ? item.itemNo : index + 1 ,
                 description: resolvedDescription,
-                wo: item.workOrder || "-",
+                wo: item.workOrder || selectedRate?.[0]?.drg || "-",
                 qty: item.dispatchQty,
                 rate: resolvedRate,
                 value: Number(resolvedRate) * Number(item.dispatchQty),
