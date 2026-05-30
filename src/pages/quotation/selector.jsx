@@ -14,6 +14,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import moment from "moment";
 import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
+import PDFICON from "../../assets/pdf2.svg";
 
 export const getColumns = ({ handleDownload, value, makeQuotationCopy }) => {
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
@@ -25,15 +26,17 @@ export const getColumns = ({ handleDownload, value, makeQuotationCopy }) => {
       renderCell: (params) => {
         return (
           <Button
-            className="customBtn"
-            variant="outlined"
+            color="error"
+            // className="customBtn"
+            variant="contained"
             onClick={(e) => {
               e.stopPropagation();
               handleDownload(e, params.row);
             }}
             size="small"
+            startIcon={<img src={PDFICON} alt="PDF" style={{ width: 16, fill: "white" }} />}
           >
-            Print
+            PDF
           </Button>
         );
       },

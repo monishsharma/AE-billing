@@ -7,9 +7,10 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import moment from "moment";
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
+import PDFICON from "../../assets/pdf2.svg";
 
 
-export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
+export const getColumns = ({ handleDownloadClick, chekboxhandler, value }) => {
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
   return [
   {
@@ -38,19 +39,20 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
       return (
         (
           <>
-          {/* <Button
-            color="primary"
+          <Button
+            color="error"
             variant="contained"
+            startIcon={<img src={PDFICON} alt="PDF" style={{ width: 16, fill: "white" }} />}
             // className="customBtn"
             onClick={(e) => {
               e.stopPropagation();
-              handleDownload(e, params.row);
+              handleDownloadClick(e, params.row);
             }}
             size="small"
           >
-            Print
-          </Button> */}
-            <IconButton
+            PDF
+          </Button>
+            {/* <IconButton
               color="primary"
               onClick={(e) => {
                 e.stopPropagation();
@@ -71,7 +73,7 @@ export const getColumns = ({ handleDownload, chekboxhandler, value }) => {
               size="small"
             >
               <ReceiptIcon />
-            </IconButton>
+            </IconButton> */}
           </>
         )
       )

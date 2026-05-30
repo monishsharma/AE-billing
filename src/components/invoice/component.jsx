@@ -155,6 +155,32 @@ const Invoice = ({
         navigate(`/edit/invoice/${row._id}`);
     };
 
+    const handleDownloadClick = async (e, row) => {
+        e.stopPropagation();
+
+        const result = await Swal.fire({
+            title: "Download Invoice",
+            text: "Which invoice would you like to download?",
+            icon: "question",
+            showDenyButton: true,
+            showCancelButton: true,
+
+            confirmButtonText: "Original",
+            denyButtonText: "Duplicate",
+
+            confirmButtonColor: "#00e676",
+            denyButtonColor: "#2196f3",
+        });
+
+        if (result.isConfirmed) {
+            handleDownload(e, row, true); // Original
+        }
+
+        if (result.isDenied) {
+            handleDownload(e, row, false); // Duplicate
+        }
+    };
+
     const handleDownload = React.useCallback(async (e, row, downloadOriginal = false) => {
         e.stopPropagation(); // prevent triggering row click
 
@@ -537,7 +563,7 @@ const Invoice = ({
       };
 
 
-      const columns = useMemo(() => getColumns({ handleDownload, chekboxhandler, value: company }), [handleDownload, chekboxhandler, company]);
+      const columns = useMemo(() => getColumns({ handleDownloadClick, chekboxhandler, value: company }), [handleDownload, chekboxhandler, company]);
 
     const renderInvoices = () => (
         <>
