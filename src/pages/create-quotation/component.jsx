@@ -157,13 +157,31 @@ const CreateQuotation = ({
     // for customer detail auto fill //
 
     if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL && name === "customer") {
-      const index = vendorList.findIndex((vendor) => vendor._id === value);
-      if (index !== -1) vendorDetail = vendorList[index];
-      customValue = getCustomerDetail({selectedCustomer: vendorDetail});
+      const selectedVendor = filteredVendorList.find(vendor => vendor._id === value);
+      const branches = selectedVendor?.plantRows || [];
+      if (branches.length === 1) {
+        customValue = getCustomerDetail({selectedCustomer: selectedVendor, branch: branches[0].id});
+        data = {
+          ...customValue,
+        }
+      } else {
+        customValue = getCustomerDetail({selectedCustomer: selectedVendor});
+        data = {
+          ...customValue,
+          branch: ""
+        }
+      }
+    }
+
+    if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL && name === "branch") {
+      const selectedVendor = filteredVendorList.find(vendor => vendor._id === buyerDetail.customer);
+      // if (index !== -1) vendorDetail = vendorList[index];
+      customValue = getCustomerDetail({selectedCustomer: selectedVendor, branch: value});
       data = {
         ...customValue
       }
     }
+
 
     // for ITEMS //
     if (savingItems) {

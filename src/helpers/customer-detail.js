@@ -8,20 +8,15 @@ export const getCustomerDetail = ({
 }) => {
     const materialCode = rest.materialCode || selectedCustomer?.materialCode || "";
     const orderType = selectedCompany === COMPANY_TYPE.PADMA ? "Roller" : rest.orderType || selectedCustomer?.orderType || ""
-    const branchID = selectedCustomer?.plantRows?.length === 1 ? selectedCustomer.plantRows[0].id : branch || "";
+    const selectedBranch = selectedCustomer?.plantRows.length === 1 ? selectedCustomer?.plantRows[0] : selectedCustomer?.plantRows?.find(plant => plant.id === branch);
+    const { address, stateCode, GSTIN, PAN, state, city, label } = selectedBranch || {};
+    const branchID = selectedCustomer?.plantRows?.length === 1 ? selectedBranch?.id : branch || "";
     const {
         id = "",
         _id = "",
-        address,
-        isInterState,
         vendorCode,
-        GSTIN,
-        PAN,
         name,
         type,
-        state,
-        city,
-        plantRows,
     } = selectedCustomer || {};
 
 
@@ -32,7 +27,9 @@ export const getCustomerDetail = ({
             customer: _id || id,
             customerName: selectedCustomer?.label,
             address,
-            isInterState,
+            stateCode,
+            label,
+            isInterState: stateCode === "23" ? false : true,
             vendorCode,
             GSTIN,
             PAN,
