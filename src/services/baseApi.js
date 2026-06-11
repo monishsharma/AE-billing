@@ -3,8 +3,8 @@ import { getAuth } from "firebase/auth";
 //
 // /* Create axios instance */
 const api = axios.create({
-    baseURL: "http://localhost:5050",
-    // baseURL: "https://ashok-enterprises-api.vercel.app",
+    // baseURL: "http://localhost:5050",
+    baseURL: "https://ashok-enterprises-api.vercel.app",
     headers: {
         "Content-Type": "application/json",
         "X-Application-Type": "React" // Added for php api to identify requesting application
