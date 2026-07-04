@@ -4,8 +4,10 @@ import Invoice from "./component.jsx";
 import { getInvoiceList, saveApiData, resetReducer, getBillPdf, generateCSV, updateInvoice, searchInvoice } from "../../store/invoice-form/action.js";
 
 const mapStateToProps = ({
+    config,
     invoiceForm
 }) => ({
+    config,
     invoiceForm
 });
 

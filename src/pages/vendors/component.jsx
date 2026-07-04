@@ -65,9 +65,8 @@ const Vendors = ({ config }) => {
             <TableHead>
               <TableRow>
                 <TableCell>S.no</TableCell>
-                <TableCell>Vendor Name</TableCell>
+                <TableCell>Customer Name</TableCell>
                 <TableCell>City</TableCell>
-                <TableCell>GSTIN</TableCell>
                 {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
               </TableRow>
             </TableHead>
@@ -90,8 +89,11 @@ const Vendors = ({ config }) => {
                         {index + 1}
                       </TableCell>
                       <TableCell >{vendor.name}</TableCell>
-                      <TableCell>{vendor.label}</TableCell>
-                      <TableCell>{vendor.GSTIN}</TableCell>
+                      <TableCell>
+                        {
+                          vendor?.plantRows?.map((plant, plantIndex) => plant.label).join(", ")
+                        }
+                        </TableCell>
                     </TableRow>
                   </React.Fragment>
                 );

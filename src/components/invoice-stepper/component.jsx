@@ -27,7 +27,7 @@ const steps = [
     component: BuyerDetail
   },
   {
-    label: 'Good Description',
+    label: 'Goods Description',
     stepName: STEPPER_NAME.GOODS_DESCRIPTION,
     component: GoodsDescription
   },
@@ -198,7 +198,24 @@ export default function InvoiceStepper({
           //
             <Step ref={(el) => (stepRefs.current[index] = el)} completed={isStepCompleted(step)} key={step.label}  sx={{cursor: 'pointer'}}>
               <StepLabel onClick={() => jumpToStep(index)}>
-                <Typography variant="h5">{step.label}</Typography>
+                <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
+                  <Typography variant="h5">{step.label}</Typography>
+                  {/* {
+                    activeStep === index &&
+                    <Button
+                      size="small"
+                      color="error"
+                      variant="contained"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Implement delete logic here, e.g., call an API to delete the invoice
+                        console.log("Delete invoice");
+                      }}
+                    >
+                      Delete Invoice
+                    </Button>
+                  } */}
+                </Box>
                 <Typography variant="subtitle2" color="textSecondary">
                   {getSubtitle(step.stepName)}
                 </Typography>

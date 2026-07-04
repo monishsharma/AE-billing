@@ -17,6 +17,7 @@ import { COMPANY_TYPE } from '../../constants/app-constant';
 import PoTable from './poTable';
 import { deductPercent, preSelectItems } from './selector';
 import RollerFilter from '../roller-filter';
+import Swal from 'sweetalert2';
 
 const style = {
     position: 'absolute',
@@ -103,7 +104,32 @@ const PoSelection = ({
 
 
     const handleSelectItem = (item) => {
+        if (company === COMPANY_TYPE.ASHOK) {
+            // if selecteditems po number is different to item po number show error also if there is one po alreayd selected and the new item po number is different show error
+            const differentPO = Object.values(selectedItems).some(
+                selectedItem => selectedItem.poNumber !== item?.poNumber
+            );
+            if (differentPO || (selectedPoNumbers && selectedPoNumbers[0] && item?.poNumber != selectedPoNumbers[0])) {
+                Swal.fire({
+                    title: "PO Mismatch",
+                    html: `
+                        <p>Cannot select item from different PO</p>
+                        <p>PO Already Selected: <strong>${Object.values(selectedItems)[0]?.poNumber}</strong></p>
+                        <p>Attempted PO: <strong>${item?.poNumber}</strong></p>
+                        <span><strong>Please Create Another Invoice For Different PO</strong></span>
+                    `,
+                    icon: "error",
+                    customClass: {
+                        popup: 'swal-popup-front',
+                    },
+                });
+                return;
+            }
+        }
         const key = item.itemId;
+
+        console.log(selectedItems, "selectedItems")
+
 
         setSelectedItems(prev => {
             const updated = { ...prev };
@@ -235,7 +261,13 @@ const PoSelection = ({
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        <Typography variant="h5">Select Po</Typography>
+                        <Typography variant="h5">Select Po
+                            <br />
+                            <Typography mt={2} variant="body2" color="error">
+                            Notice: For Company Ashok Only One PO is Allowed Per Invoice
+                        </Typography>
+                        </Typography>
+
                         <CloseOutlinedIcon
                             onClick={toggleModal}
                             sx={{ cursor: 'pointer' }}

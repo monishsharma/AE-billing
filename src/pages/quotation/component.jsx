@@ -15,6 +15,7 @@ import { ButtonGroup } from '@mui/material';
 import PoTypeFilter from '../../components/potype-filter';
 
 const Quotation = ({
+    config,
     getConfigConnect,
     getQuotationConnect,
     saveQuotationConnect,
@@ -22,6 +23,7 @@ const Quotation = ({
     getQuotationPdfConnect
 }) => {
 
+    const {vendorsList} = config || {};
     const Navigate = useNavigate();
     const { company } = useParams();
     const [quotationList, setQuotationList] = useState([])
@@ -230,7 +232,7 @@ const Quotation = ({
         })
     }
 
-    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation, makeQuotationCopy }), [ company, downloadQuotation]);
+    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation, makeQuotationCopy, vendorsList }), [ company, downloadQuotation, vendorsList]);
 
 
     const renderContent = () => {

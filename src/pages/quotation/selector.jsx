@@ -16,8 +16,15 @@ import moment from "moment";
 import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
 import PDFICON from "../../assets/pdf2.svg";
 
-export const getColumns = ({ handleDownload, value, makeQuotationCopy }) => {
+export const getColumns = ({ handleDownload, value, makeQuotationCopy, vendorsList }) => {
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
+  const findCustomerName = (row) => {
+    const customerId = row?.buyerDetail?.customer;
+    const vendor = vendorsList?.find(vendor => vendor._id == customerId);
+    const branches = vendor?.plantRows || [];
+    return branches.length === 1 ? `${vendor.label}` : `${row?.buyerDetail.label || row?.buyerDetail.customerName || row?.buyerDetail.customer}`;
+
+  }
   return [
     {
       field: "Bill",
@@ -52,7 +59,7 @@ export const getColumns = ({ handleDownload, value, makeQuotationCopy }) => {
           <Typography
             variant="body2"
             color={
-              moment(params?.row?.quotationDetail.invoiceDate).isSame(
+              moment(params?.row?.quotationDetail.quotationDate).isSame(
                 moment(),
                 "day",
               )
@@ -121,7 +128,7 @@ export const getColumns = ({ handleDownload, value, makeQuotationCopy }) => {
       flex: 1,
       renderHeader: () => <strong>Company</strong>,
       sortable: false,
-      valueGetter: (params, row) => row?.buyerDetail?.customerName ?? "",
+      valueGetter: (params, row) => findCustomerName(row),
     },
     {
       field: "date",

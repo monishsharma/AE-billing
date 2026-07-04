@@ -3,7 +3,11 @@ import { bindActionCreators } from "redux";
 import Quotation from "./component.jsx";
 import { getConfig, getQuotation, getQuotationPdf, resetReducer, saveQuotation } from "../../store/quotation/action.js";
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({
+    config
+}) => ({
+    config
+});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     resetReducerConnect: resetReducer,

@@ -28,6 +28,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import CompanyTabs from "../company-tabs";
 
 const Invoice = ({
+    config,
     invoiceForm,
     getInvoiceListConnect,
     getBillPdfConnect,
@@ -36,6 +37,7 @@ const Invoice = ({
     updateInvoiceConnect,
     searchInvoiceConnect
 }) => {
+    const { vendorsList } = config || {};
     const navigate = useNavigate();
     const { company } = useParams();
     const {isActive, ref} = useOutletContext();
@@ -563,7 +565,7 @@ const Invoice = ({
       };
 
 
-      const columns = useMemo(() => getColumns({ handleDownloadClick, chekboxhandler, value: company }), [handleDownload, chekboxhandler, company]);
+      const columns = useMemo(() => getColumns({ handleDownloadClick, chekboxhandler, value: company, vendorsList }), [handleDownload, chekboxhandler, company, vendorsList]);
 
     const renderInvoices = () => (
         <>

@@ -10,8 +10,17 @@ import { CG_URL, COMPANY_TYPE } from "../../constants/app-constant";
 import PDFICON from "../../assets/pdf2.svg";
 
 
-export const getColumns = ({ handleDownloadClick, chekboxhandler, value }) => {
+export const getColumns = ({ handleDownloadClick, chekboxhandler, value, vendorsList }) => {
   const isCompanyAshok = value === COMPANY_TYPE.ASHOK;
+
+  const findCustomerName = (row) => {
+    const customerId = row?.buyerDetail?.customer;
+    const vendor = vendorsList?.find(vendor => vendor._id == customerId);
+    const branches = vendor?.plantRows || [];
+    return branches.length === 1 ? `${vendor.label}` : `${row?.buyerDetail.label || row?.buyerDetail.customerName || row?.buyerDetail.customer}`;
+
+  }
+
   return [
   {
     field: "",
@@ -193,7 +202,7 @@ export const getColumns = ({ handleDownloadClick, chekboxhandler, value }) => {
     renderHeader: () => <strong>Billed To</strong>,
     minWidth: 150,
     sortable: false,
-    valueGetter: (params, row) => `${row?.buyerDetail.label || row?.buyerDetail.customerName || row?.buyerDetail.customer}`,
+    valueGetter: (params, row) => findCustomerName(row),
   }
 ] : []),
   {
