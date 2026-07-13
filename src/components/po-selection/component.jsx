@@ -104,32 +104,29 @@ const PoSelection = ({
 
 
     const handleSelectItem = (item) => {
-        if (company === COMPANY_TYPE.ASHOK) {
-            // if selecteditems po number is different to item po number show error also if there is one po alreayd selected and the new item po number is different show error
-            const differentPO = Object.values(selectedItems).some(
-                selectedItem => selectedItem.poNumber !== item?.poNumber
-            );
-            if (differentPO || (selectedPoNumbers && selectedPoNumbers[0] && item?.poNumber != selectedPoNumbers[0])) {
-                Swal.fire({
-                    title: "PO Mismatch",
-                    html: `
-                        <p>Cannot select item from different PO</p>
-                        <p>PO Already Selected: <strong>${Object.values(selectedItems)[0]?.poNumber}</strong></p>
-                        <p>Attempted PO: <strong>${item?.poNumber}</strong></p>
-                        <span><strong>Please Create Another Invoice For Different PO</strong></span>
-                    `,
-                    icon: "error",
-                    customClass: {
-                        popup: 'swal-popup-front',
-                    },
-                });
-                return;
-            }
-        }
+        // if (company === COMPANY_TYPE.ASHOK) {
+        //     // if selecteditems po number is different to item po number show error also if there is one po alreayd selected and the new item po number is different show error
+        //     const differentPO = Object.values(selectedItems).some(
+        //         selectedItem => selectedItem.poNumber !== item?.poNumber
+        //     );
+        //     if (differentPO || (selectedPoNumbers && selectedPoNumbers[0] && item?.poNumber != selectedPoNumbers[0])) {
+        //         Swal.fire({
+        //             title: "PO Mismatch",
+        //             html: `
+        //                 <p>Cannot select item from different PO</p>
+        //                 <p>PO Already Selected: <strong>${Object.values(selectedItems)[0]?.poNumber}</strong></p>
+        //                 <p>Attempted PO: <strong>${item?.poNumber}</strong></p>
+        //                 <span><strong>Please Create Another Invoice For Different PO</strong></span>
+        //             `,
+        //             icon: "error",
+        //             customClass: {
+        //                 popup: 'swal-popup-front',
+        //             },
+        //         });
+        //         return;
+        //     }
+        // }
         const key = item.itemId;
-
-        console.log(selectedItems, "selectedItems")
-
 
         setSelectedItems(prev => {
             const updated = { ...prev };
