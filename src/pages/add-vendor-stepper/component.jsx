@@ -8,7 +8,8 @@ const AddVendorStepper = ({
     saveDataConnect,
     updateVendorConnect,
     setCurrentStepConnect,
-    updateVendorListConnect
+    updateVendorListConnect,
+    resetVendorFormConnect
 }) => {
 
     const {id = ""} = useParams();
@@ -53,6 +54,7 @@ const AddVendorStepper = ({
                                 currentStep={currentStep}
                                 vendorForm={vendorForm}
                                 saveData={saveDataConnect}
+                                resetVendorFormConnect={resetVendorFormConnect}
                                 updateVendorConnect={updateVendorConnect}
                                 updateVendorList={updateVendorListConnect}
                                 setCurrentStepConnect={setCurrentStepConnect}
