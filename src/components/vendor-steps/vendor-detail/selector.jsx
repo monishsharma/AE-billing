@@ -28,7 +28,7 @@ export const INPUTS = [
         component: TextField,
         stepName: VENDOR_STEPS.VENDOR_DETAIL,
         extraProps: {
-            capitalize: true
+            // capitalize: true
         }
     },
 

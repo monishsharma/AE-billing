@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import PageLoader from "../../components/page-loader";
 import { useNavigate } from "react-router-dom";
 
-const Vendors = ({ config }) => {
+const Vendors = ({ config, resetVendorFormConnect }) => {
   const navigate = useNavigate();
 
   const { vendorsList = [] } = config || {};
@@ -42,6 +42,7 @@ const Vendors = ({ config }) => {
 
 
   const addVendor = () => {
+    resetVendorFormConnect();
     navigate("/add/customers");
   };
 

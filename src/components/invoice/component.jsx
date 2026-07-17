@@ -261,6 +261,8 @@ const Invoice = ({
             });
         } catch (pdfErr) {
             console.error("PDF generation error", pdfErr);
+            // remove toast on error
+            toast.dismiss(toastId);
             Swal.fire({
                 icon: "error",
                 text: "Failed to generate PDF",

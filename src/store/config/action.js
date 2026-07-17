@@ -1,8 +1,10 @@
 import Swal from "sweetalert2";
-import { BillingService } from "../../services";
+import { BillingService, ConfigService } from "../../services";
 import  Types from './actionTypes';
 
-
+const resetVendorForm = () => ({
+    type: Types.RESET_VENDOR_DETAIL,
+});
 
 const setData = ({data, detail = null}) => ({
     type: Types.SET_VENDORS,
@@ -240,7 +242,56 @@ export const editHSNCode = (id, payload) => () => {
     })
 }
 
+export const getConfig = () => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        ConfigService.getConfig()
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const postConfig = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        ConfigService.postConfig(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const updateConfig = (payload, key) => () => {
+    return new Promise((resolve, reject) => {
+        ConfigService.updateConfig(payload, key)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 export {
     saveData,
+    resetVendorForm,
     setCurrentStep
 }

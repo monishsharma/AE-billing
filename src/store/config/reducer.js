@@ -103,13 +103,23 @@ export const setVendorDetail = (state = INITIAL_STATE, {data}) => {
     }
 }
 
+export const resetVendorDetails = (state = INITIAL_STATE) => {
+    return {
+        ...state,
+        vendorForm: INITIAL_STATE.vendorForm
+    }
+};
+
+
+
 export const HANDLERS = {
     [Types.SET_VENDORS]: setVendorList,
     [Types.SAVE_HSN_LIST]: saveHsnList,
     [Types.SAVE_BAKELITES_RATE_LIST]: saveBakeliteRatesList,
     [Types.SAVE_DATA]: saveData,
     [Types.SET_ACTIVE_STEP]: setCurrentStep,
-    [Types.SAVE_VENDOR_DETAIL]: setVendorDetail
+    [Types.SAVE_VENDOR_DETAIL]: setVendorDetail,
+    [Types.RESET_VENDOR_DETAIL]: resetVendorDetails
 };
 
 

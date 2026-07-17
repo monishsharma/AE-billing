@@ -1,8 +1,9 @@
-import { Grid } from '@mui/material'
+import { Box, Button, Grid, Paper, TextField, Typography } from '@mui/material'
 import React  from 'react';
 import Swal from 'sweetalert2';
-import { BAKELITE_RATE_COLUMN, BAKELITE_RATE_MODAL_INPUTS, BAKELITE_RATE_OPTIONS, COLUMNS, ITEM_TYPE, MODAL_INPUT } from './selector';
+import { BAKELITE_RATE_COLUMN, BAKELITE_RATE_MODAL_INPUTS, BAKELITE_RATE_OPTIONS, COLUMNS, INVOICE_CONFIG, ITEM_TYPE, MODAL_INPUT } from './selector';
 import ItemTable from '../../components/item-table';
+import InvoicePdfConfig from '../../components/invoice-pdf-config';
 
 const HsnCodes = ({
     config,
@@ -123,7 +124,14 @@ const HsnCodes = ({
                         deleteItem={deleteBakeliteRateConnect}
                     />
                 </Grid>
-
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 12
+                    }}
+                >
+                    <InvoicePdfConfig />
+                </Grid>
             </Grid>
         </>
     )

@@ -96,3 +96,23 @@ export const BAKELITE_RATE_OPTIONS = [
     { label: "12MM", code: "1325" },
     { label: "20MM", code: "2445" },
 ];
+
+// make a array to render textfield for original and duplicate invoice height for both AE and PEW
+export const INVOICE_CONFIG = [
+    {
+        label: "AE Duplicate Invoice Height",
+        key: "aeDuplicateInvoiceHeight"
+    },
+    {
+        label: "AE Original Invoice Height",
+        key: "aeOriginalInvoiceHeight"
+    },
+    {
+        label: "PEW Duplicate Invoice Height",
+        key: "pewDuplicateInvoiceHeight"
+    },
+    {
+        label: "PEW Original Invoice Height",
+        key: "pewOriginalInvoiceHeight"
+    }
+]
