@@ -33,8 +33,10 @@ const GoodsDescription = ({
     steps,
     config,
     handleNext,
+    purchaseOrder,
     handleBack,
     invoiceForm,
+    getPoListConnect,
     saveDataConnect,
     getPODetailConnect,
     postHsnCodeConnect,
@@ -42,6 +44,7 @@ const GoodsDescription = ({
     getHsnCodeListConnect
 }) => {
 
+    const { data: purchaseOrderData = [] } = purchaseOrder || {};
     const {
         [STEPPER_NAME.INVOICE_DETAILS]: { company: selectedCompany },
         [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType, branch= "" },
@@ -50,6 +53,8 @@ const GoodsDescription = ({
     const {vendorsList = [], hsn: HSNLIst = []} = config;
 
     const { id: invoiceId } = useParams();
+    const isCompanyAshok = selectedCompany === COMPANY_TYPE.ASHOK;
+
 
     const showToast = ({ type, text, ...rest }) =>
             toast[type](text, {
@@ -115,9 +120,30 @@ const GoodsDescription = ({
 
     const lastSavedItemsRef = React.useRef(localItems);
 
+    const [filters, setFilters] = useState({
+        company: selectedCompany,
+        poStatus: "PENDING",
+        ...(orderType && {
+                poType: orderType.toUpperCase()
+        }),
+        ...(customer && !isCompanyAshok && {
+            vendorId: customer
+        }),
+        ...(branch && {
+            branchId: branch
+        })
+    })
+
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
+
+    React.useEffect(() => {
+        setIsFetchingPO(true)
+        getPoListConnect(filters)
+        .then((_) => setIsFetchingPO(false))
+        .catch((_) => setIsFetchingPO(false))
+    }, [filters]);
 
     React.useEffect(() => {
         // Capture original items only once (on invoice edit load).
@@ -579,7 +605,7 @@ const GoodsDescription = ({
                                             fullWidth
                                         />
                                         {
-                                            input?.span?.show &&
+                                            input?.span?.show && purchaseOrderData.length > 0 && !isFetchingPO &&
                                             <Typography variant="caption" fontWeight={500}  ml={1} display="flex" onClick={toggleModal}>
                                                 {input?.span?.text}
                                             </Typography>

@@ -2,9 +2,7 @@ import React from 'react';
 import AddVendorStepper from '../add-vendor-stepper';
 
 
-const AddVendorV2 = ({
-    getVendorListConnect
-}) => {
+const AddVendorV2 = ({}) => {
 
 
     return (
@@ -12,9 +10,7 @@ const AddVendorV2 = ({
             <div className="mt-4">
                 <h2 className="fw-bold">Add Customer</h2>
                 <div className="mt-4">
-                    <AddVendorStepper
-                        getVendorList={getVendorListConnect}
-                    />
+                    <AddVendorStepper />
                 </div>
             </div>
         </div>

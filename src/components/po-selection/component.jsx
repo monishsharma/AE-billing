@@ -84,12 +84,12 @@ const PoSelection = ({
 
 
 
-    useEffect(() => {
-        setIsFetching(true)
-        getPoListConnect(filters)
-        .then((_) => setIsFetching(false))
-        .catch((_) => setIsFetching(false))
-    }, [filters]);
+    // useEffect(() => {
+    //     setIsFetching(true)
+    //     getPoListConnect(filters)
+    //     .then((_) => setIsFetching(false))
+    //     .catch((_) => setIsFetching(false))
+    // }, [filters]);
 
     // useEffect(() => {
     //     if (!open || !data.length) return;
