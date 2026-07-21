@@ -22,6 +22,7 @@ export const getCustomerDetail = ({
 
 
     return {
+            isTemporary:false,
             materialCode,
             orderType,
             customer: _id || id,

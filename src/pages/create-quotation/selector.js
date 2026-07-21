@@ -1,4 +1,5 @@
 import TextField from '@mui/material/TextField';
+import SelectVendor from '../../components/select-vendor';
 import { COMPANY_TYPE, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from '../../constants/app-constant';
 import { isMobileDevice } from '../../helpers/is-mobile-device';
 
@@ -36,7 +37,8 @@ export const INPUTS = [
         type: "select",
         key: QUOTATION_FIELDS.QUOTATION_CUSTOMER,
         stepName: QUOTATION_STEPPER_NAME.BUYER_DETAIL,
-        component: TextField,
+        component: SelectVendor,
+        customComponent: true,
         disabledProp: true,
         extraProps: {
             select: true,

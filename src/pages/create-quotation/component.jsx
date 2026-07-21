@@ -41,14 +41,11 @@ const CreateQuotation = ({
   const {quotationDetail = {}, buyerDetail, columns: serverColumns} = quotation;
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const {isTemporary = false, branch} = buyerDetail || {};
   const vendorList = useSelector((state) => state.config.vendorsList);
   const filteredVendorList = vendorList?.filter((vendor) => vendor.type === quotationCompany);
   const branchOptions = buyerDetail?.customer ? filteredVendorList.find(vendor => vendor._id === buyerDetail.customer)?.plantRows || [] : [];
   const optionsMap = {
-    vendorList: filteredVendorList?.map((v) => ({
-      value: v._id,
-      label: v.label,
-    })),
     companyType: Object.keys(COMPANY_TYPE).map((type) => ({
         value: COMPANY_TYPE[type],
         label: COMPANY_TYPE[type],
@@ -57,7 +54,7 @@ const CreateQuotation = ({
         value: type,
         label: type,
     })),
-    branches: branchOptions.map((branch) => ({
+    branches: isTemporary ? [{value: branch, label: branch}] : branchOptions.map((branch) => ({
         value: branch.id,
         label: branch.label,
     }))
@@ -144,7 +141,7 @@ const CreateQuotation = ({
   }, [quotationCompany, filteredVendorList.length]);
 
   const onFieldChange = ({ event, stepName, savingItems = false, itemIndex }) => {
-    const { name, value } = event.target;
+    const { name, value, isTemporary = false, branch = "", label = "" } = event.target;
     let customValue = value;
     let vendorDetail;
     // for normal fields //
@@ -152,22 +149,43 @@ const CreateQuotation = ({
       [name]: customValue
     };
 
+    if (isTemporary) {
+      data = {
+        [name]: customValue,
+        materialCode: "",
+        orderType: "",
+        customerName: label,
+        address: "",
+        stateCode: "",
+        label: label,
+        vendorCode: "",
+        GSTIN: "",
+        PAN: "",
+        name: label,
+        city: branch,
+        state: "",
+        isTemporary: true,
+        branch
+      }
+    }
 
 
     // for customer detail auto fill //
 
-    if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL && name === "customer") {
+    if (stepName === QUOTATION_STEPPER_NAME.BUYER_DETAIL && name === "customer" && !isTemporary) {
       const selectedVendor = filteredVendorList.find(vendor => vendor._id === value);
       const branches = selectedVendor?.plantRows || [];
       if (branches.length === 1) {
         customValue = getCustomerDetail({selectedCustomer: selectedVendor, branch: branches[0].id});
         data = {
           ...customValue,
+          isTemporary
         }
       } else {
         customValue = getCustomerDetail({selectedCustomer: selectedVendor});
         data = {
           ...customValue,
+          isTemporary,
           branch: ""
         }
       }
@@ -314,6 +332,7 @@ const CreateQuotation = ({
         {
           INPUTS.map((input) => {
             const Component = input.component;
+            const customComponent = input.customComponent;
             const options = input.extraProps?.options || optionsMap[input.optionsFrom];
             return (
               <Grid item size={{xs:12, md: 2}} key={input.id}>
@@ -330,6 +349,33 @@ const CreateQuotation = ({
                     error={!quotationFormValidation[input.key]}
                     disabled={input.extraProps && input.extraProps.disableOnEdit && id}
                     {...input.extraProps}
+                    {
+                      ...(customComponent && {
+                          selectedCompany: quotationCompany || "",
+                          width: "100%",
+                          selectedCustomer: {
+                            value: buyerDetail?.customerName || "",
+                            branch: buyerDetail?.branch || "",
+                            label: buyerDetail?.label || ""
+                          },
+                          allowTempCustomer: true,
+                          value: buyerDetail?.customer || "",
+                          callback: (event,selectedVendor) => {
+                            const {id = "", value, branch = "", isTemporary = false} = selectedVendor || {};
+                            const customEvent = {
+                              target: {
+                                name: input.name,
+                                value: id,
+                                label: value,
+                                ...(branch && {branch}),
+                                isTemporary
+                              }
+                            }
+                            onFieldChange({event: customEvent, stepName: input.stepName})
+                          }
+                        }
+                      )
+                    }
                   >
                     {
                       options?.map((opt) => (

@@ -1,13 +1,11 @@
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
-
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '20%',
     bgcolor: 'background.paper',
     borderRadius: 10,
     outline: 'none',
@@ -17,17 +15,16 @@ const style = {
     padding: 20
 };
 
-
 const ItemModal = ({
     open,
     onSave,
     title,
     INPUT,
     toggleModal,
-    selectedItem,
-    setSelectedItem
+    selectedItem = {},
+    setSelectedItem,
+    flexDirection = "column"
 }) => {
-
 
     const onChange = (e, item) => {
         setSelectedItem({
@@ -36,15 +33,18 @@ const ItemModal = ({
         })
     }
 
-    const onSaveHandler = () => {
+    const onSaveHandler = (e) => {
+        e.preventDefault();
         onSave(selectedItem, INPUT);
     }
 
     return (
         <Modal open={open} onClose={toggleModal}>
-            <Box style={style}>
+            <Box style={{
+                ...style,
+                width: flexDirection === "row" ? "50%" : "20%",
+            }}>
                 <Box
-                    // px={3}
                     pt={2}
                     pb={1}
                     display="flex"
@@ -57,36 +57,48 @@ const ItemModal = ({
                         sx={{ cursor: 'pointer' }}
                     />
                 </Box>
+
                 <Box
                     component="form"
-                    sx={{
-                        display: "flex",
-                        gap: 2,
-                        mb: 4,
-                        mt: 2,
-                        flexDirection: "column"
-                    }}
-                    noValidate
+                    onSubmit={onSaveHandler}
                     autoComplete="off"
+                    sx={{ width: '100%' }}
                 >
-                    {
-                        INPUT.map((item, index) => (
-                            <TextField
-                                fullWidth
-                                key={index}
-                                label={item.label}
-                                value={selectedItem[item.key] || ""}
-                                onChange={(e) => onChange(e, item)}
-                                placeholder={item.label}
-                            />
-                        ))
-                    }
+                    <Box
+                        sx={{
+                            display: "flex",
+                            gap: 2,
+                            mb: 4,
+                            mt: 2,
+                            flexDirection,
+                        }}
+                    >
+                        {
+                            INPUT.map((item, index) => (
+                                <TextField
+                                    required
+                                    fullWidth
+                                    key={index}
+                                    label={item.label}
+                                    value={selectedItem[item.key] || ""}
+                                    onChange={(e) => onChange(e, item)}
+                                    placeholder={item.label}
+                                />
+                            ))
+                        }
+                    </Box>
+                    <Button
+                        type='submit'
+                        variant='contained'
+                        className='customBtn'
+                        fullWidth
+                    >
+                        Save
+                    </Button>
                 </Box>
-
-                <Button  variant='contained' className='customBtn' onClick={onSaveHandler}>Save</Button>
             </Box>
         </Modal>
     )
 }
 
-export default ItemModal
+export default ItemModal;
