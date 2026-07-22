@@ -42,6 +42,7 @@ export const INPUTS = [
         disabledProp: true,
         extraProps: {
             select: true,
+            disabledCondition: (quotationCompany) => !quotationCompany,
         },
         optionsFrom: "vendorList"
     },
@@ -56,6 +57,7 @@ export const INPUTS = [
         disabledProp: true,
         extraProps: {
             select: true,
+            // disabledCondition: (buyerDetail) => !buyerDetail?.customer,
         },
         optionsFrom: "branches"
     },

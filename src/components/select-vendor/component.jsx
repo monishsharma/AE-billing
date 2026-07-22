@@ -24,6 +24,7 @@ const SelectVendor = ({
     size,
     width = 200,
     value = "",
+    disabled = false,
     allowTempCustomer = false,
     selectedCustomer,
     selectedCompany = "",
@@ -32,6 +33,7 @@ const SelectVendor = ({
     disableClearable = false,
     ...rest
 }) => {
+
     const { company } = useParams();
     const {vendorsList = []} = config;
     const [selectedItem, setSelectedItem] = useState({});
@@ -113,6 +115,7 @@ const SelectVendor = ({
             <Autocomplete
                 sx={{width: {xs: "100%", sm: width}, flexShrink: 0}}
                 size={size}
+                disabled={disabled}
                 value={selectedVendorValue}
                 options={vendorOptions}
                 // disableClearable={disableClearable}

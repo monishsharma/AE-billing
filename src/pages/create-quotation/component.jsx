@@ -344,10 +344,15 @@ const CreateQuotation = ({
                     label={input.placeholder}
                     value={quotation?.[input.stepName]?.[input.name] || ""}
                     placeholder={input.placeholder}
+                    // disabled from disabledCondition prop in selector.js
                     onChange={(event) => onFieldChange({event, stepName: input.stepName})}
                     type={input.extraProps?.type || "text"}
                     error={!quotationFormValidation[input.key]}
-                    disabled={input.extraProps && input.extraProps.disableOnEdit && id}
+                    disabled={
+                      input.extraProps && input.extraProps.disableOnEdit && id
+                      ||
+                      input.extraProps?.disabledCondition && input.extraProps.disabledCondition(quotationCompany, buyerDetail)
+                    }
                     {...input.extraProps}
                     {
                       ...(customComponent && {

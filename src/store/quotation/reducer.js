@@ -20,6 +20,25 @@ export const INITIAL_STATE = {
     quotationConfig: null
 };
 
+const resettableValues = (state, data, stepName) => {
+    const initialState = state[stepName];
+    let isDataChanged = false;
+
+// i want to reset the buyer detail wheneveer quoation company changes
+
+    if (data.quotationCompany) {
+        isDataChanged = Object.keys(data).some(key => {
+                return data[key] !== initialState[key];
+        });
+    }
+
+    if (isDataChanged) {
+        return {
+            [QUOTATION_STEPPER_NAME.BUYER_DETAIL]: { },
+        }
+    }
+}
+
 
 
 export const saveData = (state = INITIAL_STATE, { data, stepName }) => {
@@ -29,6 +48,7 @@ export const saveData = (state = INITIAL_STATE, { data, stepName }) => {
             ...state[stepName],
             ...data
         },
+        ...resettableValues(state, data, stepName)
     }
 };
 
