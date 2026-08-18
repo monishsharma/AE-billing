@@ -60,7 +60,7 @@ const PurchaseOrder = ({
         setTimeout(() => {
         detailRef.current.scrollIntoView({
             behavior: "smooth",
-            block: "end",
+            block: "center",
         });
         }, 200); // match Collapse timing
     }
@@ -74,7 +74,6 @@ const PurchaseOrder = ({
         const updatedFilters = {...filters};
         if (updatedFilters.size) delete updatedFilters.size;
         setFilters({
-            ...updatedFilters,
             company: newValue,
         });
         Navigate(`/purchase-order/${newValue}`);
@@ -162,7 +161,7 @@ const PurchaseOrder = ({
 
         return (
             <>
-                <TableContainer >
+                <TableContainer ref={detailRef} >
                     <Table aria-label="collapsible table" >
                         <TableHead>
                             <TableRow>
@@ -173,7 +172,7 @@ const PurchaseOrder = ({
                                 ))}
                             </TableRow>
                             </TableHead>
-                        <TableBody>
+                        <TableBody >
                             {data.map((row, idx) => {
                                 const helpers = {
                                     openRow,
@@ -188,7 +187,7 @@ const PurchaseOrder = ({
                                     isLoading ?
                                     <TableSkeleton />
                                     :
-                                    <React.Fragment key={row._id}>
+                                    <React.Fragment key={row._id} >
                                         <TableRow>
                                         {
                                             TABLE_COLUMNS.map((col, i) => {
@@ -204,7 +203,6 @@ const PurchaseOrder = ({
                                         <CollapsibleItem
                                             data={row}
                                             isOpen={openRow === row._id}
-                                            detailRef={detailRef}
                                             deletePoHandler={deletePo}
                                             getInvoiceListConnect={getInvoiceListConnect}
                                             />
