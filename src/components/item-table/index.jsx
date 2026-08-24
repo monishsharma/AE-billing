@@ -58,27 +58,27 @@ const ItemTable = ({
         toggleModal()
     }
 
-    const deleteHandler = (item) => {
-            Swal.fire({
+    const deleteHandler = (item, itemType) => {
+        const {_id} = item;
+        Swal.fire({
                 title: "Are you sure?",
-                text: swalText,
+                text: `Do you really want to delete ?`,
                 icon: "question",
                 showCancelButton: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteItem({
-                        id: item._id
-                    })
+                    deleteItem(itemType, _id)
                     .then(async() => {
-                        await getItem();
+                            await getItem()
                             Swal.fire({
                             title: "Successfuly Deleted",
                             icon: "success"
                         })
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         Swal.fire({
                             title: "Something Went Wrong",
+                            text:error,
                             icon: "error"
                         })
                     })
@@ -180,7 +180,7 @@ const ItemTable = ({
                                                         })}
                                                         <TableCell align='center' key={index} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
                                                             <EditOutlinedIcon sx={{cursor: "pointer"}} color="primary" onClick={() => editItem(item)} />
-                                                            <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item)} />
+                                                            <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item, itemType)} />
                                                         </TableCell>
                                                     </TableRow>
                                                 ))

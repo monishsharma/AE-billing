@@ -296,6 +296,23 @@ export const updateAppConfig = (payload, configKey) => () => {
     })
 }
 
+export const deleteConfigValue = (configKey, valueId) => () => {
+    return new Promise((resolve, reject) => {
+        ConfigService.deleteConfigValue(configKey,valueId)
+        .then((res) => {
+            console.log(res.data)
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 export {
     saveData,
     resetVendorForm,

@@ -486,7 +486,6 @@ const Invoice = ({
 
             })
             .catch((err) => {
-                console.log(err);
                 setBtnLoading(false);
 
                 Swal.fire({
@@ -509,6 +508,14 @@ const Invoice = ({
             downloadFile(response,`${company}-GST-${month}-${year}.xlsx`);
             setBtnLoading(false);
 
+        })
+        .catch(() => {
+            setBtnLoading(false);
+
+                Swal.fire({
+                    icon: "error",
+                    text: "Failed to generate Report",
+                });
         })
     };
 

@@ -12,11 +12,16 @@ export default (api) => {
         return api.post(`/config/post-config-value?configKey=${configKey}`, payload);
     }
 
+    const deleteConfigValue = (configKey, valueId) => {
+        return api.delete(`/config/delete-config-value?configKey=${configKey}&valueId=${valueId}`);
+    }
+
 
 
   return {
     getAppConfig,
     postAppConfig,
-    updateAppConfig
+    updateAppConfig,
+    deleteConfigValue
   };
 };

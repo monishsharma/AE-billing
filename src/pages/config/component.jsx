@@ -12,7 +12,8 @@ import TabList from '@mui/lab/TabList';
 const Config = ({
     config,
     getAppConfigConnect,
-    updateAppConfigConnect
+    updateAppConfigConnect,
+    deleteConfigValueConnect
 }) => {
 
 
@@ -119,7 +120,9 @@ const Config = ({
                                             itemType={key}
                                             onSave={onSave}
                                             onEdit={onEdit}
+                                            getItem={getAppConfigConnect}
                                             title={configItem.title}
+                                            deleteItem={deleteConfigValueConnect}
                                             swalText={`Do You Want to Delete the ${configItem.title}`}
                                             btnTitle={`ADD ${configItem.title.toUpperCase()}`}
                                         />
