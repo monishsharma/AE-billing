@@ -27,9 +27,12 @@ export const TABLE_COLUMNS = [
   {
     label: "Customer",
     sx: { minWidth: 175 },
-    render: (row) => {
-
-      return row?.vendorDetail?.branchLabel
+    render: (row, _ ,helpers) => {
+      const {filteredVendorList} = helpers;
+      const customerId = row?.vendorDetail?.vendorId;
+      const vendor = filteredVendorList?.find(vendor => vendor._id == customerId);
+      const branches = vendor?.plantRows || [];
+      return branches.length === 1 ? `${vendor?.label}` : `${row?.vendorDetail?.branchLabel}`;
     }
   },
   {

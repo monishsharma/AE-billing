@@ -108,7 +108,12 @@ ul {
   border: 1px solid var(--blue) !important;
   min-width: 150px;
 }
-
+.outlinedCustomBtn:hover {
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 1);
+}
+/* .customBtn:hover {
+  box-shadow: 1px 1px 1px 1px rgb(0, 0, 0, 1);
+} */
 .hoverBtn {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;

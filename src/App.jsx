@@ -5,7 +5,7 @@ import Layout from "./shared/components/layout";
 import { isMobileDevice } from "./helpers/is-mobile-device";
 import { Outlet } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { getVendorList } from "./store/config/action";
+import { getAppConfig, getVendorList } from "./store/config/action";
 import { connect, useSelector } from "react-redux";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ToastContainer } from "react-toastify";
@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 
-const App = ({ getVendorListConnect }) => {
+const App = ({ getVendorListConnect, getAppConfigConnect }) => {
   const scrollableDivRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -52,6 +52,7 @@ const App = ({ getVendorListConnect }) => {
 
   useEffect(() => {
     getVendorListConnect();
+    getAppConfigConnect();
   }, [getVendorListConnect]);
 
   const toggleNavigation = () => {
@@ -192,6 +193,7 @@ const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       getVendorListConnect: getVendorList,
+      getAppConfigConnect: getAppConfig
     },
     dispatch
   );

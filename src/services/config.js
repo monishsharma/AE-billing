@@ -1,22 +1,22 @@
 export default (api) => {
 
-    const getConfig = () => {
+    const getAppConfig = () => {
         return api.get(`/config/config-detail`);
     }
 
-    const postConfig = (payload) => {
+    const postAppConfig = (payload) => {
         return api.post(`/config/post-config-detail`, payload);
     }
 
-    const updateConfig = (payload, key) => {
-        return api.patch(`/config/update/config/${key}`, payload);
+    const updateAppConfig = (payload, configKey) => {
+        return api.post(`/config/post-config-value?configKey=${configKey}`, payload);
     }
 
 
 
   return {
-    getConfig,
-    postConfig,
-    updateConfig
+    getAppConfig,
+    postAppConfig,
+    updateAppConfig
   };
 };

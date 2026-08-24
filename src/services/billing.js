@@ -28,6 +28,12 @@ export default (api) => {
         })
     };
 
+    const generateGstReport = ({company, month, year}) => {
+        return api.get(`/billing/generate-gst-report?company=${company}&month=${month}&year=${year}`, {
+            responseType: 'blob',
+        })
+    };
+
     const updateVendorList = (payload) => {
         return api.post(`/billing/update/vendor/list`, payload)
     };
@@ -130,6 +136,7 @@ export default (api) => {
         getBakeliteRates,
         postBakeliteRate,
         editBakeliteRate,
-        deleteBakeliteRate
+        deleteBakeliteRate,
+        generateGstReport
     };
 };

@@ -29,8 +29,11 @@ export const INPUTS = [
         name: "HSN Code",
         placeholder: "HSN Code",
         key: "HSN",
-        type: "autocomplete",
+        type: "select",
         component: TextField,
+        labelKey: "code",
+        valueKey: "code",
+        combineKey: "desc",
         span: {
             show: true,
             text: "Hsn Config"
@@ -42,6 +45,9 @@ export const INPUTS = [
         placeholder: "Material Type",
         key: "type",
         type: "select",
+        labelKey: "uqc",
+        valueKey: "uqc",
+        combineKey: "desc",
         component: TextField,
         options: [
             {

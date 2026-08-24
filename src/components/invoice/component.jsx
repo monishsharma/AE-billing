@@ -5,7 +5,6 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-
 import { COMPANY_TYPE } from "../../constants/app-constant";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -26,6 +25,7 @@ import {  getColumns } from "./selector";
 import PaymentConfirmationModal from "../payment-confirmation-modal";
 import ClearIcon from '@mui/icons-material/Clear';
 import CompanyTabs from "../company-tabs";
+import { downloadFile } from "../../helpers/file-downloader";
 
 const Invoice = ({
     config,
@@ -35,7 +35,8 @@ const Invoice = ({
     generateCSVConnect,
     resetReducerConnect,
     updateInvoiceConnect,
-    searchInvoiceConnect
+    searchInvoiceConnect,
+    generateGstReportConnect
 }) => {
     const { vendorsList } = config || {};
     const navigate = useNavigate();
@@ -470,35 +471,19 @@ const Invoice = ({
     };
 
     const downloadCSV = async (forGST = false) => {
+        const month = dateValue.getMonth() + 1;
+        const year = dateValue.getFullYear();
         setBtnLoading(true);
         generateCSVConnect({
             company,
             forGST,
-            month: dateValue.getMonth() + 1,
-            year: dateValue.getFullYear(),
+            month,
+            year,
         })
-            .then(({ data, headers }) => {
-                const blob = new Blob([data], { type: "text/csv" }); // Convert text to Blob
-                const url = window.URL.createObjectURL(blob);
-                const contentDisposition = headers.get("Content-Disposition");
-
-                let filename = `${company} SALES .csv`; // Fallback
-                if (contentDisposition) {
-                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                    if (match && match[1]) {
-                        filename = match[1];
-                    }
-                }
-
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${filename}`; // Customize filename here
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+            .then((response) => {
+               downloadFile(response,`${company}-SALES-${month}-${year}.xlsx`);
                 setBtnLoading(false);
 
-                window.URL.revokeObjectURL(url);
             })
             .catch((err) => {
                 console.log(err);
@@ -509,6 +494,22 @@ const Invoice = ({
                     text: "Failed to generate CSV",
                 });
             });
+    };
+
+    const onClickGstReportBtn = () => {
+        setBtnLoading(true);
+        const month = dateValue.getMonth() + 1;
+        const year = dateValue.getFullYear();
+        generateGstReportConnect({
+            company,
+            month,
+            year,
+        })
+        .then((response) => {
+            downloadFile(response,`${company}-GST-${month}-${year}.xlsx`);
+            setBtnLoading(false);
+
+        })
     };
 
     const handleDateChange = (selectedDate) => {
@@ -781,7 +782,7 @@ const Invoice = ({
                             }
                         }}
                     >
-                            <Box className={`m-1`} sx={{
+                        <Box className={`m-1`} sx={{
                             width: {
                                 xs: "100%",
                                 sm: "auto",
@@ -791,7 +792,6 @@ const Invoice = ({
                                 fullWidth
                                 onClick={() => downloadCSV(false)}
                                 loading={btnLoading}
-                                variant="outlined"
                                 size="medium"
                                 className="outlinedCustomBtn"
                             >
@@ -800,6 +800,8 @@ const Invoice = ({
                                 </span>
                             </Button>
                         </Box>
+
+
                         <Box className={`m-1`} sx={{
                             width: {
                                 xs: "100%",
@@ -808,11 +810,10 @@ const Invoice = ({
                         }}  >
                             <Button
                                 fullWidth
-                                onClick={() => downloadCSV(true)}
+                                onClick={() => onClickGstReportBtn()}
                                 loading={btnLoading}
-                                variant="outlined"
-                                size="medium"
                                 className="outlinedCustomBtn"
+                                size="medium"
                             >
                                 <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
                                     {company} GST

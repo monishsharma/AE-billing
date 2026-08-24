@@ -42,7 +42,7 @@ const BakeliteRateConfig = ({
             ...rest,
     }), []);
 
-    const { bakeliteRates } = config;
+    const {appConfig: {bakeliteRate: {values} = {}} = {} } = config || {};
 
     const INPUT = [
         {
@@ -50,8 +50,8 @@ const BakeliteRateConfig = ({
             label: "Thickness",
             component: TextField,
             type: "select",
-            options: bakeliteRates?.map(item => ({
-                label: item.label,
+            options: values?.map(item => ({
+                label: item.size,
                 value: item._id
             })),
             extraProps: {
@@ -89,9 +89,9 @@ const BakeliteRateConfig = ({
     React.useEffect(() => {
         if (detail.thickness && detail.inputLength && detail.width) {
             let calculatedRate = 0;
-            const selectedRate = bakeliteRates.find(rate => rate._id === detail.thickness);
+            const selectedRate = values.find(rate => rate._id == detail.thickness);
             const rate = selectedRate ? selectedRate.rate : 0;
-            if (selectedRate.label === "5MM") {
+            if (selectedRate.size === "5MM") {
                 calculatedRate = ((detail.inputLength) * rate).toFixed(2);
             } else {
                 calculatedRate = parseInt((((detail.inputLength * detail.width) / 93025) * rate));
@@ -107,20 +107,19 @@ const BakeliteRateConfig = ({
                 rate: ""
             }))
         }
-    }, [detail.thickness, detail.inputLength, detail.width, bakeliteRates])
+    }, [detail.thickness, detail.inputLength, detail.width, values])
 
 
     const onChange = (e, item) => {
         const { value } = e.target;
         let selectedRate = null;
+
         if (item.key === "thickness") {
-            selectedRate = bakeliteRates.find(rate => rate._id === value);
-        }
-        if (item.key === "thickness") {
+            selectedRate = values.find(rate => rate._id == value);
             setDetail(prev => ({
                 ...prev,
                 [item.key]: value,
-                ...(selectedRate && selectedRate.label === "5MM" ? {
+                ...(selectedRate && selectedRate.size === "5MM" ? {
                     "width": "15",
                     "inputLength": "",
                     "rate": "",

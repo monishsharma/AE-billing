@@ -17,6 +17,11 @@ const saveHSNList = ({data}) => ({
     data
 });
 
+const saveAppConfig = ({data}) => ({
+    type: Types.APP_CONFIG,
+    data
+});
+
 const saveBakeliteRatesList = ({data}) => ({
     type: Types.SAVE_BAKELITES_RATE_LIST,
     data
@@ -242,9 +247,26 @@ export const editHSNCode = (id, payload) => () => {
     })
 }
 
-export const getConfig = () => (dispatch) => {
+export const getAppConfig = () => (dispatch) => {
     return new Promise((resolve, reject) => {
-        ConfigService.getConfig()
+        ConfigService.getAppConfig()
+        .then((res) => {
+            dispatch(saveAppConfig({data: res.data.data}));
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+export const postAppConfig = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        ConfigService.postAppConfig(payload)
         .then((res) => {
             resolve(res.data);
         })
@@ -258,25 +280,9 @@ export const getConfig = () => (dispatch) => {
     })
 }
 
-export const postConfig = (payload) => () => {
+export const updateAppConfig = (payload, configKey) => () => {
     return new Promise((resolve, reject) => {
-        ConfigService.postConfig(payload)
-        .then((res) => {
-            resolve(res.data);
-        })
-        .catch((err) => {
-            reject(err);
-            Swal.fire({
-                icon: "error",
-                text: err.error,
-            })
-        })
-    })
-}
-
-export const updateConfig = (payload, key) => () => {
-    return new Promise((resolve, reject) => {
-        ConfigService.updateConfig(payload, key)
+        ConfigService.updateAppConfig(payload, configKey)
         .then((res) => {
             resolve(res.data);
         })

@@ -35,7 +35,7 @@ const ItemModal = ({
 
     const onSaveHandler = (e) => {
         e.preventDefault();
-        onSave(selectedItem, INPUT);
+        onSave(selectedItem, INPUT, true);
     }
 
     return (
@@ -79,10 +79,11 @@ const ItemModal = ({
                                     required
                                     fullWidth
                                     key={index}
-                                    label={item.label}
+                                    label={item.title}
+                                    type={item.type || "text"}
                                     value={selectedItem[item.key] || ""}
                                     onChange={(e) => onChange(e, item)}
-                                    placeholder={item.label}
+                                    placeholder={item.title}
                                 />
                             ))
                         }

@@ -6,21 +6,24 @@ import { toast } from 'react-toastify';
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { useNavigate } from 'react-router-dom';
 
 
 const ItemTable = ({
-    data,
+    data = [],
     title,
-    onSave,
+    onSave = () => {},
     itemType,
     columns = [],
-    btnTitle,
-    modalInput,
-    deleteItem,
-    getItem,
-    swalText
+    btnTitle = "",
+    modalInput = [],
+    deleteItem = () => {},
+    getItem = () => {},
+    swalText = "",
+    onEdit = () => {}
 }) => {
 
+    const Navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState({});
 
@@ -34,7 +37,7 @@ const ItemTable = ({
         toggleModal();
     };
 
-    const onSaveHandler = (item, inputs) => {
+    const onSaveHandler = (item, inputs, editingItem = false) => {
        // Check if any required field is empty
         const hasEmptyField = inputs.some(
             ({ key }) => !item[key]?.toString().trim()
@@ -51,7 +54,7 @@ const ItemTable = ({
             ...item,
             itemType
         }
-        onSave(updatedItems);
+        onSave(updatedItems, editingItem);
         toggleModal()
     }
 
@@ -90,9 +93,9 @@ const ItemTable = ({
                 {
                     showModal &&
                     <ItemModal
-                        title={selectedItem?._id ? "Edit Item" : "Add Item"}
+                        title={Object.keys(selectedItem).length ? "Edit Item" : "Add Item"}
                         open={showModal}
-                        INPUT={modalInput}
+                        INPUT={columns}
                         onSave={onSaveHandler}
                         toggleModal={toggleModal}
                         selectedItem={selectedItem}
@@ -115,62 +118,70 @@ const ItemTable = ({
                                         <Typography variant='h6' color='black' >
                                             {title}
                                         </Typography>
-                                        <Button
-                                            size='medium'
-                                            className='customBtn'
-                                            onClick={() => {
-                                                setSelectedItem({})
-                                                toggleModal();
-                                            }}
-                                            startIcon={<AddIcon />}
+                                        <Box
+                                            sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                        }}
                                         >
-                                            {btnTitle}
-                                        </Button>
+                                            <Button
+                                                size='small'
+                                                className='outlinedCustomBtn'
+                                                onClick={() => {
+                                                    onEdit(itemType)
+                                                }}
+                                            >
+                                                Edit Master Config
+                                            </Button>
+                                            <Button
+                                                size='small'
+                                                className='customBtn'
+                                                onClick={() => {
+                                                    setSelectedItem({})
+                                                    toggleModal();
+                                                }}
+                                            >
+                                                {btnTitle}
+                                            </Button>
+
+                                        </Box>
                                 </Box>
                                     <Table size="small" sx={{ width: "100%" }}>
                                         <TableHead>
                                             <TableRow>
+                                                <TableCell align='center'>S.No</TableCell>
                                                 {
                                                     columns.map((column, index) => (
                                                         <TableCell  key={index} align='center'>
-                                                            {column.field}
+                                                            {column.title}
                                                         </TableCell>
                                                     ))
                                                 }
+                                                <TableCell align='center'>Action</TableCell>
 
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {
                                                 data.map((item, index) => (
-                                                    <TableRow key={item._id || index}>
+                                                    <TableRow key={index}>
+                                                        <TableCell key={index} align="center">
+                                                            {index + 1}
+                                                        </TableCell>
                                                         {columns.map((col, colIndex) => {
-
-                                                            // handle special columns
-                                                            if (col.key === "sno") {
-                                                                return (
-                                                                    <TableCell  key={colIndex} align="center">
-                                                                        {index + 1}
-                                                                    </TableCell>
-                                                                );
-                                                            }
-
-                                                            if (col.key === "action") {
-                                                                return (
-                                                                    <TableCell align='center' key={colIndex} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
-                                                                        <EditOutlinedIcon sx={{cursor: "pointer"}} color="primary" onClick={() => editItem(item)} />
-                                                                        <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item)} />
-                                                                    </TableCell>
-                                                                );
-                                                            }
-
-                                                            // normal fields
                                                             return (
-                                                                <TableCell key={colIndex} align='center'>
-                                                                    {item[col.key] || ""}
-                                                                </TableCell>
+                                                                <>
+
+                                                                    <TableCell key={colIndex} align='center'>
+                                                                        {item[col.key] || ""}
+                                                                    </TableCell>
+                                                                </>
                                                             );
                                                         })}
+                                                        <TableCell align='center' key={index} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                                                            <EditOutlinedIcon sx={{cursor: "pointer"}} color="primary" onClick={() => editItem(item)} />
+                                                            <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item)} />
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))
                                             }

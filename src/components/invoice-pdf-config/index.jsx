@@ -1,14 +1,14 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import InvoiceStepper from "./component.jsx";
-import { postConfig } from "../../store/config/action.js";
+import { postAppConfig } from "../../store/config/action.js";
 
 const mapStateToProps = ({
     config
 }) => ({config});
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    postConfigConnect: postConfig
+    postConfigConnect: postAppConfig
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(InvoiceStepper);

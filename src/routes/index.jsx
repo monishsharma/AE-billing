@@ -17,6 +17,8 @@ import AddVendorsV2 from "../pages/add-vendor-v2";
 import { Navigate } from "react-router-dom";
 import PurchaseOrder from "../pages/purchase-order";
 import HsnCode from "../pages/hsn-code";
+import Config from "../pages/config";
+import AddConfig from "../components/add-config";
 
 
 
@@ -116,9 +118,25 @@ const routes = [
           },
           {
             path: "settings/config",
-            element: <HsnCode />,
+            element: <Config />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings/config/:itemType",
+            element: <Config />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings/config/edit/:itemType",
+            element: <AddConfig />,
+            errorElement: <ErrorPage />,
+          },
+          {
+            path: "settings/config/add",
+            element: <AddConfig />,
             errorElement: <ErrorPage />,
           }
+
         ],
         errorElement: <ErrorPage />,
       },

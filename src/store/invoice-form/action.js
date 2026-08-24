@@ -139,6 +139,22 @@ export const generateCSV = ({company, month, year, forGST, forUnpaid, unpaidInvo
     })
 }
 
+export const generateGstReport = ({company, month, year}) => () => {
+    return new Promise((resolve, reject) => {
+        BillingService.generateGstReport({company, month, year})
+        .then((res) => {
+            resolve(res);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
 export const getUnpaidInvoices = ({month, year, company}) => () => {
     return new Promise((resolve, reject) => {
         BillingService.getUnpaidInvoices({month, year, company})

@@ -36,18 +36,21 @@ export const setVendorList = (state = INITIAL_STATE, { data }) => {
 export const saveHsnList = (state = INITIAL_STATE, {data}) => {
     return {
         ...state,
-        hsn: [
-            ...data
-        ]
+        hsn: data
+    }
+};
+
+export const saveAppConfig = (state = INITIAL_STATE, {data}) => {
+    return {
+        ...state,
+        appConfig: data
     }
 };
 
 export const saveBakeliteRatesList = (state = INITIAL_STATE, {data}) => {
     return {
         ...state,
-        bakeliteRates: [
-            ...data
-        ]
+        bakeliteRates: data
     }
 };
 
@@ -119,7 +122,8 @@ export const HANDLERS = {
     [Types.SAVE_DATA]: saveData,
     [Types.SET_ACTIVE_STEP]: setCurrentStep,
     [Types.SAVE_VENDOR_DETAIL]: setVendorDetail,
-    [Types.RESET_VENDOR_DETAIL]: resetVendorDetails
+    [Types.RESET_VENDOR_DETAIL]: resetVendorDetails,
+    [Types.APP_CONFIG]: saveAppConfig
 };
 
 

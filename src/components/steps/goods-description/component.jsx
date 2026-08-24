@@ -50,8 +50,15 @@ const GoodsDescription = ({
         [STEPPER_NAME.BUYER_DETAIL]: { customer, customerName = "", orderType, branch= "" },
         [STEPPER_NAME.GOODS_DESCRIPTION]: { po, serial, HSN, items = [],type = "", poDisplay = "" },
     } = invoiceForm;
-    const {vendorsList = [], hsn: HSNLIst = []} = config;
+    const {vendorsList = [], hsn: HSNLIst = [], appConfig} = config;
 
+    const { hsnCode: { values } = {}, uqc: { values: uqcOptions} = {} } = appConfig || {};
+
+    const Options = {
+        HSN: values || [],
+        type: uqcOptions || []
+    }
+    console.log(Options)
     const { id: invoiceId } = useParams();
     const isCompanyAshok = selectedCompany === COMPANY_TYPE.ASHOK;
 
@@ -545,8 +552,15 @@ const GoodsDescription = ({
                                             onChange={onFieldChange}
                                         >
                                             {
-                                                input.options.map((opt) =>
-                                                    <MenuItem  value={opt.label}>{opt.label}</MenuItem>
+                                                Options[input.key].map((opt) =>
+                                                    <MenuItem  value={opt[input.valueKey]}>
+                                                        {
+                                                            input.combineKey ?
+                                                            `${opt[input.valueKey]} - ${opt[input.combineKey]}`
+                                                            :
+                                                            opt[input.valueKey]
+                                                        }
+                                                    </MenuItem>
                                                 )
                                             }
                                         </Select>
