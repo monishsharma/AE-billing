@@ -75,6 +75,7 @@ const PurchaseOrder = ({
         if (updatedFilters.size) delete updatedFilters.size;
         setFilters({
             company: newValue,
+            poStatus: STATUS_FILTER[1].value
         });
         Navigate(`/purchase-order/${newValue}`);
         // setValue(newValue);
