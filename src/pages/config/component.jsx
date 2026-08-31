@@ -8,6 +8,9 @@ import Swal from 'sweetalert2';
 import TabPanel from '@mui/lab/TabPanel';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
+import PageLoader from "../../components/page-loader"
+import AddIcon from "@mui/icons-material/Add";
+
 
 const Config = ({
     config,
@@ -63,18 +66,22 @@ const Config = ({
         navigate(`/settings/config/edit/${itemType}`)
     }
 
+    // return <PageLoader />
+
     return (
         <div>
             <HeroSection
                 pageTitle="Config"
                 btnText="Add Master Config"
                 onClick={onClickHeroBtn}
+                startIcon={<AddIcon />}
             />
 
             <TabContext value={selectedTab}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}>
                     <TabList
                         // variant='fullWidth'
+                        variant="scrollable"
                         textColor="black"
                         onChange={onChangeTab}
                         sx={{

@@ -274,7 +274,7 @@ export const postAppConfig = (payload) => () => {
             reject(err);
             Swal.fire({
                 icon: "error",
-                text: err.error,
+                text: err.message,
             })
         })
     })
@@ -290,7 +290,7 @@ export const updateAppConfig = (payload, configKey) => () => {
             reject(err);
             Swal.fire({
                 icon: "error",
-                text: err.error,
+                text: err.message,
             })
         })
     })
@@ -300,7 +300,6 @@ export const deleteConfigValue = (configKey, valueId) => () => {
     return new Promise((resolve, reject) => {
         ConfigService.deleteConfigValue(configKey,valueId)
         .then((res) => {
-            console.log(res.data)
             resolve(res.data);
         })
         .catch((err) => {

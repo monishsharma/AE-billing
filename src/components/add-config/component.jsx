@@ -16,6 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { COLUMNS, INPUTS } from './selector';
 import { useNavigate, useParams } from 'react-router-dom';
+import { isMobileDevice } from '../../helpers/is-mobile-device';
 
 const AddConfig = ({
     getAppConfigConnect,
@@ -198,13 +199,28 @@ const AddConfig = ({
                                             )
                                         })
                                     }
-                                    <IconButton
-                                        color="error"
-                                        disabled={config.columns.length === 1}
-                                        onClick={() => removeColumn(index)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
+                                    {
+                                        isMobileDevice() ?
+                                        <Button
+                                            fullWidth
+                                            variant='outlined'
+                                            color="error"
+                                            disabled={config.columns.length === 1}
+                                            onClick={() => removeColumn(index)}
+                                            startIcon={<DeleteIcon />}
+                                        >
+                                            Delete
+                                        </Button>
+                                        :
+                                        <IconButton
+                                            color="error"
+                                            disabled={config.columns.length === 1}
+                                            onClick={() => removeColumn(index)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    }
+
                                 </Grid>
                             ))}
                         </Box>

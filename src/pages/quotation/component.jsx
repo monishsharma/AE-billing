@@ -13,6 +13,7 @@ import SelectVendor from '../../components/select-vendor';
 import { COMPANY_TYPE, FILTER_OPTION } from '../../constants/app-constant';
 import { ButtonGroup } from '@mui/material';
 import PoTypeFilter from '../../components/potype-filter';
+import HeroSection from '../../components/hero-section';
 
 const Quotation = ({
     config,
@@ -23,7 +24,7 @@ const Quotation = ({
     getQuotationPdfConnect
 }) => {
 
-    const {vendorsList} = config || {};
+    const { vendorsList } = config || {};
     const Navigate = useNavigate();
     const { company } = useParams();
     const [quotationList, setQuotationList] = useState([])
@@ -37,31 +38,31 @@ const Quotation = ({
         pageSize: 20,
     });
     const showToast = React.useCallback(({ type, text, ...rest }) =>
-            toast[type](text, {
-                position: "bottom-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Bounce,
-                ...rest,
+        toast[type](text, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+            ...rest,
         }), []);
 
     React.useEffect(() => {
         setIsLoading(true);
         setQuotationList([])
         getQuotationConnect(filters)
-        .then((res) => {
-            setQuotationList(res.data);
-            setIsLoading(false);
-        })
-        .catch((err) => {
-            console.log(err)
-            setIsLoading(false);
-        })
+            .then((res) => {
+                setQuotationList(res.data);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.log(err)
+                setIsLoading(false);
+            })
     }, [filters])
 
     const handleChange = (event, newValue) => {
@@ -93,12 +94,12 @@ const Quotation = ({
         });
     };
 
-    const handleRowClick = ({row}) => {
+    const handleRowClick = ({ row }) => {
         resetReducerConnect();
         Navigate(`/edit/quotation/${row._id}`);
     }
 
-    const downloadQuotation = useCallback(async(e,row) => {
+    const downloadQuotation = useCallback(async (e, row) => {
 
         const payload = {
             id: row._id,
@@ -182,7 +183,7 @@ const Quotation = ({
         }
     }, [getQuotationPdfConnect, showToast]);
 
-    const makeQuotationCopy = (e,row) => {
+    const makeQuotationCopy = (e, row) => {
         Swal.fire({
             title: "Are you sure?",
             text: "Do you want to create a copy of this quotation?",
@@ -191,12 +192,12 @@ const Quotation = ({
         }).then((result) => {
 
             if (result.isConfirmed) {
-              setIsLoading(true);
+                setIsLoading(true);
                 // Call API to copy quotation
                 getConfigConnect()
-                      .then(async(res) => {
-                        const {config: {quotation} = {}} = res;
-                        const payload = {...row}
+                    .then(async (res) => {
+                        const { config: { quotation } = {} } = res;
+                        const payload = { ...row }
                         delete payload._id;
                         const nextQuotationeNo = getNextInvoiceNo(quotation[company], "nextQuotationNo");
                         payload.quotationDetail.quotationNo = nextQuotationeNo;
@@ -205,10 +206,10 @@ const Quotation = ({
                         await saveQuotationConnect(payload);
                         fetchQuotationList();
                         setIsLoading(false);
-                      })
-                      .catch(() => {
+                    })
+                    .catch(() => {
                         setIsLoading(false);
-                      })
+                    })
                 // On success:
                 showToast({
                     type: "success",
@@ -232,13 +233,13 @@ const Quotation = ({
         })
     }
 
-    const columns = useMemo(() => getColumns({  company, handleDownload: downloadQuotation, makeQuotationCopy, vendorsList }), [ company, downloadQuotation, vendorsList]);
+    const columns = useMemo(() => getColumns({ company, handleDownload: downloadQuotation, makeQuotationCopy, vendorsList }), [company, downloadQuotation, vendorsList]);
 
 
     const renderContent = () => {
         return (
-                <Box sx={{ height: 470, width: '100%' }}>
-                    <DataGrid
+            <Box sx={{width: "100%", overflow: "hidden", height: "61vh" }}>
+                <DataGrid
                     rows={isLoading ? [] : quotationList}
                     getRowId={(row) => row._id}
 
@@ -250,7 +251,7 @@ const Quotation = ({
                     disableColumnResize
                     sx={{
                         '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
-                        outline: 'none !important',
+                            outline: 'none !important',
                         },
                         cursor: 'pointer',
                     }}
@@ -261,7 +262,7 @@ const Quotation = ({
                             },
                         }
                     }
-                    // showToolbar
+                // showToolbar
                 />
             </Box>
         )
@@ -269,65 +270,80 @@ const Quotation = ({
 
     return (
         <div>
-            <div className="mt-2">
-                <h2 className="fw-bold">Quotation</h2>
+            <HeroSection
+                pageTitle="Quotation"
+                btnText="New Quotation"
+                startIcon={<AddIcon />}
+                style={{
+                    display: "flex",
+                    flexDirection: {
+                        xs: "column",
+                        sm: "column",
+                        md: "row"
+                    },
+                    width: {
+                        xs: "100%",
+                    },
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 2
+                }}
+                onClick={onClick}
+            >
                 <Box
                     sx={{
-                        mt: 2,
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
                         flexDirection: {
-                            xs: "column",
-                            sm: "row"
+                            xs: "column-reverse",
+                            sm: "row",
                         },
+                        width: {
+                            xs: "100%",
+                            sm: "100%",
+                            md: "auto",
+                        },
+                        pt: {
+                            xs: 1,
+                            sm: 0
+                        }
                     }}
                 >
-                    <Button
-                        onClick={onClick}
-                        variant="contained"
-                        className="customBtn"
-                        size="medium"
-                        startIcon={<AddIcon />}
-                        sx={{
-                            textTransform: "none",
-                            minWidth: "120px",
-                            width: {
-                                xs: "100%",
-                                sm: "auto",
+                    {
+                        company === COMPANY_TYPE.ASHOK &&
+                        <Box className="w-100" sx={{
+                            m: {
+                                xs: 0,
+                                sm: 1,
+                                md: 1
                             }
-                        }}
-                    >
-                        New Quotation
-                    </Button>
-                    <Box mt={2} mb={2} display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
-                    <Box>
-                         {company === COMPANY_TYPE.ASHOK && (
+                        }} >
                             <PoTypeFilter
-                            options={FILTER_OPTION}
-                            selected={poType}
-                            onChange={onPoTypeFilterClick}
+                                options={FILTER_OPTION}
+                                selected={poType}
+                                onChange={onPoTypeFilterClick}
                             />
-                        )}
-                    </Box>
-                </Box>
+                        </Box>
+                    }
                     {
                         company === COMPANY_TYPE.PADMA &&
-                        <SelectVendor
-                            size={"small"}
-                            width={250}
-                            callback={(event, selectedVendor) => selectVendorCallback(event, selectedVendor)}
-                        />
+                        <Box className="m-1 w-100" >
+                            <SelectVendor
+                                size={"small"}
+                                width={250}
+                                callback={(event, selectedVendor) => selectVendorCallback(event, selectedVendor)}
+                            />
+                        </Box>
                     }
                 </Box>
+            </HeroSection>
+
+            <div className="mt-2">
+                <CompanyTabs
+                    value={company}
+                    onChange={handleChange}
+                    renderContent={renderContent}
+                />
             </div>
-           <div className="mt-2">
-             <CompanyTabs
-                value={company}
-                onChange={handleChange}
-                renderContent={renderContent}
-            />
-           </div>
         </div>
     )
 }

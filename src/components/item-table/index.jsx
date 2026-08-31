@@ -114,17 +114,47 @@ const ItemTable = ({
 
                                 })}
                             >
-                                <Box mb={4} sx={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                        <Typography variant='h6' color='black' >
+                                <Box
+                                    mb={4}
+                                    sx={{
+                                        width: "100%",
+                                        display: "flex",
+                                        flexDirection: {
+                                            xs: "column",
+                                            sm: "row",
+                                        },
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}
+                                    >
+                                        <Typography variant='h6' color='black' sx={{
+                                            mb: {
+                                                xs: 2
+                                            }
+                                        }} >
                                             {title}
                                         </Typography>
                                         <Box
                                             sx={{
                                             display: "flex",
+                                            width: {
+                                                xs: "100%",
+                                                sm: "auto"
+                                            },
                                             gap: 1,
+                                            flexDirection: {
+                                                xs: "column",
+                                                sm: "row"
+                                            },
                                         }}
                                         >
                                             <Button
+                                                sx={{
+                                                    width: {
+                                                        xs: "100%",
+                                                        sm: "auto"
+                                                    }
+                                                }}
                                                 size='small'
                                                 className='outlinedCustomBtn'
                                                 onClick={() => {
@@ -134,6 +164,12 @@ const ItemTable = ({
                                                 Edit Master Config
                                             </Button>
                                             <Button
+                                                sx={{
+                                                    width: {
+                                                        xs: "100%",
+                                                        sm: "auto"
+                                                    }
+                                                }}
                                                 size='small'
                                                 className='customBtn'
                                                 onClick={() => {

@@ -1,4 +1,4 @@
-import { Button } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import React from 'react'
 
 const HeroSection = ({
@@ -8,21 +8,37 @@ const HeroSection = ({
     btnText,
     btnVariant = "contained",
     children,
-    showButton = true
+    showButton = true,
+    startIcon = null,
+    style = {}
 }) => {
     return (
-        <div className="mt-2">
+        <Box mt={2}>
             <h2 className="fw-bold">{pageTitle}</h2>
-            {
-                showButton &&
-                <div className="mt-4">
-                    <Button variant={btnVariant} onClick={onClick} className={btnClassName}>
-                        {btnText}
-                    </Button>
-                </div>
-            }
-            {children}
-        </div>
+            <Box sx={{...style}}>
+                {
+                    showButton &&
+                        <Button
+                            sx={{
+                                width: {
+                                    xs: '100%',
+                                    md: 'auto'
+                                },
+                                mt: {
+                                    xs: 1
+                                }
+                            }}
+                            startIcon={startIcon}
+                            variant={btnVariant}
+                            onClick={onClick}
+                            className={btnClassName}
+                        >
+                            {btnText}
+                        </Button>
+                }
+                {children}
+            </Box>
+        </Box>
     )
 }
 

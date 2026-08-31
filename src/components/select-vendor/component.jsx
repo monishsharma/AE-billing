@@ -113,7 +113,7 @@ const SelectVendor = ({
                 setSelectedItem={setSelectedItem}
             />
             <Autocomplete
-                sx={{width: {xs: "100%", sm: width}, flexShrink: 0}}
+                sx={{width: {xs: "100%", sm: "100%", md: width}, flexShrink: 0, }}
                 size={size}
                 disabled={disabled}
                 value={selectedVendorValue}

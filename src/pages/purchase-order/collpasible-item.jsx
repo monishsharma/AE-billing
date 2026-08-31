@@ -29,12 +29,12 @@ const CollapsibleItem = ({
                             Po Detail
                         </Typography>
                         <Box gap={2} display={"flex"} mb={2}>
-                            <Button
+                            {/* <Button
                                 variant='contained'
                                 size='small'
                             >
                                 Fetch Dispatch Detail
-                            </Button>
+                            </Button> */}
                             <Button
                                 variant='contained'
                                 size='small'

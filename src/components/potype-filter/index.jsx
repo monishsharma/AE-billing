@@ -14,7 +14,8 @@ const PoTypeFilter = ({
         display: "flex",
         flexWrap: "wrap",
         width: "100%",
-        gap: "6px"
+        gap: "6px",
+        width: "100%"
       }}
     >
       {options.map((option) => (
@@ -27,7 +28,7 @@ const PoTypeFilter = ({
           }
           onClick={() => onChange(option)}
           sx={{
-            flexGrow: { xs: 1, sm: 0 },
+            flexGrow: { xs: 1, sm: 1, md: 0 },
             flexBasis: { xs: "48%", sm: "auto" },
             minWidth: "100px",
             fontSize: { xs: "11px" }

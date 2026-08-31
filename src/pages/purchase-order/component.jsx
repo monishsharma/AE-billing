@@ -9,8 +9,8 @@ import StatusFilter from '../../components/status-filter';
 import { COMPANY_TYPE, FILTER_OPTION, STATUS_FILTER } from '../../constants/app-constant';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Chip,IconButton, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import moment from 'moment';
+import { Chip, IconButton, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import HeroSection from "../../components/hero-section"
 import CollapsibleItem from './collpasible-item';
 import TableSkeleton from './table-skeleton';
 import Swal from 'sweetalert2';
@@ -51,19 +51,19 @@ const PurchaseOrder = ({
     React.useEffect(() => {
         setIsLoading(true);
         getPoListConnect(filters)
-        .then((_) => setIsLoading(false))
-        .catch((_) => setIsLoading(false));
+            .then((_) => setIsLoading(false))
+            .catch((_) => setIsLoading(false));
     }, [filters])
 
     React.useEffect(() => {
-    if (openRow && detailRef.current) {
-        setTimeout(() => {
-        detailRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-        });
-        }, 200); // match Collapse timing
-    }
+        if (openRow && detailRef.current) {
+            setTimeout(() => {
+                detailRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "top",
+                });
+            }, 200); // match Collapse timing
+        }
     }, [openRow]);
 
     const handleToggle = (rowId) => {
@@ -71,7 +71,7 @@ const PurchaseOrder = ({
     };
 
     const handleChange = (event, newValue) => {
-        const updatedFilters = {...filters};
+        const updatedFilters = { ...filters };
         if (updatedFilters.size) delete updatedFilters.size;
         setFilters({
             company: newValue,
@@ -133,27 +133,27 @@ const PurchaseOrder = ({
         setFilters(updatedFilters)
     }
 
-    const deletePo = async(id) => {
+    const deletePo = async (id) => {
         Swal.fire({
-                title: "Are you sure?",
-                text: "Do you want to delete this PO?",
-                icon: "question",
-                showCancelButton: true,
-            }).then((result) => {
-                if (result.isConfirmed) {
+            title: "Are you sure?",
+            text: "Do you want to delete this PO?",
+            icon: "question",
+            showCancelButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
                 deletePoConnect(id)
-                    .then(async() => {
+                    .then(async () => {
                         Swal.fire(({
                             title: "Succesfully Deleted",
                             icon: "success"
                         }));
                         await getPoListConnect(filters);
                     })
-                }
+            }
 
 
 
-            })
+        })
     }
 
     // const columns = useMemo(() => getColumns({ company, vendorsList, expandedRow, toggleRow}), [company, vendorsList, expandedRow, toggleRow]);
@@ -167,12 +167,12 @@ const PurchaseOrder = ({
                         <TableHead>
                             <TableRow>
                                 {TABLE_COLUMNS.map((col, i) => (
-                                <TableCell key={i}>
-                                    <strong>{col.label}</strong>
-                                </TableCell>
+                                    <TableCell key={i}>
+                                        <strong>{col.label}</strong>
+                                    </TableCell>
                                 ))}
                             </TableRow>
-                            </TableHead>
+                        </TableHead>
                         <TableBody >
                             {data.map((row, idx) => {
                                 const helpers = {
@@ -186,31 +186,31 @@ const PurchaseOrder = ({
 
                                 return (
                                     isLoading ?
-                                    <TableSkeleton />
-                                    :
-                                    <React.Fragment key={row._id} >
-                                        <TableRow>
-                                        {
-                                            TABLE_COLUMNS.map((col, i) => {
-                                                if (col.hide && col.hide(row)) return null;
-                                                return (
-                                                <TableCell key={i} sx={col.sx}>
-                                                    {col.render(row, idx, helpers)}
-                                                </TableCell>
-                                                );
-                                        }   )}
-                                        </TableRow>
+                                        <TableSkeleton />
+                                        :
+                                        <React.Fragment key={row._id} >
+                                            <TableRow>
+                                                {
+                                                    TABLE_COLUMNS.map((col, i) => {
+                                                        if (col.hide && col.hide(row)) return null;
+                                                        return (
+                                                            <TableCell key={i} sx={col.sx}>
+                                                                {col.render(row, idx, helpers)}
+                                                            </TableCell>
+                                                        );
+                                                    })}
+                                            </TableRow>
 
-                                        <CollapsibleItem
-                                            data={row}
-                                            isOpen={openRow === row._id}
-                                            deletePoHandler={deletePo}
-                                            getInvoiceListConnect={getInvoiceListConnect}
+                                            <CollapsibleItem
+                                                data={row}
+                                                isOpen={openRow === row._id}
+                                                deletePoHandler={deletePo}
+                                                getInvoiceListConnect={getInvoiceListConnect}
                                             />
-                                    </React.Fragment>
+                                        </React.Fragment>
                                 );
                             })}
-                            </TableBody>
+                        </TableBody>
                     </Table>
                 </TableContainer>
             </>
@@ -219,10 +219,11 @@ const PurchaseOrder = ({
 
     return (
         <div>
-            <div className="mt-2">
-                <h2 className="fw-bold">Purchase Order</h2>
-                <Box sx={{
-                    mt: 2,
+            <HeroSection
+                pageTitle={"Purchase Order"}
+                showButton={false}
+                style={{
+                    mt: 3,
                     mb: 2,
                     display: "flex",
                     justifyContent: "space-between",
@@ -232,71 +233,76 @@ const PurchaseOrder = ({
                         sm: "row"
                     },
                     gap: 2
-                }}>
-                <Box width="100%">
-                    {company === COMPANY_TYPE.ASHOK && (
-                        <PoTypeFilter
-                        options={FILTER_OPTION}
-                        selected={poType}
-                        onChange={onPoTypeFilterClick}
-                        />
-                    )}
-                </Box>
+                }}
+            >
 
-                    <Box sx={{
-                            display: "flex",
-                            gap: 2,
-                            flexDirection:{
-                                xs: "column",
-                                sm: "row"
-                            },
-                            width: {
-                                xs: "100%",
-                                sm: "auto"
-                            }
-                        }}
-                    >
-                        {
-                            ((company === COMPANY_TYPE.ASHOK && poType.id === FILTER_OPTION[2].id)
+                {company === COMPANY_TYPE.ASHOK && (
+                    <Box width="100%">
+                        <PoTypeFilter
+                            options={FILTER_OPTION}
+                            selected={poType}
+                            onChange={onPoTypeFilterClick}
+                        />
+                    </Box>
+                )}
+
+
+                <Box sx={{
+                    display: "flex",
+                    gap: 2,
+                    flexDirection: {
+                        xs: "column",
+                        sm: "row"
+                    },
+                    width: {
+                        xs: "100%",
+                        sm: "auto"
+                    }
+                }}
+                >
+                    {
+                        ((company === COMPANY_TYPE.ASHOK && poType.id === FILTER_OPTION[2].id)
                             ||
                             (company === COMPANY_TYPE.PADMA)) &&
-                            <RollerFilter
-                                onClear={onClear}
-                                value={filters?.size || ""}
-                                onChange={onChangeRollerSizeFilter}
-                            />
-                        }
-
-                        {
-                            company === COMPANY_TYPE.PADMA &&
-                            <SelectVendor
-                                size={"small"}
-                                callback={(event,selectedVendor) => selectVendorCallback(event,selectedVendor)}
-                            />
-                        }
-
-                        <StatusFilter
-                            size={"small"}
-                            defaultStatus={STATUS_FILTER[1]}
-                            options={STATUS_FILTER}
-                            onchange={onChangeStatusFilter}
+                        <RollerFilter
+                            onClear={onClear}
+                            value={filters?.size || ""}
+                            onChange={onChangeRollerSizeFilter}
                         />
+                    }
 
-                    </Box>
-                </Box>
+                    {
+                        company === COMPANY_TYPE.PADMA &&
+                        <SelectVendor
+                            size={"small"}
+                            callback={(event, selectedVendor) => selectVendorCallback(event, selectedVendor)}
+                        />
+                    }
 
-                <Box
-                    sx={{
-                        mt: 2,
-                    }}
-                >
-                    <CompanyTabs
-                        value={company}
-                        onChange={handleChange}
-                        renderContent={renderContent}
+                    <StatusFilter
+                        size={"small"}
+                        defaultStatus={STATUS_FILTER[1]}
+                        options={STATUS_FILTER}
+                        onchange={onChangeStatusFilter}
                     />
+
                 </Box>
-            </div>
+
+
+
+            </HeroSection>
+            <Box
+                sx={{
+                    mt: 2,
+                }}
+            >
+                <CompanyTabs
+                    value={company}
+                    onChange={handleChange}
+                    renderContent={renderContent}
+                />
+            </Box>
+
         </div>
     )
 }

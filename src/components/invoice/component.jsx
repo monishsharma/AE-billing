@@ -1,31 +1,25 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import { COMPANY_TYPE } from "../../constants/app-constant";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import Swal from "sweetalert2";
-import DatePicker from "react-datepicker";
 import { toast, Bounce } from "react-toastify";
 import AddIcon from "@mui/icons-material/Add";
 import { useOutletContext } from "react-router-dom";
-import { isMobileDevice } from "../../helpers/is-mobile-device";
 import { debounce } from "../../helpers/debounce";
-// import { DataGrid } from "@mui/x-data-grid";
 const DataGrid = React.lazy(() =>
   import('@mui/x-data-grid').then(m => ({ default: m.DataGrid }))
 );
 import {  getColumns } from "./selector";
 import PaymentConfirmationModal from "../payment-confirmation-modal";
-import ClearIcon from '@mui/icons-material/Clear';
 import CompanyTabs from "../company-tabs";
 import { downloadFile } from "../../helpers/file-downloader";
+import HeroSection from "../hero-section";
+import ClearInputAdorment from "../../shared/components/clear-input-adorment";
+import DatePicker from "../../shared/components/date-picker/custom-input";
+import { REPORT_BTN } from "./constant";
 
 const Invoice = ({
     config,
@@ -46,7 +40,6 @@ const Invoice = ({
     const { _id = "" } = invoiceForm || {};
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
-    const [totalpage, setTotalpage] = useState(0);
     // const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
@@ -87,6 +80,7 @@ const Invoice = ({
             transition: Bounce,
             ...rest,
     }), []);
+
     const fetchInvoices = () => {
         setIsLoading(true);
         setSearchValue("")
@@ -99,11 +93,9 @@ const Invoice = ({
         })
           .then((res) => {
             setInvoices(res.data);
-            setTotalpage(Number(res.totalItems));
           })
           .catch(() => {
             setInvoices([]);
-            setTotalpage(0);
           })
           .finally(() => {
             setIsLoading(false);
@@ -116,17 +108,11 @@ const Invoice = ({
         searchInvoiceConnect({ company, searchTerm, page : paginationModel.page + 1})
               .then((res) => {
                 setInvoices(res.data);
-                setTotalpage(Number(res.totalItems));
                 setIsQueryRunning(false);
-                // setPaginationModel((prev) => {
-                // const newModel = { ...paginationModel };
-                // return JSON.stringify(prev) === JSON.stringify(newModel) ? prev : newModel;
-            // });
 
               })
               .catch(() => {
                 setInvoices([]);
-                setTotalpage(0);
                 setSearchValue("");
                 setIsQueryRunning(false);
 
@@ -149,11 +135,9 @@ const Invoice = ({
         });
         setSearchValue("");
         navigate(`/invoice/${newValue}`);
-        // setValue(newValue);
     };
 
     const handleRowClick = async ({row}) => {
-        // e.stopPropagation(); // prevent triggering row click
         resetReducerConnect();
         navigate(`/edit/invoice/${row._id}`);
     };
@@ -239,19 +223,7 @@ const Invoice = ({
                 },
             });
 
-            const contentDisposition = pdfResponse.headers["content-disposition"];
-            const match = contentDisposition?.match(/filename="?(.+)"?/);
-            const filename = match?.[1] || "invoice.pdf";
-
-            const blob = new Blob([pdfResponse.data], { type: "application/pdf" });
-            const fileURL = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.href = fileURL;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            downloadFile(pdfResponse);
 
             //   setIsLoading(false);
             toast.update(toastId, {
@@ -271,104 +243,6 @@ const Invoice = ({
             setIsLoading(false);
         }
     }, [getBillPdfConnect, showToast, setIsLoading]);
-
-    // const downloadPdfWithProgress = async ({
-    //     row,
-    //     downloadOriginal,
-    //     toastId,
-    //     label,
-    // }) => {
-    //     showToast({
-    //         type: "info",
-    //         text: `Preparing ${label}...`,
-    //         autoClose: false,
-    //         closeButton: false,
-    //         progress: 0,
-    //         theme: "dark",
-    //         toastId,
-    //     });
-
-    //     const response = await getBillPdfConnect(
-    //         {
-    //         id: row._id,
-    //         downloadOriginal,
-    //         },
-    //         {
-    //         responseType: "blob",
-    //         headers: { Accept: "application/pdf" },
-    //         onDownloadProgress: (e) => {
-    //             if (!e.total) return;
-
-    //             const percent = Math.round((e.loaded * 100) / e.total);
-
-    //             toast.update(toastId, {
-    //             render: `Downloading ${label}... ${percent}%`,
-    //             progress: percent / 100,
-    //             theme: "dark",
-    //             });
-    //         },
-    //         }
-    //     );
-
-    //     const contentDisposition = response.headers["content-disposition"];
-    //     const match = contentDisposition?.match(/filename="?(.+)"?/);
-
-    //     const filename =
-    //         match?.[1] ||
-    //         (downloadOriginal
-    //         ? "invoice-original.pdf"
-    //         : "invoice-duplicate.pdf");
-
-    //     const blob = new Blob([response.data], { type: "application/pdf" });
-    //     const url = URL.createObjectURL(blob);
-
-    //     const link = document.createElement("a");
-    //     link.href = url;
-    //     link.download = filename;
-    //     link.click();
-
-    //     URL.revokeObjectURL(url);
-
-    //     toast.update(toastId, {
-    //         render: `${label} downloaded`,
-    //         type: "success",
-    //         autoClose: 2000,
-    //         progress: undefined,
-    //     });
-    // };
-
-    // const handleDownload = React.useCallback(
-    //     async (e, row) => {
-    //         e.stopPropagation();
-
-    //         try {
-    //         // 🔹 Duplicate invoice
-    //         await downloadPdfWithProgress({
-    //             row,
-    //             downloadOriginal: false,
-    //             toastId: `dup-${row._id}`,
-    //             label: "Duplicate invoice",
-    //         });
-
-    //         // 🔹 Original invoice
-    //         await downloadPdfWithProgress({
-    //             row,
-    //             downloadOriginal: true,
-    //             toastId: `org-${row._id}`,
-    //             label: "Original invoice",
-    //         });
-    //         } catch (err) {
-    //         console.error(err);
-    //         Swal.fire({
-    //             icon: "error",
-    //             text: "Failed to download invoices",
-    //         });
-    //         }
-    //     },
-    //     [getBillPdfConnect, showToast]
-    // );
-
-
 
     const handleOpenPaymentModal = React.useCallback((invoice) => {
         setSelectedInvoice(invoice);
@@ -527,27 +401,6 @@ const Invoice = ({
         })
     };
 
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <div className="d-flex ">
-            <Button
-                fullWidth
-                onClick={onClick}
-                variant="outlined"
-                size="medium"
-                ref={ref}
-                className="customBtn"
-            >
-                {value}
-            </Button>
-        </div>
-    ));
-
-    const paginationCheck = () => {
-        if (isMobileDevice()) {
-            return isActive;
-        }
-        return true;
-    }
 
     const debouncedSearch = useMemo(() =>
         debounce((searchTerm) => {
@@ -575,25 +428,17 @@ const Invoice = ({
       };
 
 
-      const columns = useMemo(() => getColumns({ handleDownloadClick, chekboxhandler, value: company, vendorsList }), [handleDownload, chekboxhandler, company, vendorsList]);
+      const columns = useMemo(() => getColumns({
+        handleDownloadClick,
+        chekboxhandler,
+        value: company,
+        vendorsList
+    }), [handleDownload, chekboxhandler, company, vendorsList]);
 
     const renderInvoices = () => (
         <>
             <Paper sx={{ width: "100%", overflow: "hidden", height: "61vh" }}>
-                {/* <div className="customTable">
-                    <Table
-                        data={invoices}
-                        isClickable={true}
-                        hoverable={true}
-                        isQueryRunning={isQueryRunning}
-                        onClick={handleRowClick}
-                        cols={tableConstants({
-                            chekboxhandler,
-                            handleDownload,
-                            getDuePayment,
-                        })}
-                    />
-                </div> */}
+
                 <DataGrid
                     rows={isLoading || isQueryRunning ? [] : invoices}
                     getRowId={(row) => row._id}
@@ -666,43 +511,26 @@ const Invoice = ({
 
     return (
         <React.Fragment>
-            {/* {paginationCheck() && parseInt(totalpage) > 10 && <Pagination  paginationModel={paginationModel} totalpage={totalpage} setPaginationModel={setPaginationModel} />} */}
-            <div className={`mt-3`}>
-                <h2 className="fw-bold">Invoice</h2>
-            </div>
-
-            <Box
-                sx={{
+            <HeroSection
+                pageTitle="Invoice"
+                btnText="Create Invoice"
+                startIcon={<AddIcon />}
+                style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     flexDirection: {
                         xs: "column",
                         sm: "row",
                     },
                     width: {
                         xs: "100%",
+                        sm: "100%"
                     },
-                    mt: 2,
+                    justifyContent: "space-between",
                     alignItems: "center",
+                    mt: 2
                 }}
+                onClick={onClick}
             >
-                <Button
-                    onClick={onClick}
-                    variant="contained"
-                    className="customBtn"
-                    size="medium"
-                    startIcon={<AddIcon />}
-                    sx={{
-                        textTransform: "none",
-                        minWidth: "120px",
-                        width: {
-                            xs: "100%",
-                            sm: "auto",
-                        }
-                    }}
-                >
-                    Create Invoice
-                </Button>
                 <Box
                     sx={{
                         display: "flex",
@@ -742,24 +570,18 @@ const Invoice = ({
                                 },
 
                             }}
+                            endAdornment
                             slotProps={{
                                 input:{
                                     endAdornment: (
                                         !!(searchValue .length) &&
-                                        <InputAdornment
-                                            position="end"
-                                            sx={{
-                                                cursor: 'pointer' ,
-                                            }}
+                                        <ClearInputAdorment
                                             onClick={() => {
                                                 setSearchValue("");
                                                 setIsQueryRunning(false);
                                                 fetchInvoices();
                                             }}
-                                        >
-
-                                            <ClearIcon  />
-                                        </InputAdornment>
+                                        />
                                     )
                                 }
                             }}
@@ -776,8 +598,8 @@ const Invoice = ({
                             showMonthYearPicker={true}
                             dateFormat="MMMM, YYYY"
                             onChange={handleDateChange}
-                            withPortal
-                            customInput={<ExampleCustomInput />}
+                            withPortal={true}
+                            customInput={true}
                         />
                     </Box>
                     <Box
@@ -789,47 +611,38 @@ const Invoice = ({
                             }
                         }}
                     >
-                        <Box className={`m-1`} sx={{
-                            width: {
-                                xs: "100%",
-                                sm: "auto",
-                            }
-                        }}  >
-                            <Button
-                                fullWidth
-                                onClick={() => downloadCSV(false)}
-                                loading={btnLoading}
-                                size="medium"
-                                className="outlinedCustomBtn"
-                            >
-                                <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                    {company} Sales
-                                </span>
-                            </Button>
-                        </Box>
+                        {
+                            REPORT_BTN.map((btn) => {
+                                const onClickHandler = btn.downloadGstFile ? () => onClickGstReportBtn() : () => downloadCSV(false)
+                                return (
+                                    <Box
+                                        className={`m-1`}
+                                        sx={{
+                                            width: {
+                                                xs: "100%",
+                                                sm: "auto",
+                                            }
+                                        }}
+                                    >
+                                        <Button
+                                            fullWidth
+                                            size="medium"
+                                            loading={btnLoading}
+                                            className="outlinedCustomBtn"
+                                            onClick={onClickHandler}
 
-
-                        <Box className={`m-1`} sx={{
-                            width: {
-                                xs: "100%",
-                                sm: "auto",
-                            }
-                        }}  >
-                            <Button
-                                fullWidth
-                                onClick={() => onClickGstReportBtn()}
-                                loading={btnLoading}
-                                className="outlinedCustomBtn"
-                                size="medium"
-                            >
-                                <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
-                                    {company} GST
-                                </span>
-                            </Button>
-                        </Box>
+                                        >
+                                            <span style={{ visibility: btnLoading ? "hidden" : "visible" }}>
+                                                {`${company} ${btn.buttonText}`}
+                                            </span>
+                                        </Button>
+                                    </Box>
+                                )
+                            })
+                        }
                     </Box>
                 </Box>
-            </Box>
+            </HeroSection>
 
             <div className="mt-2">
                 <CompanyTabs

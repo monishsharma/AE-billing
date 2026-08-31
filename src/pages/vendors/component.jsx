@@ -11,6 +11,9 @@ import React from "react";
 import Paper from "@mui/material/Paper";
 import PageLoader from "../../components/page-loader";
 import { useNavigate } from "react-router-dom";
+import HeroSection from "../../components/hero-section";
+import AddIcon from "@mui/icons-material/Add";
+
 
 const Vendors = ({ config, resetVendorFormConnect }) => {
   const navigate = useNavigate();
@@ -53,13 +56,15 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
   if (isLoading) return <PageLoader />;
 
   return (
-    <div className="mt-4">
-      <h2 className="fw-bold">Customer Lists</h2>
-      <div className="mt-4">
-        <Button variant="contained" onClick={addVendor} className="customBtn">
-          Add Customer
-        </Button>
-      </div>
+    <>
+      <HeroSection
+      pageTitle={"Customers"}
+      btnText={"Add Customer"}
+      startIcon={<AddIcon />}
+      style={{
+        mt: 2,
+      }}
+    />
       <div className="mt-4">
         <TableContainer component={Paper}>
           <Table sx={{minWidth: "1000px"}}>
@@ -103,7 +108,8 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
           </Table>
         </TableContainer>
       </div>
-    </div>
+    </>
+    // </div>
   );
 };
 
