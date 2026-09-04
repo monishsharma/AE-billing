@@ -192,3 +192,42 @@ export const gstinStateCodes = [
         code: stateCode
      }
   }
+
+  export const GLOBAL_FLEX_STYLING = {
+    display: "flex",
+    flexDirection: {
+        xs: "column",
+        lg: "row",
+    },
+    alignItems: "center",
+    justifyContent: "space-between",
+  }
+
+  export const RESPONSIVE_WIDTH_STYLE = {
+    width: {
+        xs: "100%",
+        lg: "auto",
+    }
+  }
+
+  export const DASHBOARD_CARD_KEYS = {
+    SALES: "SALES",
+    RECEIVED: "RECEIVED",
+    OUTSTANDING: "OUTSTANDING",
+    GROWTH: "GROWTH"
+  }
+
+   export const MONTHLY_CHART_LABELS = [
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+  ];

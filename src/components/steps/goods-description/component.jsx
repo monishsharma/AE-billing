@@ -58,7 +58,7 @@ const GoodsDescription = ({
         HSN: values || [],
         type: uqcOptions || []
     }
-    console.log(Options)
+
     const { id: invoiceId } = useParams();
     const isCompanyAshok = selectedCompany === COMPANY_TYPE.ASHOK;
 

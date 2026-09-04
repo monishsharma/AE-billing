@@ -55,10 +55,13 @@ export const columns = ({ isCompanyAshok, isEditMode, getStatus }) => [
   {
     key: "checkbox",
     label: "",
-    render: ({ poItem, selected, handleSelectItem, data, selectedPo }) => (
+    render: ({ poItem, selected, handleSelectItem, data, selectedPo,  totalQty, remainingQty }) => {
+      const status = getStatus(totalQty, remainingQty);
+      const config = statusConfig[status];
+      return (
       <Checkbox
         checked={!!selected}
-        disabled={poItem.pendingQty <= 0 && !selected}
+        disabled={config.label === "Completed"}
         onChange={() =>
           handleSelectItem({
             ...poItem,
@@ -66,7 +69,7 @@ export const columns = ({ isCompanyAshok, isEditMode, getStatus }) => [
           })
         }
       />
-    )
+    )}
   },
   {
     key: "sno",

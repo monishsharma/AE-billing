@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 
 const HeroSection = ({
@@ -10,11 +10,13 @@ const HeroSection = ({
     children,
     showButton = true,
     startIcon = null,
+    subtitle="",
     style = {}
 }) => {
     return (
         <Box mt={2}>
             <h2 className="fw-bold">{pageTitle}</h2>
+            {subtitle && <Typography variant='subtitle2' sx={{ mt: "-5px", ml: 0.2,  color: "#64748B"}} className='fw-regualr'>{subtitle}</Typography>}
             <Box sx={{...style}}>
                 {
                     showButton &&

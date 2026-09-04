@@ -7,11 +7,11 @@ const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <div className="d-flex ">
             <Button
                 fullWidth
+                sx={{minWidth: 150}}
                 onClick={onClick}
-                variant="outlined"
                 size="medium"
                 ref={ref}
-                className="customBtn"
+                className="outlinedCustomBtn"
             >
                 {value}
             </Button>
