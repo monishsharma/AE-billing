@@ -316,7 +316,7 @@ const UnpaidInvoices = ({
                     sx={{
                       ...TABLE_CELL_STYLE,
                       fontWeight: 700,
-                      color: "#4F46E5",
+                      color: "#6C5CE7",
                     }}
                   >
                     {invoice.invoiceDetail.invoiceNO}
