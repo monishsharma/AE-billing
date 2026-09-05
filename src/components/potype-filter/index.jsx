@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Button } from "@mui/material";
+import { FILTER_OPTION } from "../../constants/app-constant";
 
 const PoTypeFilter = ({
-  options = [],
+  options = FILTER_OPTION,
   selected,
   onChange,
   classNameActive = "customBtn",

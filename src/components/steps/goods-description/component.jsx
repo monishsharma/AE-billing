@@ -433,7 +433,11 @@ const GoodsDescription = ({
                 description: value?.description || "",
                 itemType: value?.type || "manual",
                 wo: value?.drg || "",
+
                 size: value?.size || "-",
+                sizeType: value?.sizeType || "",
+                edgeType: value?.edgeType || "",
+                rollerType: value?.rollerType || "",
             };
         }
 
@@ -490,7 +494,11 @@ const GoodsDescription = ({
                 rate: resolvedRate,
                 value: Number(resolvedRate) * Number(item.dispatchQty),
                 itemId: item.itemId,
-                poNumber: item.poNumber
+                poNumber: item.poNumber,
+                size: selectedRate?.[0].size || "",
+                rollerType: selectedRate?.[0]?.rollerType || "",
+                sizeType: selectedRate?.[0]?.sizeType || "",
+                edgeType: selectedRate?.[0]?.edgeType || ""
             });
         });
         const poArray = Array.from(poSet);
@@ -656,7 +664,6 @@ const GoodsDescription = ({
                                                             ...copyOfItems[idx],
                                                             rate: newInputValue,
                                                             itemType: "manual",
-                                                            size: "-",
                                                         };
 
                                                         saveDataConnect({

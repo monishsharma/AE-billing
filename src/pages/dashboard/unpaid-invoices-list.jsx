@@ -100,7 +100,6 @@ const UnpaidInvoices = ({
         borderRadius: "14px",
         height: 350,
         boxSizing: "border-box",
-
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",

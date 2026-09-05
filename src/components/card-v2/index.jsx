@@ -120,13 +120,13 @@ const CardV2 = ({
                                 <>
                                     {
                                         <>
-                                            {
+                                            {/* {
                                                 showGrowthIcon &&
                                                 <ShimmerIcon
                                                     color= {color}
                                                     icon={Icon}
                                                 />
-                                            }
+                                            } */}
 
                                             <Typography
                                                 sx={{

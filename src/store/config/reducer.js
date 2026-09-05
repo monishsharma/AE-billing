@@ -2,7 +2,6 @@ import { createReducer } from "reduxsauce";
 import  Types from "./actionTypes";
 import { VENDOR_STEPS } from "../../constants/app-constant";
 import { createPlantDetailInitialValue } from "../../components/vendor-steps/vendor-plant-detail/selector";
-import { createInitialValue } from "../../components/vendor-steps/vendor-supply-rates/selector";
 
 
 export const INITIAL_STATE = {
@@ -18,7 +17,7 @@ export const INITIAL_STATE = {
         materialCode: "",
         vendorCode: "",
         plantRows: [createPlantDetailInitialValue()],
-        supplyRate: [createInitialValue()],
+        supplyRate: [],
         currentStep: 0
 
    },

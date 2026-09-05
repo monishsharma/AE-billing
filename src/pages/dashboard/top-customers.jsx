@@ -17,7 +17,7 @@ const TopCustomers = ({
                     p: 2,
                     border: "1px solid #E2E8F0",
                     borderRadius: "14px",
-                    height: 300,
+                    height: "350px",
                     boxSizing: "border-box",
                     display: "flex",
                     flexDirection: "column",

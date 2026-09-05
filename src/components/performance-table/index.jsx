@@ -188,7 +188,7 @@ const BreakdownTable = ({
 
                 {/* Percentage */}
                 <TableCell
-                  align="right"
+                  align="center"
                   sx={{
                     width: {
                       xs: 48,

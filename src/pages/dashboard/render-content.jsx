@@ -8,6 +8,7 @@ import UnpaidInvoices from "./unpaid-invoices-list";
 import TopCustomers from "./top-customers";
 import { formatAmount } from "../../helpers/price-formatter";
 import { getBreakdownData } from "./selector";
+import RollerBreakdown from "../../components/roller-breakdown";
 
 export const renderContent = ({
     fy,
@@ -35,6 +36,8 @@ export const renderContent = ({
         ],
     };
     const apiDataKey = reportType === DASHBOARD_TAB_TYPE.MONTHLY ? "monthly" : "yearly";
+
+    const rollerBreakDown = data?.rollerBreakdown?.[apiDataKey] || [];
 
     const breakdownData = getBreakdownData({
         company,
@@ -123,7 +126,7 @@ export const renderContent = ({
                         financialYear={fy}
                     />
                 </Grid>
-                <Grid item size={{ sm: 12, lg: 6 }}>
+                <Grid item size={{ sm: 12, lg: 6 }} >
                     <UnpaidInvoices
                         company={company}
                         isLoading={loadingUnpaidInvoices}
@@ -144,12 +147,15 @@ export const renderContent = ({
                         valueKey="value"
                     />
                 </Grid>
-                {/* <Grid item size={{xs: 12, sm: 4}}>
-                    <TopCustomers />
-                </Grid>
-                <Grid item size={{xs: 12, sm: 4}}>
-                    <TopCustomers />
-                </Grid> */}
+                {
+                    !!(rollerBreakDown.length) &&
+                    <Grid item size={{xs: 12, sm: 6}}>
+                        <RollerBreakdown
+                            reportType={reportType}
+                            data={rollerBreakDown}
+                        />
+                    </Grid>
+                }
             </Grid>
         </>
     )

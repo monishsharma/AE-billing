@@ -61,6 +61,7 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
       pageTitle={"Customers"}
       btnText={"Add Customer"}
       startIcon={<AddIcon />}
+      onClick={addVendor}
       style={{
         mt: 2,
       }}

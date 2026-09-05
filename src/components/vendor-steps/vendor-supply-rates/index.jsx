@@ -1,235 +1,397 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import styles from "./style.module.css"
-import { createInitialValue, intialState } from './selector'
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import { isMobileDevice } from '../../../helpers/is-mobile-device'
-import StepperButton from '../../steps/stepper-button'
-import { VENDOR_STEPS } from '../../../constants/app-constant'
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+
+import { useNavigate } from "react-router-dom";
+
+import { COLUMNS } from "./selector";
+
+import StepperButton from "../../steps/stepper-button";
 import PageLoader from "../../page-loader";
+import PoTypeFilter from "../../potype-filter";
+import ProductDialog from "./product-modal";
 
+import {
+  FILTER_OPTION,
+  VENDOR_STEPS,
+} from "../../../constants/app-constant";
 
-
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const VendorSupplyRates = ({
-    id,
-    steps,
-    index,
-    prevStep,
-    vendorForm,
-    nextStep,
-    saveData,
-    updateVendorList,
-    getVendorList,
-    setCurrentStepConnect,
-    updateVendorConnect
-,}) => {
+  id,
+  steps,
+  index,
+  prevStep,
+  vendorForm,
+  saveData,
+  updateVendorList,
+  getVendorList,
+  setCurrentStepConnect,
+  updateVendorConnect,
+}) => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const {supplyRate: vendorSupplyRateRows = []} = vendorForm || {};
-    const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState(
+    FILTER_OPTION[0]
+  );
 
-    const addRow = () => {
-        const newRow = createInitialValue()
-        const updatedRows =[...vendorSupplyRateRows, newRow];
-        saveData({
-        stepName: VENDOR_STEPS.SUPPLY_RATE,
-            data: {
-                supplyRate: updatedRows
-            }
-        });
+
+  const [productModal, setProductModal] =
+    useState({
+      open: false,
+      product: null,
+      rowIndex: null,
+    });
+
+  const {
+    supplyRate: vendorSupplyRateRows = [],
+  } = vendorForm || {};
+
+  const filteredProducts =
+    activeTab.id === FILTER_OPTION[0].id
+      ? vendorSupplyRateRows
+      : vendorSupplyRateRows.filter(
+          (item) => item.code === activeTab.label
+        );
+
+  const handleAdd = () => {
+    setProductModal({
+      open: true,
+      product: null,
+      rowIndex: null,
+    });
+  };
+
+  const handleEdit = (
+    product,
+    rowIndex
+  ) => {
+    setProductModal({
+      open: true,
+      product: {
+        ...product,
+      },
+      rowIndex,
+    });
+  };
+
+  const handleCloseProductModal = () => {
+    setProductModal({
+      open: false,
+      product: null,
+      rowIndex: null,
+    });
+  };
+
+  const handleProductSubmit = (
+    product
+  ) => {
+    const updatedRows = [
+      ...vendorSupplyRateRows,
+    ];
+
+    if (productModal.rowIndex !== null) {
+      updatedRows[productModal.rowIndex] = product;
+    } else {
+      updatedRows.push(product);
     }
 
-    const deleteRow = ({ rowIndex }) => {
-        const updatedRows =  [...vendorSupplyRateRows];
-        updatedRows.splice(rowIndex, 1);
+    saveData({
+      stepName:
+        VENDOR_STEPS.SUPPLY_RATE,
+      data: {
+        supplyRate: updatedRows,
+      },
+    });
 
-        saveData({
-            stepName: VENDOR_STEPS.SUPPLY_RATE,
-            data: {
-                supplyRate: updatedRows
-            }
-        });
-    };
+    handleCloseProductModal();
+  };
 
-    const validateRows = () => {
-        const newErrors = vendorSupplyRateRows.map((row) => {
-            let rowError = {};
+  const deleteRow = ({ rowIndex }) => {
+    const updatedRows = [
+      ...vendorSupplyRateRows,
+    ];
 
-            intialState.forEach((input) => {
-                const value = row[input.name];
+    updatedRows.splice(rowIndex, 1);
 
-                // only validate required fields
-                if ((!value || value === "")) {
-                    rowError[input.name] = `${input.name} is required`;
-                }
-            });
+    saveData({
+      stepName:
+        VENDOR_STEPS.SUPPLY_RATE,
+      data: {
+        supplyRate: updatedRows,
+      },
+    });
+  };
 
-            return rowError;
-        });
 
-        setErrors(newErrors);
+  const nextStepHandler = () => {
 
-        return newErrors.some(row => Object.keys(row).length > 0);
-    };
+    setIsLoading(true);
 
-    const onFieldChange = (event,rowIndex) => {
-        const { name, value } = event.target;
-        const updatedRows = [...vendorSupplyRateRows];
-        updatedRows[rowIndex] = {
-            ...updatedRows[rowIndex],
-            [name]: value
-        }
+    const {
+      currentStep,
+      ...rest
+    } = vendorForm;
 
-        saveData({
-            stepName: VENDOR_STEPS.SUPPLY_RATE,
-            data: {
-                supplyRate: updatedRows
-            }
-        });
-    }
+    const action = id ? () => updateVendorConnect(id,rest) : () => updateVendorList(rest);
 
-    const nextStepHandler =  () => {
-        const hasError = validateRows();
-        if (hasError) return;
-        setIsLoading(true);
-        const {currentStep, ...rest} = vendorForm;
-        const action = id ? () => updateVendorConnect(id, rest) : () => updateVendorList(rest)
-        action()
-        .then(async() => {
-            // reset currentstep and navigate to vendor list page
-            await getVendorList();
-            setCurrentStepConnect(0);
-            navigate(-1)
-            setIsLoading(true);
-        })
-        .catch((err) => {
-            console.log(err)
-            setIsLoading(false);
-        })
-    }
+    action()
+      .then(async () => {
+        await getVendorList();
 
-    if (isLoading) return <PageLoader />
+        setCurrentStepConnect(0);
 
-    return (
-        <>
-            <Box mt={2}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        mt: 1,
-                        mb: 4
-                    }}
-                >
-                    <Button variant='contained' color='primary' size='small' onClick={() => addRow()}>
-                        Add Product
-                    </Button>
-                </Box>
-                {
-                    // isProductRateRequired &&
-                    <div className={styles.flexContainer}>
-                        <div className={styles.gridContainer}>
-                            {
-                                !isMobileDevice() ?
-                                    <>
-                                        <span>Product Description</span>
-                                        <span>Description</span>
-                                        <span>Rate</span>
-                                        <span>Drg No</span>
-                                        <span>Product Type</span>
-                                    </>
-                                    :
-                                    <span>Product Item Rate</span>
-                            }
+        navigate(-1);
 
-                        </div>
-                        {
-                            vendorSupplyRateRows.map((row, rowIndex) => (
-                                <div className={styles.itemsContainer} key={rowIndex}>
-                                    {
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  };
 
-                                        intialState.map((item, itemIndex) => (
-                                                <span key={itemIndex}>
-                                                    {
-                                                        item.type === "select" ?
-                                                        <FormControl fullWidth key={itemIndex}>
-                                                        <InputLabel id={`${item.id}-label`}>{item.placeholder}</InputLabel>
-                                                            <Select
-                                                                fullWidth
-                                                                id={item.id}
-                                                                labelId={`${item.id}-label`}
-                                                                name={item.id}
-                                                                variant='standard'
-                                                                label={item.placeholder}
-                                                                value={vendorSupplyRateRows[rowIndex]?.[item.key] || ""}
-                                                                placeholder={item.placeholder}
-                                                                onChange={(event) => onFieldChange(event, rowIndex)}
-                                                                error={errors[rowIndex] && errors[rowIndex][item.key]}
-                                                                 helperText={
-                                                                    errors?.[rowIndex]?.[item.key] ? `${item.placeholder} is required` : ""
-                                                                }
-                                                                // disabled={item.extraProps && item.extraProps.disableOnEdit && id}
-                                                                {...item.extraProps}
-                                                            >
-                                                                {
-                                                                    item.extraProps.options.map((opt) => (
-                                                                        <MenuItem key={opt.value.toUpperCase()} value={opt.value.toUpperCase()} >
-                                                                            {opt.label}
-                                                                        </MenuItem>
-                                                                    ))
-                                                                }
-                                                            </Select>
-                                                        </FormControl>
-                                                        :
-                                                            <TextField
-                                                                fullWidth
-                                                                multiline
-                                                                id={item.label}
-                                                                label={item.label}
-                                                                name={item.key}
-                                                                sx={{minHeight: "100%"}}
-                                                                value={vendorSupplyRateRows[rowIndex]?.[item.key] || ""}
-                                                                onChange={(event) => onFieldChange(event, rowIndex)}
-                                                                error={errors[rowIndex] && errors[rowIndex][item.key]}
-                                                                 helperText={
-                                                                    errors?.[rowIndex]?.[item.key] ? errors?.[rowIndex]?.[item.key]: ""
-                                                                }
-                                                                // value={row[item.key]}
-                                                                variant="standard"
-                                                            // error={rowsValidation[index] && !rowsValidation[index][item.key]}
-                                                            // onChange={(e) => onItemChange(e, index)}
-                                                            />
-                                                    }
-                                                </span>
-                                        ))
-                                    }
-                                    {vendorSupplyRateRows.length > 1 && <span className='mt-2' >
-                                                <Button fullWidth color="error" variant="text" onClick={() => deleteRow({ rowIndex })}>
-                                                    Delete
-                                                </Button>
-                                    </span>}
-                                </div>
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
-                            ))
-                        }
-                    </div>
-                }
-            </Box>
-            <Box sx={{ mt: 4 }}>
-                <StepperButton
-                    steps={steps}
-                    index={index}
-                    handleNext={nextStepHandler}
-                    handleBack={prevStep}
+  return (
+    <>
+      <Box mt={2}>
+        <Paper
+          elevation={0}
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 3,
+            overflow: "hidden",
+          }}
+        >
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+              >
+                Products
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+              >
+                Manage product rates and
+                specifications
+              </Typography>
+
+              <Box mt={2}>
+                <PoTypeFilter
+                  selected={activeTab}
+                  onChange={(
+                    selectedValue
+                  ) =>
+                    setActiveTab(
+                      selectedValue
+                    )
+                  }
                 />
+              </Box>
             </Box>
-        </>
-    )
-}
 
+            <Button
+              variant="contained"
+              className="outlinedCustomBtn"
+              onClick={handleAdd}
+            >
+              Add Product
+            </Button>
+          </Box>
 
-export default VendorSupplyRates
+          <TableContainer
+            sx={{
+              px: 1,
+              py: 2,
+              maxHeight: 300,
+            }}
+          >
+            <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {COLUMNS.map(
+                  (column) => (
+                    <TableCell
+                      key={column.key}
+                      align={
+                        column.align ||
+                        "left"
+                      }
+                      sx={{
+                        width:
+                          column.width,
+                        minWidth:
+                          column.minWidth,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  )
+                )}
+
+                <TableCell
+                  align="center"
+                  width={100}
+                >
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {filteredProducts.length >
+              0 ? (
+                filteredProducts.map(
+                  (product) => {
+                    const rowIndex =
+                      vendorSupplyRateRows.indexOf(
+                        product
+                      );
+
+                    return (
+                      <TableRow
+                        key={
+                          product._id ||
+                          rowIndex
+                        }
+                        hover
+                      >
+                        {COLUMNS.map(
+                          (column) => {
+                            const value =
+                              product[
+                                column
+                                  .key
+                              ];
+
+                            return (
+                              <TableCell
+                                key={
+                                  column.key
+                                }
+                                align={
+                                  column.align ||
+                                  "left"
+                                }
+                              >
+                                {column.render
+                                  ? column.render(
+                                      value,
+                                      product
+                                    )
+                                  : value ??
+                                    "-"}
+                              </TableCell>
+                            );
+                          }
+                        )}
+
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            onClick={() =>
+                              handleEdit(
+                                product,
+                                rowIndex
+                              )
+                            }
+                          >
+                            <EditOutlinedIcon fontSize="small" />
+                          </IconButton>
+
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() =>
+                              deleteRow({
+                                rowIndex,
+                              })
+                            }
+                          >
+                            <DeleteOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                )
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={
+                      COLUMNS.length +
+                      1
+                    }
+                    align="center"
+                    sx={{
+                      py: 6,
+                      color:
+                        "text.secondary",
+                    }}
+                  >
+                    No supply rates
+                    found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Box>
+
+      <Box sx={{ mt: 4 }}>
+        <StepperButton
+          steps={steps}
+          index={index}
+          handleNext={
+            nextStepHandler
+          }
+          handleBack={prevStep}
+        />
+      </Box>
+
+      <ProductDialog
+        open={productModal.open}
+        product={productModal.product}
+        onClose={handleCloseProductModal}
+        onSubmit={handleProductSubmit}
+      />
+    </>
+  );
+};
+
+export default VendorSupplyRates;
