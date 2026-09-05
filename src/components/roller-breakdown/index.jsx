@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
+import { capitalize } from "../../helpers/capitalize";
 
 const RollerBreakdown = ({ data = [], reportType }) => {
     return (
@@ -14,7 +15,7 @@ const RollerBreakdown = ({ data = [], reportType }) => {
             }}
         >
             <Typography fontSize={16} fontWeight={700} mb={1.5}>
-                Roller Dispatch Breakdown ({reportType})
+                Roller Dispatch Breakdown ({capitalize(reportType)})
             </Typography>
 
             <Box
