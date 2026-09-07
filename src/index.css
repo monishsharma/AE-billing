@@ -198,3 +198,47 @@ td {
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
   }
 }
+
+.cancelRipple {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 9.6px;
+  position: relative;
+}
+
+.cancelRippleIcon {
+  font-size: 28px !important;
+  color: #ef4444;
+  position: relative;
+  z-index: 1;
+}
+
+.cancelRipple::before,
+.cancelRipple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: liveRedPulse 1.8s ease-out infinite;
+}
+
+.cancelRipple::after {
+  animation-delay: 0.6s;
+}
+
+@keyframes liveRedPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}

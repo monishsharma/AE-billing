@@ -37,7 +37,7 @@ export const renderContent = ({
     };
     const apiDataKey = reportType === DASHBOARD_TAB_TYPE.MONTHLY ? "monthly" : "yearly";
 
-    const rollerBreakDown = data?.rollerBreakdown?.[apiDataKey] || [];
+    const rollerBreakDown = data?.rollerBreakdown || [];
 
     const breakdownData = getBreakdownData({
         company,
@@ -148,11 +148,13 @@ export const renderContent = ({
                     />
                 </Grid>
                 {
-                    !!(rollerBreakDown.length) &&
+                    !!(data?.rollerBreakdown?.length) &&
                     <Grid item size={{xs: 12, sm: 6}}>
                         <RollerBreakdown
+                            isLoading={isLoading}
                             reportType={reportType}
                             data={rollerBreakDown}
+                            apiDataKey={apiDataKey}
                         />
                     </Grid>
                 }
