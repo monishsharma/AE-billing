@@ -30,6 +30,13 @@ export const getColumns = ({ handleDownloadClick, chekboxhandler, value, vendors
     renderCell: (params) => (
       <Checkbox
         id=""
+        sx={{
+          // color: "#6c5ce7",
+          // color: '#pink', // Color when unchecked
+        '&.Mui-checked': {
+          color: '#6c5ce7', // Color when checked
+        },
+        }}
         checked={params.row.paid}
         onClick={(e) => chekboxhandler(e, params.row)}
       />
@@ -112,7 +119,7 @@ export const getColumns = ({ handleDownloadClick, chekboxhandler, value, vendors
           // >
           //   ASN
           // </Button>
-          <IconButton color="secondary" aria-label="add an alarm" onClick={(e) => {
+          <IconButton sx={{color:"#6c5ce7"}} aria-label="add an alarm" onClick={(e) => {
                 e.stopPropagation();
                 window.open(`${CG_URL}${asnNumber}`, '_blank')
               }}>
@@ -138,7 +145,7 @@ export const getColumns = ({ handleDownloadClick, chekboxhandler, value, vendors
         return (
             <Typography
                 variant="body2"
-                color={moment(params?.row?.invoiceDetail.invoiceDate).isSame(moment(), 'day') ? "secondary" : "black"}
+                color={moment(params?.row?.invoiceDetail.invoiceDate).isSame(moment(), 'day') ? "#6c5ce7" : "black"}
                 sx={{
                     height: "100%",
                     display:"flex",
