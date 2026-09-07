@@ -149,7 +149,7 @@ export const renderContent = ({
                 </Grid>
                 {
                     !!(data?.rollerBreakdown?.length) &&
-                    <Grid item size={{xs: 12, sm: 6}}>
+                    <Grid item size={{xs: 12, sm: 12, lg: 6}}>
                         <RollerBreakdown
                             isLoading={isLoading}
                             reportType={reportType}

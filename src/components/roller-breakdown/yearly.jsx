@@ -14,6 +14,7 @@ import SelectVendor from "../select-vendor";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getFinancialYearMonthsTill } from "./selector";
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import { GLOBAL_FLEX_STYLING } from "../../constants/app-constant";
 
 
 const accordionSx = {
@@ -107,13 +108,16 @@ const YearlyRollerBreakdown = ({ reportType, data }) => {
         >
             <Box
                 sx={{
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    display: "flex",
+                    ...GLOBAL_FLEX_STYLING,
                     mb: 1.5,
+                    flexDirection: {
+                        xs: "column",
+                        sm: "column",
+                        md: "row"
+                    }
                 }}
             >
-                <Typography fontSize={16} fontWeight={700}>
+                <Typography fontSize={16} fontWeight={700} sx={{m: {xs: 2, sm: 2, md: 0}}}>
                     Roller Dispatch Breakdown ({capitalize(reportType)})
                 </Typography>
 
