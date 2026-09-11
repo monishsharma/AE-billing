@@ -1,5 +1,5 @@
 import React from "react";
-import { getAreaChartOption } from "./constant";
+import { getAreaChartOption, getCurrentMonthRipplePlugin } from "./constant";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -31,6 +31,7 @@ ChartJS.register(
 
 
 const AreaChart = ({ data, isLoading, reportType, dateValue, financialYear }) => {
+
     return (
         <Paper
             elevation={0}
@@ -59,6 +60,7 @@ const AreaChart = ({ data, isLoading, reportType, dateValue, financialYear }) =>
                         key="sales"
                         options={getAreaChartOption(reportType, dateValue)}
                         data={data}
+                        plugins={[getCurrentMonthRipplePlugin(dateValue, reportType)]}
                     />
                 )}
             </Box>

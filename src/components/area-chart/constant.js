@@ -108,3 +108,85 @@ export const getAreaChartOption = (reportType, dateValue) => {
     },
   })
 };
+
+export const getCurrentMonthRipplePlugin = (dateValue, reportType) => {
+  const now = new Date();
+
+  const currentMonth = now.toLocaleString("en-US", {
+    month: "short",
+  });
+
+  const currentYear = now.getFullYear();
+  const currentMonthNumber = now.getMonth();
+
+  const selectedDate = new Date(dateValue);
+  const selectedMonth = selectedDate.getMonth();
+  const selectedYear = selectedDate.getFullYear();
+
+  // Current FY
+  const fyStartYear =
+    currentMonthNumber >= 3
+      ? currentYear
+      : currentYear - 1;
+
+  const currentFY = `${fyStartYear}-${String(fyStartYear + 1).slice(-2)}`;
+
+  const isMonthly = reportType?.toLowerCase() === "monthly";
+
+  // Your original monthly check
+  const isMonthInCurrentFY = selectedMonth >= 3;
+
+  const isCurrentPeriod =
+    selectedYear === currentYear &&
+    isMonthInCurrentFY;
+
+  const currentLabel = isMonthly
+    ? currentMonth
+    : currentFY;
+
+  return {
+    id: "currentMonthRipple",
+
+    afterDatasetsDraw(chart) {
+      // Only apply this check for monthly
+      if (isMonthly && !isCurrentPeriod) return;
+
+      const { ctx } = chart;
+
+      const index = chart.data.labels?.indexOf(currentLabel);
+
+      if (index === -1) return;
+
+      const point = chart.getDatasetMeta(0)?.data?.[index];
+
+      if (!point) return;
+
+      const duration = 1600;
+      const progress = (Date.now() % duration) / duration;
+
+      const radius = 6 + progress * 12;
+      const opacity = 0.5 * (1 - progress);
+
+      ctx.save();
+
+      ctx.beginPath();
+      ctx.arc(
+        point.x,
+        point.y,
+        radius,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.strokeStyle = `rgba(108, 92, 231, ${opacity})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.restore();
+
+      requestAnimationFrame(() => {
+        chart.draw();
+      });
+    },
+  };
+};
