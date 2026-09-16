@@ -142,6 +142,10 @@ td {
 }
 
 @media only screen and (max-width: 600px) {
+  .scrollableDiv {
+    padding: 0px 15px;
+    height: "100%";
+  }
   .main {
     width: calc(100% - 80px);
   }

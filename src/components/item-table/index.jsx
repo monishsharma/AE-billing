@@ -214,7 +214,7 @@ const ItemTable = ({
                                                                 </>
                                                             );
                                                         })}
-                                                        <TableCell align='center' key={index} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                                                        <TableCell align='center' key={`${item._id}`} sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
                                                             <EditOutlinedIcon sx={{cursor: "pointer"}} color="primary" onClick={() => editItem(item)} />
                                                             <DeleteOutlineOutlinedIcon   sx={{cursor: "pointer"}} color="error" onClick={() => deleteHandler(item, itemType)} />
                                                         </TableCell>

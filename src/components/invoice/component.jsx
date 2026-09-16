@@ -20,6 +20,7 @@ import HeroSection from "../hero-section";
 import ClearInputAdorment from "../../shared/components/clear-input-adorment";
 import DatePicker from "../../shared/components/date-picker/custom-input";
 import { REPORT_BTN } from "./constant";
+import PaginationToolbar from "../../shared/components/pagination";
 
 const Invoice = ({
     config,
@@ -437,10 +438,10 @@ const Invoice = ({
 
     const renderInvoices = () => (
         <>
-            <Paper sx={{ width: "100%", overflow: "hidden", height: "61vh" }}>
+            <Paper sx={{ width: "100%", overflow: "hidden"}}>
 
                 <DataGrid
-                    rows={isLoading || isQueryRunning ? [] : invoices}
+                    rows={invoices}
                     getRowId={(row) => row._id}
                     columns={columns}
                     disableColumnMenu={true}
@@ -448,8 +449,22 @@ const Invoice = ({
                     loading={isLoading || isQueryRunning}
                     disableRowSelectionOnClick
                     disableColumnResize
+                    hideFooter
+                    slots={{
+                        toolbar: PaginationToolbar,
 
+                    }}
+                    slotProps={{
+                         loadingOverlay: {
+                            variant: 'skeleton',
+                            noRowsVariant: 'skeleton',
+                        },
+                        toolbar: {
+                            loading: isLoading || isQueryRunning,
+                        },
+                    }}
                      sx={{
+                        minHeight: 500,
                         '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
                         outline: 'none !important',
                         },
@@ -501,7 +516,7 @@ const Invoice = ({
                             },
                         }
                     }
-                    // showToolbar
+                    showToolbar
                 />
             </Paper>
         </>
@@ -570,7 +585,6 @@ const Invoice = ({
                                 },
 
                             }}
-                            endAdornment
                             slotProps={{
                                 input:{
                                     endAdornment: (

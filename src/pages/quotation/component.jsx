@@ -14,6 +14,7 @@ import { COMPANY_TYPE, FILTER_OPTION } from '../../constants/app-constant';
 import { ButtonGroup } from '@mui/material';
 import PoTypeFilter from '../../components/potype-filter';
 import HeroSection from '../../components/hero-section';
+import PaginationToolbar from '../../shared/components/pagination';
 
 const Quotation = ({
     config,
@@ -35,7 +36,7 @@ const Quotation = ({
     });
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
-        pageSize: 20,
+        pageSize: 10,
     });
     const showToast = React.useCallback(({ type, text, ...rest }) =>
         toast[type](text, {
@@ -238,7 +239,7 @@ const Quotation = ({
 
     const renderContent = () => {
         return (
-            <Box sx={{width: "100%", overflow: "hidden", height: "61vh" }}>
+            <Box sx={{width: "100%", overflow: "hidden"}}>
                 <DataGrid
                     rows={isLoading ? [] : quotationList}
                     getRowId={(row) => row._id}
@@ -249,11 +250,25 @@ const Quotation = ({
                     loading={isLoading}
                     disableRowSelectionOnClick
                     disableColumnResize
+                    slots={{
+                                            toolbar: PaginationToolbar,
+
+                                        }}
                     sx={{
+                        minHeight: 500,
                         '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {
                             outline: 'none !important',
                         },
                         cursor: 'pointer',
+                    }}
+                    slotProps={{
+                         loadingOverlay: {
+                            variant: 'skeleton',
+                            noRowsVariant: 'skeleton',
+                        },
+                        toolbar: {
+                            loading: isLoading,
+                        },
                     }}
                     initialState={
                         {
@@ -262,7 +277,7 @@ const Quotation = ({
                             },
                         }
                     }
-                // showToolbar
+                showToolbar
                 />
             </Box>
         )
