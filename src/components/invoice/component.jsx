@@ -36,8 +36,6 @@ const Invoice = ({
     const { vendorsList } = config || {};
     const navigate = useNavigate();
     const { company } = useParams();
-    const {isActive, ref} = useOutletContext();
-    const scroll = localStorage.getItem("scroll");
     const { _id = "" } = invoiceForm || {};
     const [isLoading, setIsLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
@@ -55,11 +53,6 @@ const Invoice = ({
     const [searchValue, setSearchValue] = useState("");
     const [isQueryRunning, setIsQueryRunning] = useState(false);
 
-    useEffect(() => {
-        if(!isLoading&& invoices.length) {
-        ref.current.scrollTop = scroll;
-        }
-    }, [isLoading, invoices])
 
     const onClick = () => {
         if (_id) {

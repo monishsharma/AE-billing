@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 
 import SideBar from "./shared/components/sidebar";
 import TopBar from "./components/top-bar";
-import useScrollableContainer from "./hooks/useScrollableContainer";
-import useScrollRestoration from "./hooks/useScrollRestoration";
+// import useScrollableContainer from "./hooks/useScrollableContainer";
+// import useScrollRestoration from "./hooks/useScrollRestoration";
 import { isMobileDevice } from "./helpers/is-mobile-device";
 
 const AppLayout = () => {
     const [isActive, setIsActive] = useState(isMobileDevice() ? true : false);
 
-    const {
-        scrollableDivRef,
-        handleScroll,
-    } = useScrollableContainer();
+    // const {
+    //     scrollableDivRef,
+    //     handleScroll,
+    // } = useScrollableContainer();
 
-    useScrollRestoration();
+    // useScrollRestoration();
 
     const toggleSidebar = () => {
         setIsActive(!isActive);
@@ -40,17 +40,18 @@ const AppLayout = () => {
 
                 <div
                     className="scrollableDiv"
-                    ref={scrollableDivRef}
-                    onScroll={handleScroll}
+                    // ref={scrollableDivRef}
+                    // onScroll={handleScroll}
                 >
                     <Outlet
                         context={{
-                            ref: scrollableDivRef,
+                            // ref: scrollableDivRef,
                             isActive,
                         }}
                     />
                 </div>
             </main>
+            <ScrollRestoration />
         </div>
     );
 };
