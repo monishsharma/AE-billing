@@ -125,14 +125,16 @@ export const getColumns = ({ handleDownload, value, makeQuotationCopy, vendorsLi
     },
     {
       field: "customerName",
-      flex: 1,
+      // flex: 1,
+      width: 200,
+
       renderHeader: () => <strong>Company</strong>,
       sortable: false,
       valueGetter: (params, row) => findCustomerName(row),
     },
     {
       field: "date",
-      flex: 1,
+      width: 150,
       renderHeader: () => <strong>Date</strong>,
       sortable: true,
 

@@ -44,6 +44,11 @@ const PaginationToolbar = ({ loading }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                flexDirection: {
+                    xs: "column",
+                    sm: "row",
+                },
+                gap: 1,
                 px: 2,
                 py: 1,
                 minHeight: 48,
@@ -107,6 +112,18 @@ const PaginationToolbar = ({ loading }) => {
                             },
                             "& .MuiPaginationItem-root.Mui-selected:hover": {
                                 backgroundColor: "#000",
+                            },
+                              width: {
+                                xs: "50%",
+                                sm: "auto",
+                            },
+
+                            "& .MuiPagination-ul": {
+                                width: "100%",
+                                justifyContent: {
+                                    xs: "space-between",
+                                    sm: "flex-end",
+                                },
                             },
                         }}
                     />

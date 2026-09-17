@@ -243,7 +243,7 @@ const Quotation = ({
                 <DataGrid
                     rows={isLoading ? [] : quotationList}
                     getRowId={(row) => row._id}
-
+                    hideFooter
                     columns={columns}
                     disableColumnMenu={true}
                     onRowClick={handleRowClick}
@@ -251,9 +251,9 @@ const Quotation = ({
                     disableRowSelectionOnClick
                     disableColumnResize
                     slots={{
-                                            toolbar: PaginationToolbar,
+                        toolbar: PaginationToolbar,
 
-                                        }}
+                    }}
                     sx={{
                         minHeight: 500,
                         '& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus-within': {

@@ -18,16 +18,14 @@ const AppLayout = () => {
     useScrollRestoration();
 
     const toggleSidebar = () => {
-        setIsActive(
-            (previous) => !previous
-        );
+        setIsActive(!isActive);
     };
 
     return (
         <div className="app-layout">
             <SideBar
                 isActive={isActive}
-                onToggle={toggleSidebar}
+                toggleNavigation={toggleSidebar}
             />
 
             <main
