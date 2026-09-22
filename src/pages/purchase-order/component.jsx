@@ -17,10 +17,14 @@ import Swal from 'sweetalert2';
 import RollerFilter from '../../components/roller-filter';
 import { getPOProgress, TABLE_COLUMNS } from './selector';
 import PoTypeFilter from '../../components/potype-filter';
+import AddIcon from "@mui/icons-material/Add";
+import AddPo from './addPo';
+
 
 
 const PurchaseOrder = ({
     config,
+    addPOConnect,
     purchaseOrder,
     deletePoConnect,
     getInvoiceListConnect,
@@ -34,6 +38,7 @@ const PurchaseOrder = ({
     const { data = [] } = purchaseOrder;
     const filteredVendorList = vendorsList.filter((v => v.type === company));
     const [isLoading, setIsLoading] = useState(false);
+    const [showAddPOModal, setShowAddPOModal] = useState(false);
     const [poType, setPoType] = useState(FILTER_OPTION[0])
 
 
@@ -156,6 +161,25 @@ const PurchaseOrder = ({
         })
     }
 
+    const onSave = (payload) => {
+        setI
+        addPOConnect(payload)
+            .then(async () => {
+                Swal.fire(({
+                    title: "Succesfully Added",
+                    icon: "success"
+                }));
+                await getPoListConnect(filters);
+            })
+    }
+
+    const onCloseHandler = (callPoListApi = false) => {
+        setShowAddPOModal(false);
+        if (callPoListApi) {
+            getPoListConnect(filters);
+        }
+    }
+
     // const columns = useMemo(() => getColumns({ company, vendorsList, expandedRow, toggleRow}), [company, vendorsList, expandedRow, toggleRow]);
 
     const renderContent = () => {
@@ -221,7 +245,9 @@ const PurchaseOrder = ({
         <div>
             <HeroSection
                 pageTitle={"Purchase Order"}
-                showButton={false}
+                btnText={"Add Purchase Order"}
+                onClick={() => setShowAddPOModal(true)}
+                startIcon={<AddIcon />}
                 style={{
                     mt: 3,
                     mb: 2,
@@ -236,20 +262,13 @@ const PurchaseOrder = ({
                 }}
             >
 
-                {company === COMPANY_TYPE.ASHOK && (
-                    <Box width="100%">
-                        <PoTypeFilter
-                            options={FILTER_OPTION}
-                            selected={poType}
-                            onChange={onPoTypeFilterClick}
-                        />
-                    </Box>
-                )}
+
 
 
                 <Box sx={{
                     display: "flex",
                     gap: 2,
+                    alignItems: "center",
                     flexDirection: {
                         xs: "column",
                         sm: "row"
@@ -260,6 +279,13 @@ const PurchaseOrder = ({
                     }
                 }}
                 >
+                    {company === COMPANY_TYPE.ASHOK && (
+                        <PoTypeFilter
+                            options={FILTER_OPTION}
+                            selected={poType}
+                            onChange={onPoTypeFilterClick}
+                        />
+                    )}
                     {
                         ((company === COMPANY_TYPE.ASHOK && poType.id === FILTER_OPTION[2].id)
                             ||
@@ -303,6 +329,11 @@ const PurchaseOrder = ({
                 />
             </Box>
 
+                <AddPo
+                    open={showAddPOModal}
+                    addPOConnect={addPOConnect}
+                    onClose={onCloseHandler}
+                />
         </div>
     )
 }

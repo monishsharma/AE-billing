@@ -25,6 +25,18 @@ export const getPoList = (query) => (dispatch) => {
     })
 }
 
+export const addPO = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        PurchaseOrderService.addPO(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+        })
+    })
+}
+
 export const updatePo = (query) => () => {
     return new Promise((resolve, reject) => {
         PurchaseOrderService.updatePo(query)

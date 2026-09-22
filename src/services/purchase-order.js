@@ -9,6 +9,10 @@ export default (api) => {
       return api.patch(`/purchase-order/update-po-on-invoice`, payload);
   };
 
+  const addPO = (payload) => {
+      return api.post(`/purchase-order/post-po-detail`, payload);
+  };
+
   const deletePo = (poId) => {
       return api.delete(`/purchase-order/delete/po/${poId}`);
   };
@@ -16,6 +20,7 @@ export default (api) => {
   return {
     getPoList,
     updatePo,
-    deletePo
+    deletePo,
+    addPO
   };
 };
