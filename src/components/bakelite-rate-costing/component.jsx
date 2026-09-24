@@ -8,7 +8,6 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '50%',
     bgcolor: 'background.paper',
     borderRadius: 10,
     outline: 'none',
@@ -165,7 +164,7 @@ const BakeliteRateConfig = ({
 
     return (
         <Modal open={open} onClose={toggleModal}>
-                <Box style={style}>
+                <Box style={style} sx={{width: { xs: "90%", sm: "70%", md: "50%" }}}>
                     <Box
                         // px={3}
                         pt={2}
@@ -187,7 +186,10 @@ const BakeliteRateConfig = ({
                             gap: 2,
                             mb: 4,
                             mt: 2,
-                            flexDirection: "row"
+                            flexDirection: {
+                                xs: "column",
+                                sm: "row",
+                            }
                         }}
                         noValidate
                         autoComplete="off"

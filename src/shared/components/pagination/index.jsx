@@ -113,10 +113,7 @@ const PaginationToolbar = ({ loading }) => {
                             "& .MuiPaginationItem-root.Mui-selected:hover": {
                                 backgroundColor: "#000",
                             },
-                              width: {
-                                xs: "50%",
-                                sm: "auto",
-                            },
+
 
                             "& .MuiPagination-ul": {
                                 width: "100%",

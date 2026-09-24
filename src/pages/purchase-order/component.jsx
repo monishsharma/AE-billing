@@ -245,7 +245,7 @@ const PurchaseOrder = ({
         <div>
             <HeroSection
                 pageTitle={"Purchase Order"}
-                btnText={"Add Purchase Order"}
+                btnText={"Add PO"}
                 onClick={() => setShowAddPOModal(true)}
                 startIcon={<AddIcon />}
                 style={{
@@ -281,6 +281,7 @@ const PurchaseOrder = ({
                 >
                     {company === COMPANY_TYPE.ASHOK && (
                         <PoTypeFilter
+                            isLoading={isLoading}
                             options={FILTER_OPTION}
                             selected={poType}
                             onChange={onPoTypeFilterClick}

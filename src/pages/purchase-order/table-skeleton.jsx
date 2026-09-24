@@ -8,8 +8,8 @@ const TableSkeleton = () => {
                 <TableRow>
                     <TableCell><Skeleton width={10} /></TableCell>
                     <TableCell><Skeleton /></TableCell>
-                    <TableCell><Skeleton /></TableCell>
-                    <TableCell><Skeleton /></TableCell>
+                    <TableCell><Skeleton width={175}/></TableCell>
+                    <TableCell><Skeleton width={100}/></TableCell>
                     <TableCell><Skeleton /></TableCell>
                     <TableCell><Skeleton /></TableCell>
                     <TableCell width={220}>

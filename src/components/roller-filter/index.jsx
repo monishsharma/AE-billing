@@ -17,7 +17,6 @@ const RollerFilter = ({
 }) => {
 
     return (
-        <Box >
             <Select
                 sx={{
                     flexShrink: 0,
@@ -78,7 +77,6 @@ const RollerFilter = ({
                 ))}
 
             </Select>
-        </Box>
     )
 }
 

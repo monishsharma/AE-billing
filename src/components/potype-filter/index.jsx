@@ -3,6 +3,7 @@ import { Box, Button } from "@mui/material";
 import { FILTER_OPTION } from "../../constants/app-constant";
 
 const PoTypeFilter = ({
+  isLoading = false,
   options = FILTER_OPTION,
   selected,
   onChange,
@@ -22,6 +23,7 @@ const PoTypeFilter = ({
       {options.map((option) => (
         <Button
           key={option.id}
+          loading={isLoading}
           className={
             selected?.id === option.id
               ? classNameActive
@@ -32,10 +34,11 @@ const PoTypeFilter = ({
             flexGrow: { xs: 1, sm: 1, md: 0 },
             flexBasis: { xs: "48%", sm: "auto" },
             minWidth: "100px",
+            minHeight: "33px",
             fontSize: { xs: "11px" }
           }}
         >
-          {option.label}
+          {isLoading ? "" : option.label}
         </Button>
       ))}
     </Box>

@@ -335,6 +335,7 @@ const Quotation = ({
                             <PoTypeFilter
                                 options={FILTER_OPTION}
                                 selected={poType}
+                                isLoading={isLoading}
                                 onChange={onPoTypeFilterClick}
                             />
                         </Box>
