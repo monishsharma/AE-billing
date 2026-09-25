@@ -10,13 +10,15 @@ import {
 import React from "react";
 import Paper from "@mui/material/Paper";
 import PageLoader from "../../components/page-loader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HeroSection from "../../components/hero-section";
 import AddIcon from "@mui/icons-material/Add";
+import CompanyTabs from "../../components/company-tabs";
 
 
 const Vendors = ({ config, resetVendorFormConnect }) => {
   const navigate = useNavigate();
+  const { company } = useParams();
 
   const { vendorsList = [] } = config || {};
 
@@ -53,32 +55,27 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
     navigate(`/edit/customers/${id}`);
   };
 
-  if (isLoading) return <PageLoader />;
+  const handleChange = (event, newValue) => {
+        navigate(`/customers/${newValue}`);
+    };
 
-  return (
-    <>
-      <HeroSection
-      pageTitle={"Customers"}
-      btnText={"Add Customer"}
-      startIcon={<AddIcon />}
-      onClick={addVendor}
-      style={{
-        mt: 2,
-      }}
-    />
-      <div className="mt-4">
-        <TableContainer component={Paper}>
-          <Table sx={{minWidth: "1000px"}}>
+  const renderContent = (company) => {
+    const filteredVendors = vendors.filter(
+      (vendor) => vendor.type === company
+    );
+    return (
+      <TableContainer component={Paper}>
+          <Table>
             <TableHead>
               <TableRow>
-                <TableCell>S.no</TableCell>
-                <TableCell>Customer Name</TableCell>
-                <TableCell>City</TableCell>
+                <TableCell sx={{minWidth: "100px"}}>S.no</TableCell>
+                <TableCell sx={{minWidth: "400px"}}>Customer Name</TableCell>
+                <TableCell sx={{minWidth: "300px"}}>City</TableCell>
                 {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {vendors.map((vendor, index) => {
+              {filteredVendors.map((vendor, index) => {
                 return (
                   <React.Fragment key={vendor.id || index}>
                     <TableRow
@@ -98,7 +95,7 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
                       <TableCell >{vendor.name}</TableCell>
                       <TableCell>
                         {
-                          vendor?.plantRows?.map((plant, plantIndex) => plant.label).join(", ")
+                          vendor?.plantRows?.map((plant) => plant.label).join(", ")
                         }
                         </TableCell>
                     </TableRow>
@@ -108,6 +105,28 @@ const Vendors = ({ config, resetVendorFormConnect }) => {
             </TableBody>
           </Table>
         </TableContainer>
+    )
+  }
+
+  if (isLoading) return <PageLoader />;
+
+  return (
+    <>
+      <HeroSection
+        pageTitle={"Customers"}
+        btnText={"Add Customer"}
+        startIcon={<AddIcon />}
+        onClick={addVendor}
+        style={{
+          mt: 2,
+        }}
+      />
+      <div className="mt-4">
+        <CompanyTabs
+          value={company}
+          onChange={handleChange}
+          renderContent={renderContent}
+        />
       </div>
     </>
     // </div>

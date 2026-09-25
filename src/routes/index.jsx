@@ -94,9 +94,14 @@ const routes = [
           },
           {
             path: "customers",
+            element: <Navigate to="/customers/ASHOK" replace />,
+          },
+          {
+            path: "customers/:company",
             element: <Vendors />,
             errorElement: <ErrorPage />,
           },
+
           {
             path: "add/vendor",
             element: <AddVendorsV2 />,
