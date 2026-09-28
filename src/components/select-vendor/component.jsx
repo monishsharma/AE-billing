@@ -22,6 +22,7 @@ const SelectVendor = ({
     id,
     config,
     size,
+    variant,
     width = 200,
     value = "",
     disabled = false,
@@ -123,7 +124,7 @@ const SelectVendor = ({
                 isOptionEqualToValue={(option, value) => option?.id == value?.id}
                 onChange={(event, newValue) => {onInputChange(event,newValue)}}
                 renderInput={(params) => (
-                    <TextField {...params}   label="Select Customer" />
+                    <TextField {...params} variant={variant}  label="Select Customer" />
                 )}
                renderOption={({key, ...props}, option) => {
                     if (option.isTemporary) {

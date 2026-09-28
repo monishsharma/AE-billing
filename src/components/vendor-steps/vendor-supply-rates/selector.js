@@ -43,7 +43,8 @@ export const INITIAL_FORM = {
   edgeType: "",
   rate: "",
   drg: "",
-  sizeType: ""
+  sizeType: "",
+  frameType: ""
 };
 
 export const PRODUCT_TYPE_OPTIONS = [
@@ -69,6 +70,14 @@ export const SIZE_TYPE_OPTIONS = [
   { label: "Inch", value: "Inch" },
 ];
 
+export const FRAME_TYPE_OPTIONS = [
+  { value: "LPT", label: "LPT" },
+  { value: "DT", label: "DT" },
+  { value: "PAUWELS", label: "Pauwels" },
+  { value: "CHANNEL", label: "Channel" },
+  { value: "DRY_LPT", label: "DRY LPT" },
+];
+
 export const PRODUCT_FIELDS = [
   {
     key: "code",
@@ -78,21 +87,35 @@ export const PRODUCT_FIELDS = [
     grid: 12,
     required: true,
   },
+
   {
     key: "type",
     label: "Product",
     type: "text",
-    placeholder: 'e.g. 300mm Flange Roller',
+    placeholder: "e.g. 300mm Flange Roller",
     grid: 12,
     required: true,
   },
+
+  {
+    key: "frameType",
+    label: "Frame Type",
+    type: "select",
+    options: FRAME_TYPE_OPTIONS,
+    grid: 12,
+    required: true,
+    condition: (form) => form.code === "FRAME",
+  },
+
   {
     key: "size",
     label: "Size",
     type: "number",
     placeholder: "e.g. 300",
     grid: 3,
+    condition: (form) => form.code === "ROLLER",
   },
+
   {
     key: "sizeType",
     label: "Size Type",
@@ -100,21 +123,27 @@ export const PRODUCT_FIELDS = [
     placeholder: "e.g. MM/Inch",
     options: SIZE_TYPE_OPTIONS,
     grid: 3,
+    condition: (form) => form.code === "ROLLER",
   },
+
   {
     key: "edgeType",
     label: "Edge Type",
     type: "select",
     options: EDGE_TYPE_OPTIONS,
     grid: 3,
+    condition: (form) => form.code === "ROLLER",
   },
+
   {
     key: "rollerType",
     label: "Roller Type",
     type: "select",
     options: ROLLER_TYPE_OPTIONS,
     grid: 3,
+    condition: (form) => form.code === "ROLLER",
   },
+
   {
     key: "description",
     label: "Description",
@@ -125,6 +154,7 @@ export const PRODUCT_FIELDS = [
     grid: 12,
     required: true,
   },
+
   {
     key: "rate",
     label: "Rate",
@@ -133,6 +163,7 @@ export const PRODUCT_FIELDS = [
     grid: 6,
     required: true,
   },
+
   {
     key: "drg",
     label: "Drawing No.",
@@ -147,12 +178,12 @@ export const PRODUCT_FIELDS = [
 export const validateProduct = (form) => {
   const errors = {};
 
-  if (!form.type?.trim()) {
-    errors.type = "Product is required";
-  }
-
   if (!form.code) {
     errors.code = "Product type is required";
+  }
+
+  if (!form.type?.trim()) {
+    errors.type = "Product is required";
   }
 
   if (!form.description?.trim()) {
@@ -163,6 +194,14 @@ export const validateProduct = (form) => {
     errors.rate = "Enter a valid rate";
   }
 
+  // FRAME-specific validation
+  if (form.code === "FRAME") {
+    if (!form.frameType) {
+      errors.frameType = "Frame type is required";
+    }
+  }
+
+  // ROLLER-specific validation
   if (form.code === "ROLLER") {
     if (form.size === "" || Number(form.size) <= 0) {
       errors.size = "Size is required";
@@ -172,7 +211,6 @@ export const validateProduct = (form) => {
       errors.edgeType = "Edge type is required";
     }
   }
-
 
   return errors;
 };

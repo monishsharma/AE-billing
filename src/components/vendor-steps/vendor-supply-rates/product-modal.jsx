@@ -155,7 +155,8 @@ const ProductDialog = ({
         }}
       >
         <Grid container spacing={2}>
-          {PRODUCT_FIELDS.map((field) => (
+          {PRODUCT_FIELDS.filter((field) => !field.condition || field.condition(form))
+          .map((field) => (
             <Grid
               key={field.key}
               size={{

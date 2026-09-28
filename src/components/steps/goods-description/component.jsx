@@ -431,7 +431,7 @@ const GoodsDescription = ({
                 ...copyOfItems[index],
                 rate: value?.rate || "",
                 description: value?.description || "",
-                itemType: value?.type || "manual",
+                itemType: value?.frameType || "manual",
                 wo: value?.drg || "",
 
                 ...(value.code === "ROLLER" && {
@@ -497,11 +497,12 @@ const GoodsDescription = ({
                 value: Number(resolvedRate) * Number(item.dispatchQty),
                 itemId: item.itemId,
                 poNumber: item.poNumber,
+                itemType: selectedRate?.[0]?.frameType || "manual",
                ...(selectedRate?.[0]?.code === "ROLLER" && {
-                 size: selectedRate?.[0].size || "",
-                rollerType: selectedRate?.[0]?.rollerType || "",
-                sizeType: selectedRate?.[0]?.sizeType || "",
-                edgeType: selectedRate?.[0]?.edgeType || ""
+                    size: selectedRate?.[0].size || "",
+                    rollerType: selectedRate?.[0]?.rollerType || "",
+                    sizeType: selectedRate?.[0]?.sizeType || "",
+                    edgeType: selectedRate?.[0]?.edgeType || ""
                })
             });
         });

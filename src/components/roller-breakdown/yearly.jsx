@@ -35,7 +35,7 @@ const accordionSx = {
 };
 
 const summarySx = {
-    minHeight: 48,
+    minHeight: 30,
 
     // Move expand icon to LEFT
     flexDirection: "row-reverse",
@@ -50,7 +50,7 @@ const summarySx = {
     },
 
     "&.Mui-expanded": {
-        minHeight: 48,
+        minHeight: 30,
         bgcolor: "#F3F0FF",
     },
 
@@ -104,12 +104,17 @@ const YearlyRollerBreakdown = ({ reportType, data }) => {
                 borderRadius: "14px",
                 mb: 4,
                 overflowY: "auto",
-            }}
+                scrollbarWidth: "none", // Firefox
+                "&::-webkit-scrollbar": {
+                    display: "none", // Chrome, Edge, Safari
+                    },
+                }}
         >
             <Box
                 sx={{
                     ...GLOBAL_FLEX_STYLING,
-                    mb: 1.5,
+                    mb: 2,
+                    mt: 1,
                     flexDirection: {
                         xs: "column",
                         sm: "column",
@@ -117,11 +122,11 @@ const YearlyRollerBreakdown = ({ reportType, data }) => {
                     }
                 }}
             >
-                <Typography fontSize={16} fontWeight={700} sx={{m: {xs: 2, sm: 2, md: 0}}}>
+                <Typography textAlign={"left"} fontSize={16} fontWeight={700} sx={{m: {xs: 2, sm: 2, md: 0}}}>
                     Roller Dispatch Breakdown ({capitalize(reportType)})
                 </Typography>
 
-                <SelectVendor
+                 <SelectVendor
                     size="small"
                     allowPreset={true}
                     callback={(event, selectedVendor) => selectVendorCallback(event, selectedVendor)}
