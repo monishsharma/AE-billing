@@ -60,7 +60,7 @@ const ProductDialog = ({
       const value = form[field.key];
 
       if (
-        field.required &&
+        field.required && form.code !== "ROLLER" &&
         (value === "" || value === null || value === undefined)
       ) {
         newErrors[field.key] = `${field.label} is required`;
