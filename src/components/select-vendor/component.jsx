@@ -10,11 +10,11 @@ import ItemModal from '../item-modal';
 
 const modalInput = [
     {
-        label: "Customer Name",
+        title: "Customer Name",
         key: "value"
     },
     {
-        label: "Customer Branch",
+        title: "Customer Branch",
         key: "branch"
     }
 ]

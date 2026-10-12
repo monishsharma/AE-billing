@@ -1,5 +1,6 @@
 import  Types from './actionTypes';
 import {BillingService} from "../../services"
+import {TransactionService} from "../../services"
 import Swal from 'sweetalert2';
 
 const setData = ({data}) => ({
@@ -236,6 +237,23 @@ const getPaymentInfo = ({month, year}) => () => {
     })
 }
 
+const recordTransaction = (payload) => () => {
+    return new Promise((resolve, reject) => {
+        TransactionService.recordTransaction(payload)
+        .then((res) => {
+            resolve(res.data);
+        })
+        .catch((err) => {
+            reject(err);
+            Swal.fire({
+                icon: "error",
+                text: err.error,
+            })
+        })
+    })
+}
+
+
 
 
 
@@ -248,7 +266,8 @@ export {
     searchInvoice,
     setCurrentStep,
     getPaymentInfo,
-    uploadPaymentFile
+    uploadPaymentFile,
+    recordTransaction
 }
 
 
