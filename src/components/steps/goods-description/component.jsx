@@ -687,7 +687,7 @@ const GoodsDescription = ({
                                                     })
                                                 }
                                                 getOptionLabel={(option) => {
-                                                    return option?.rate || "";
+                                                    return String(option?.rate) || "";
                                                 }}
                                                 isOptionEqualToValue={(option, value) =>
                                                     option?.type === value?.type

@@ -1,5 +1,5 @@
-import React from 'react'
-import { columns as staticColumns, createInitialValue, createInitialValueValidation, INPUTS } from './selector';
+import React, { useState } from 'react'
+import { columns as staticColumns, createInitialValue, createInitialValueValidation, INPUTS, prepareInvoiceData } from './selector';
 import Grid  from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,26 +16,32 @@ import { useParams } from 'react-router-dom';
 import { performValidation } from '../../helpers/perform-validation';
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from '../../components/rich-text-editor';
+import ConvertToInvoice from './invoiceConvert';
+import InvoicePreparationLoader from './invoice-prepartion-loader';
 
 
 
 const CreateQuotation = ({
   quotation,
+  saveApiDataConnect,
   saveDataConnect,
   getConfigConnect,
   saveQuotationConnect,
   updateQuotationConnect,
   getQuotationConnect,
-  getBakeliteRatesConnect
+  getBakeliteRatesConnect,
+  resetReducerConnect
 }) => {
   const {
     [QUOTATION_STEPPER_NAME.QUOTATION_DETAIL]: {
-      quotationCompany
+      quotationCompany,
+      quotationType
     },
     [QUOTATION_STEPPER_NAME.GOODS_DESCRIPTION]: {
       terms,
       items = []
     },
+    invoicedItems
   } = quotation || {};
 
   const {quotationDetail = {}, buyerDetail, columns: serverColumns} = quotation;
@@ -43,6 +49,8 @@ const CreateQuotation = ({
   const navigate = useNavigate();
   const {isTemporary = false, branch} = buyerDetail || {};
   const vendorList = useSelector((state) => state.config.vendorsList);
+  const appConfig = useSelector((state) => state.config.appConfig);
+  const {materialType} = appConfig || {};
   const filteredVendorList = vendorList?.filter((vendor) => vendor.type === quotationCompany);
   const branchOptions = buyerDetail?.customer ? filteredVendorList.find(vendor => vendor._id === buyerDetail.customer)?.plantRows || [] : [];
   const optionsMap = {
@@ -61,6 +69,7 @@ const CreateQuotation = ({
   };
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const [invoiceConvertModal, setInvoiceConvertModal] = useState(false);
   const [columns, setColumns] = React.useState(staticColumns);
   const [quotationFormValidation, setQuotationFormValidation] = React.useState({
 
@@ -74,6 +83,10 @@ const CreateQuotation = ({
   });
 
   const [itemsValidation, setItemsValidation] = React.useState([]);
+
+  const [loaderOpen, setLoaderOpen] = React.useState(false);
+  const [loaderActiveStep, setLoaderActiveStep] = React.useState(0);
+  const [loaderError, setLoaderError] = React.useState(false);
 
   React.useEffect(() => {
     getBakeliteRatesConnect();
@@ -139,6 +152,8 @@ const CreateQuotation = ({
       });
     }
   }, [quotationCompany, filteredVendorList.length]);
+
+  const toggleInvoiceConverMOdal = () => setInvoiceConvertModal(!invoiceConvertModal)
 
   const onFieldChange = ({ event, stepName, savingItems = false, itemIndex }) => {
     const { name, value, isTemporary = false, branch = "", label = "" } = event.target;
@@ -314,18 +329,90 @@ const CreateQuotation = ({
   }
 
   const handleHeaderChange = (columnId, newLabel) => {
-  setColumns(prev =>
-    prev.map(col =>
-      col.id === columnId ? { ...col, label: newLabel } : col
-    )
-  );
-};
+    setColumns(prev =>
+      prev.map(col =>
+        col.id === columnId ? { ...col, label: newLabel } : col
+      )
+    );
+  };
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const createInvoice = async(selectedItems) => {
+    setLoaderOpen(true);
+    setLoaderActiveStep(0);
+    setLoaderError(false);
+    setInvoiceConvertModal(false);
+
+    try {
+      // Step 1: Fetch invoice configuration
+      const step1Start = Date.now();
+      const {config} = await getConfigConnect();
+      const nextInvoiceNo = getNextInvoiceNo(config[quotationCompany], "nextInvoiceNo");
+
+      await delay(Math.max(0, 2000 - (Date.now() - step1Start)));
+
+       // Step 2: Prepare customer details
+      setLoaderActiveStep(1);
+      resetReducerConnect();
+      const step2Start = Date.now();
+      const payload = prepareInvoiceData(quotation, selectedItems, nextInvoiceNo, materialType);
+
+      saveApiDataConnect({
+        data: {
+          ...payload
+        }
+      })
+
+      await delay(Math.max(0, 2000 - (Date.now() - step2Start)));
+
+       // Step 3: Prepare invoice items
+      setLoaderActiveStep(2);
+
+
+      const step3Start = Date.now();
+
+      await delay(Math.max(0, 3000 - (Date.now() - step3Start)));
+      navigate(`/new/invoice`);
+
+    }  catch (error) {
+      console.error(error);
+      setLoaderError(true);
+    }
+  }
 
   if (isLoading) return <PageLoader />;
   return (
     <>
-      <div className="mt-2">
+      {
+        <InvoicePreparationLoader
+          open={loaderOpen}
+          activeStep={loaderActiveStep}
+          error={loaderError}
+          // onRetry={handleConvertToInvoice}
+          onClose={() => setLoaderOpen(false)}
+        />
+      }
+      {
+        invoiceConvertModal &&
+        <ConvertToInvoice
+          open={invoiceConvertModal}
+          handleClose={toggleInvoiceConverMOdal}
+          items={items}
+          columns={columns}
+          companyType={quotationCompany}
+          onSubmit={createInvoice}
+          invoicedItems={invoicedItems}
+        />
+      }
+      <div className="mt-2 d-flex align-items-center justify-content-between">
         <h2 className="fw-bold">New Quotation</h2>
+        {
+         id && quotationType === "BAKELITE" &&
+          <Button className="outlinedCustomBtn" onClick={() => setInvoiceConvertModal(true)}>
+            Convert To  Invoice
+          </Button>
+        }
       </div>
       <Box>
       <Grid container spacing={2} mt={4}>

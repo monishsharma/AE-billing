@@ -25,6 +25,7 @@ const BuyerDetail = ({
     const { id } = useParams();
 
 
+
     const {
         invoiceDetail: {
             company: selectedCompany
@@ -38,7 +39,9 @@ const BuyerDetail = ({
         }
     } = invoiceForm;
 
-    const {vendorsList = []} = config;
+    const {vendorsList = [], appConfig} = config;
+
+    const {materialType} = appConfig || {};
 
 
     const getValueByKey = (obj, value) => {
@@ -53,6 +56,15 @@ const BuyerDetail = ({
         label: plant.label
     }))
     : [];
+
+    const selectOptions = {
+        branch: branchOptions,
+        orderType: materialType?.values.map(type => ({
+            value: type._id,
+            label: type.type,
+            vCode: type.code || ""
+        })) || [],
+    }
 
     const invoiceFormDetail = {
         customer: customer || "",
@@ -195,7 +207,7 @@ const BuyerDetail = ({
         }
 
         if (name === "orderType") {
-            const selectedOption = orderTypeOptions.find(input => input.label === value);
+            const selectedOption = selectOptions.orderType.find(input => input.label === value || input.value === value);
             saveDataConnect({
                 stepName: STEPPER_NAME.BUYER_DETAIL,
                 data: {
@@ -245,7 +257,7 @@ const BuyerDetail = ({
             <Grid container spacing={2}>
                 {INPUTS.map((input, index) => {
                     const Component = input.component;
-                    const options = input.key === "branch" ? branchOptions : input.extraProps.options || [];
+                    const options = selectOptions[input.key] || [];
                     return (
                          <Grid key={index} item size={{xs:12, md: 2.4}}>
                             {input.type === "select"  ? (
@@ -256,7 +268,13 @@ const BuyerDetail = ({
                                         id={input.id}
                                         name={input.id}
                                         label={input.placeholder}
-                                        value={invoiceFormDetail[input.key]}
+                                         value={
+                                            options.find(
+                                            (option) =>
+                                                String(option.value) === String(invoiceFormDetail[input.key]) ||
+                                                option.label === invoiceFormDetail[input.key]
+                                            )?.value ?? ""
+                                        }
                                         onChange={onFieldChange}
                                         // disabled={input.extraProps && input.extraProps.disabledOnEdit && id}
 

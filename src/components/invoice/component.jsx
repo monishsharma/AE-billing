@@ -250,7 +250,7 @@ const Invoice = ({
         setPaymentAmount("");
     };
 
-    const handlePaymentSubmit = async () => {
+    const handlePaymentSubmit = async (payload) => {
         if (
             !paymentAmount ||
             isNaN(paymentAmount) ||
@@ -264,15 +264,6 @@ const Invoice = ({
         }
 
         setIsLoading(true);
-        const payload = {
-            ...selectedInvoice,
-            paid: true,
-            paymentAmount: parseFloat(paymentAmount),
-            duePayment:
-                parseFloat(selectedInvoice.goodsDescription.Total) -
-                parseFloat(paymentAmount),
-        };
-
         try {
             await updateInvoiceConnect(selectedInvoice._id, payload);
             setRunEffect(!runEffect);

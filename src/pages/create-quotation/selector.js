@@ -1,7 +1,9 @@
 import TextField from '@mui/material/TextField';
 import SelectVendor from '../../components/select-vendor';
-import { COMPANY_TYPE, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME } from '../../constants/app-constant';
+import { COMPANY, COMPANY_TYPE, QUOTATION_FIELDS, QUOTATION_STEPPER_NAME, STEPPER_NAME } from '../../constants/app-constant';
 import { isMobileDevice } from '../../helpers/is-mobile-device';
+import { getStateInfo } from '../../helpers/customer-detail';
+import { capitalize } from '../../helpers/capitalize';
 
 export const INPUTS = [
     {
@@ -167,3 +169,70 @@ export const createInitialValueValidation = () => {
     }, {});
 }
 
+const prepareGoodsDescriptionItems = (items) => {
+    return items.map(({description, rate, drawingNo, qty = 0, ...rest}, index) => ({
+        sno: index + 1,
+        description: description || "",
+        rate: rate || "",
+        qty : qty || 0,
+        value: 0,
+        wo: drawingNo || "",
+        quotationItemId: rest?._id || "",
+    }));
+}
+
+export const getMaterialCode = (materialTypeList, quotationType) => {
+    const material = materialTypeList.values.find((item) => item?.type?.toLowerCase() === quotationType.toLowerCase());
+    return material ? material.code : "asd";
+};
+
+export const prepareInvoiceData = (quotationData, selectedItems, nextInvoiceNo, materialTypeList) => {
+
+    const { quotationDetail, buyerDetail, _id } = quotationData;
+    const {
+        quotationType,
+        quotationCompany: company,
+    } = quotationDetail;
+
+    const {vendorList, ...otherData} = COMPANY[company] || {};
+
+    const invoiceData = {
+        company,
+        paid: false,
+        currentStep: 0,
+        referenceQuotation: _id,
+        [STEPPER_NAME.INVOICE_DETAILS]: {
+            ...otherData,
+            company,
+            invoiceNO: nextInvoiceNo,
+            invoiceDate: new Date().toISOString().split('T')[0],
+            quotationReference: _id,
+        },
+        [STEPPER_NAME.BUYER_DETAIL]: {
+            ...buyerDetail,
+            isTemporary: false,
+            orderType: capitalize(quotationType),
+            materialCode: getMaterialCode(materialTypeList, quotationType),
+            stateCode: getStateInfo(buyerDetail?.GSTIN)?.code || "",
+        },
+        [STEPPER_NAME.GOODS_DESCRIPTION] : {
+            po: "",
+            serial: "",
+            HSN: "",
+            Total: 0,
+            freight: 0,
+            SGST: 0,
+            CGST: 0,
+            roundOff: 0,
+            taxableValue: 0,
+            items: prepareGoodsDescriptionItems(selectedItems),
+        },
+        [STEPPER_NAME.SHIPMENT_DETAIL]: {
+            vehicleNo: "",
+            eway: "",
+            asn: ""
+        },
+    }
+
+    return invoiceData;
+}
