@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 
-import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE, normalizePOInput, formatPoDisplay } from './selector';
+import { createInitialValue, createInitialValueValidation, initialState, INPUTS, columns, ASN_INITIAL_STATE, normalizePOInput, formatPoDisplay, getPoType } from './selector';
 import StepperButton from '../stepper-button';
 import { COMPANY_TYPE, STEPPER_NAME, VENDOR_NAME } from '../../../constants/app-constant';
 import Items from "../../items";
@@ -52,7 +52,18 @@ const GoodsDescription = ({
     } = invoiceForm;
     const {vendorsList = [], hsn: HSNLIst = [], appConfig} = config;
 
-    const { hsnCode: { values } = {}, uqc: { values: uqcOptions} = {} } = appConfig || {};
+    const {
+        hsnCode: {
+            values
+        } = {},
+        uqc: {
+            values:
+            uqcOptions
+        } = {} ,
+        materialType: {
+            values: orderTypeOptions
+        } = {}
+    } = appConfig || {};
 
     const Options = {
         HSN: values || [],
@@ -127,30 +138,32 @@ const GoodsDescription = ({
 
     const lastSavedItemsRef = React.useRef(localItems);
 
-    const [filters, setFilters] = useState({
-        company: selectedCompany,
-        poStatus: "PENDING",
-        ...(orderType && {
-                poType: orderType.toUpperCase()
-        }),
-        ...(customer && !isCompanyAshok && {
-            vendorId: customer
-        }),
-        ...(branch && {
-            branchId: branch
-        })
-    })
-
     React.useEffect(() => {
         setLocalItems(items);
     }, [items]);
 
     React.useEffect(() => {
-        setIsFetchingPO(true)
-        getPoListConnect(filters)
-        .then((_) => setIsFetchingPO(false))
-        .catch((_) => setIsFetchingPO(false))
-    }, [filters]);
+        if (orderType && orderTypeOptions && orderTypeOptions.length > 0) {
+            setIsFetchingPO(true)
+            const filters = {
+                company: selectedCompany,
+                poStatus: "PENDING",
+                ...(orderType && {
+                        poType: getPoType(orderType, orderTypeOptions)
+                }),
+                ...(customer && !isCompanyAshok && {
+                    vendorId: customer
+                }),
+                ...(branch && {
+                    branchId: branch
+                })
+            }
+            getPoListConnect(filters)
+            .then((_) => setIsFetchingPO(false))
+            .catch((_) => setIsFetchingPO(false))
+        }
+
+    }, [orderType, orderTypeOptions, selectedCompany, customer, branch, getPoListConnect]);
 
     React.useEffect(() => {
         // Capture original items only once (on invoice edit load).

@@ -227,3 +227,13 @@ export const formatPoDisplay = (poArray = []) => {
         })
         .join(",");
 };
+
+export const getPoType = (value, orderTypeOptions = []) => {
+    if (!value) return "";
+
+    const option = orderTypeOptions.find(
+        opt => String(opt._id) === String(value)
+    );
+    return option ? option.type?.toUpperCase(): value.toUpperCase();
+
+};
