@@ -133,7 +133,8 @@ const ShippingDetails = ({
                 if (poNumber && item.sno) {
                 return {
                     ...item,
-                    itemId: `${poNumber}_${Number(item.sno)}`
+                    itemId: `${poNumber}_${Number(item.sno)}`,
+                    poNumber
                 };
                 }
             }
