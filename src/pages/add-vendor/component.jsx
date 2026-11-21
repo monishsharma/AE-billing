@@ -1,20 +1,20 @@
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import React, { useState } from 'react';
-import {createInitialValue, createInitialValueValidation, getStateInfo, INPUTS, intialState} from "./selector";
+import {createInitialValue} from "./selector";
 import styles from "./style.module.css"
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import PageLoader from '../../components/page-loader';
-import { useNavigate, useParams } from 'react-router-dom';
-import {isMobileDevice} from "../../helpers/is-mobile-device";
+import { useParams } from 'react-router-dom';
 import AddVendorV2 from '../add-vendor-v2';
 
 
 const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getVendorListConnect}) => {
 
     const { id } = useParams();
+    const [isLoading, setIsLoading] = useState(false);
 
     React.useEffect(() => {
         if (id) {
+            setIsLoading(true);
             getVendorConnect(id)
             .then((res) => {
                 const priorityTypes = ["LPT", "Pauwels", "Channel"];
@@ -41,13 +41,16 @@ const AddVendor = ({config = {}, updateVendorListConnect, getVendorConnect, getV
                 })
                 setIsProductRateRequired(isProductRateRequired)
                 setRows(orderedSupplyRate || [createInitialValue()]);
+                setIsLoading(true);
+
             })
             .catch(() => {
+                setIsLoading(false);
             })
         }
 
     }, [id])
-    return <AddVendorV2 />;
+    return isLoading ? <PageLoader /> : <AddVendorV2 />;
 }
 
 export default AddVendor

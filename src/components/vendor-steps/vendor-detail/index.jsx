@@ -1,4 +1,4 @@
-import { Box, FormControl, Grid, InputLabel, MenuItem } from '@mui/material';
+import { Box, FormControl, Grid, InputLabel, MenuItem, Paper } from '@mui/material';
 import React, { useState } from 'react'
 import { INPUTS, NO_VALIDATON_INPUTS } from './selector';
 import StepperButton from '../../steps/stepper-button';
@@ -60,7 +60,17 @@ const VendorDetails = ({
     return (
         <>
 
-            <Grid container spacing={2} mt={2}>
+            <Paper elevation={1}
+                 sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    p: 2 ,
+                    maxHeight: 300,
+                    overflowY: "auto",
+                }}
+            >
+                <Grid container spacing={2} mt={2}>
                 {
                     INPUTS.map((input, index) => {
                         const Component = input.component;
@@ -103,6 +113,7 @@ const VendorDetails = ({
                     })
                 }
             </Grid>
+            </Paper>
             <Box sx={{ mt: 4 }}>
                 <StepperButton  steps={steps} handleNext={onClick} />
             </Box>

@@ -1,5 +1,5 @@
 import { Step, StepContent, StepLabel, Stepper, Typography } from '@mui/material'
-import React, { use } from 'react'
+import React from 'react'
 import { STEPS } from './stepper'
 import { useParams } from 'react-router-dom'
 
@@ -16,10 +16,32 @@ const AddVendorStepper = ({
     const {id = ""} = useParams();
     const {vendorForm} = config
     const {currentStep} = vendorForm;
+    const stepRefs = React.useRef([]);
+
+    React.useEffect(() => {
+        // Delay scroll to allow expand animation to finish
+        const timeout = setTimeout(() => {
+          const el = stepRefs.current[currentStep];
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }, 500); // adjust 300–500ms for smoother sync with MUI animation
+
+        return () => clearTimeout(timeout);
+      }, [currentStep]);
 
     const nextStep = () => setCurrentStepConnect({step: Number(currentStep) + 1});
 
     const prevStep = () => setCurrentStepConnect({step: Number(currentStep) - 1});
+
+    const jumpToStep = (index) => {
+        if(id) {
+            setCurrentStepConnect({step: index})
+        }
+    }
 
 
     return (
@@ -29,7 +51,7 @@ const AddVendorStepper = ({
                 orientation="vertical"
                 sx={{
                     '& .MuiStepIcon-root': {
-                        color: 'gray', // Change color for active step
+                        color: id ? 'black' : 'gray', // Change color for active step
                     },
                     '& .MuiStepIcon-root.Mui-active': {
                     color: 'black', // Color for the active step
@@ -40,10 +62,11 @@ const AddVendorStepper = ({
                 }}
             >
                 {STEPS.map((step, index) => (
-                    <Step key={step.id}>
-                        <StepLabel >
-                        {/* <StepLabel onClick={() => jumpToStep(index)}> */}
-                            <Typography  variant="h5">{step.label}</Typography>
+                    <Step ref={(el) => (stepRefs.current[index] = el)} key={step.id}>
+                        <StepLabel onClick={() => jumpToStep(index)}>
+                            <Typography  variant="h5" color="text.primary">
+                                {step.label}
+                            </Typography>
                         </StepLabel>
                         <StepContent>
                             <step.component

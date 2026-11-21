@@ -18,7 +18,10 @@ const ProductDialog = ({
   onClose,
   product = null,
   onSubmit,
+  vendorForm
 }) => {
+  const { plantRows } = vendorForm;
+  const {id} = plantRows[0] || {};
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
 
@@ -42,9 +45,11 @@ const ProductDialog = ({
   }, [open, product]);
 
   const handleChange = (key, value) => {
+    const bdsRate = key === "rateWithoutBds" ? Number(value) - (Number(value) * 0.0125) : 0;
     setForm((prev) => ({
       ...prev,
       [key]: value,
+      ...(key === "rateWithoutBds" && { rate: bdsRate.toFixed(3) }),
     }));
 
     setErrors((prev) => ({
@@ -53,26 +58,24 @@ const ProductDialog = ({
     }));
   };
 
+
+  const isEmpty = (value) => value === "" || value == null;
+
   const validateForm = () => {
     const newErrors = {};
 
-    PRODUCT_FIELDS.forEach((field) => {
-      const value = form[field.key];
-
+    PRODUCT_FIELDS.forEach(({ key, label, required }) => {
       if (
-        field.required && form.code !== "ROLLER" &&
-        (value === "" || value === null || value === undefined)
+        required &&
+        form.code !== "ROLLER" &&
+        isEmpty(form[key])
       ) {
-        newErrors[field.key] = `${field.label} is required`;
+        newErrors[key] = `${label} is required`;
       }
     });
 
     if (form.code === "ROLLER") {
-      if (
-        form.size === "" ||
-        form.size === null ||
-        form.size === undefined
-      ) {
+      if (isEmpty(form.size)) {
         newErrors.size = "Size is required";
       }
 
@@ -81,12 +84,7 @@ const ProductDialog = ({
       }
     }
 
-    if (
-      form.rate !== "" &&
-      form.rate !== null &&
-      form.rate !== undefined &&
-      Number(form.rate) < 0
-    ) {
+    if (!isEmpty(form.rate) && Number(form.rate) < 0) {
       newErrors.rate = "Rate cannot be negative";
     }
 
@@ -96,28 +94,25 @@ const ProductDialog = ({
   };
 
   const handleSubmit = () => {
-    const isValid = validateForm();
+    if (!validateForm()) return;
 
-    if (!isValid) return;
-
-    const payload = {
+    onSubmit({
       ...form,
-      size:
-        form.size !== "" &&
-          form.size !== null &&
-          form.size !== undefined
-          ? Number(form.size)
-          : null,
-      rate:
-        form.rate !== "" &&
-          form.rate !== null &&
-          form.rate !== undefined
-          ? String(form.rate)
-          : "",
-    };
-
-    onSubmit(payload);
+      size: isEmpty(form.size) ? null : Number(form.size),
+      rate: isEmpty(form.rate) ? "" : String(form.rate),
+    });
   };
+
+  const bdsCheck = () => {
+
+      if (id === "69f086310d14c6ff9efc4411") {
+        return true;
+      } else {
+        return false;
+      }
+
+    }
+
 
   return (
     <Dialog
@@ -155,50 +150,57 @@ const ProductDialog = ({
         }}
       >
         <Grid container spacing={2}>
-          {PRODUCT_FIELDS.filter((field) => !field.condition || field.condition(form))
-          .map((field) => (
-            <Grid
-              key={field.key}
-              size={{
-                xs: 12,
-                sm: field.grid,
-              }}
-            >
-              <TextField
-                fullWidth
-                size="small"
-                label={field.label}
-                type={
-                  field.type === "select"
-                    ? "text"
-                    : field.type
-                }
-                select={field.type === "select"}
-                placeholder={field.placeholder}
-                value={form[field.key] ?? ""}
-                onChange={(event) =>
-                  handleChange(
-                    field.key,
-                    event.target.value
-                  )
-                }
-                multiline={field.multiline || false}
-                minRows={field.rows}
-                error={Boolean(errors[field.key])}
-                helperText={errors[field.key] || ""}
+          {PRODUCT_FIELDS.filter(
+              (field) =>
+                (!field.condition || field.condition(form)) &&
+                (field.key !== "rateWithoutBds" || bdsCheck())
+            )
+            .map((field) => {
+              const gridSize = typeof field.grid === "function" ? field.grid(bdsCheck()) : field.grid ?? 12;
+              return (
+                <Grid
+                key={field.key}
+                size={{
+                  xs: 12,
+                  sm: gridSize,
+                }}
               >
-                {field.type === "select" &&
-                  field.options?.map((option) => (
-                    <MenuItem
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
-            </Grid>
-          ))}
+                <TextField
+                  fullWidth
+                  size="small"
+                  label={field.label}
+                  type={
+                    field.type === "select"
+                      ? "text"
+                      : field.type
+                  }
+                  select={field.type === "select"}
+                  placeholder={field.placeholder}
+                  value={form[field.key] ?? ""}
+                  onChange={(event) =>
+                    handleChange(
+                      field.key,
+                      event.target.value
+                    )
+                  }
+                  multiline={field.multiline || false}
+                  minRows={field.rows}
+                  error={Boolean(errors[field.key])}
+                  helperText={errors[field.key] || ""}
+                >
+                  {field.type === "select" &&
+                    field.options?.map((option) => (
+                      <MenuItem
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+              )
+            })}
         </Grid>
       </DialogContent>
 
@@ -214,12 +216,14 @@ const ProductDialog = ({
         <Button
           variant="outlined"
           onClick={onClose}
+          className="outlinedCustomBtn"
+
         >
           Cancel
         </Button>
 
         <Button
-          variant="contained"
+          className="customBtn"
           onClick={handleSubmit}
         >
           {isEdit

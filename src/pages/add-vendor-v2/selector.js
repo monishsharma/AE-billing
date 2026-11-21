@@ -1,11 +1,3 @@
-import TextField from '@mui/material/TextField';
-import { Select } from '@mui/material';
-import { COMPANY_TYPE, orderTypeOptions } from '../../constants/app-constant';
-
-// Define the INPUTS array with each field's configuration
-
-
-
 
 export const createInitialValueValidation = () => {
     return intialState.reduce((acc, item) => {

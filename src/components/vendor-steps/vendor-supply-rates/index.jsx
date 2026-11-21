@@ -171,14 +171,15 @@ const VendorSupplyRates = ({
 
   return (
     <>
-      <Box mt={2}>
+      <Box mt={2} sx={{ height: 450 }}>
         <Paper
-          elevation={0}
+          elevation={1}
           sx={{
             border: "1px solid",
             borderColor: "divider",
             borderRadius: 3,
             overflow: "hidden",
+            height: 425,
           }}
         >
           <Box
@@ -234,7 +235,6 @@ const VendorSupplyRates = ({
           <TableContainer
             sx={{
               px: 1,
-              py: 2,
               maxHeight: 300,
             }}
           >
@@ -283,37 +283,20 @@ const VendorSupplyRates = ({
 
                     return (
                       <TableRow
-                        key={
-                          product._id ||
-                          rowIndex
-                        }
+                        key={product._id || rowIndex}
                         hover
                       >
-                        {COLUMNS.map(
-                          (column) => {
-                            const value =
-                              product[
-                                column
-                                  .key
-                              ];
-
+                        {
+                          COLUMNS.map((column) => {
+                            const value = product[column.key];
                             return (
                               <TableCell
-                                key={
-                                  column.key
-                                }
-                                align={
-                                  column.align ||
-                                  "left"
-                                }
+                                key={column.key}
+                                align={column.align || "left"}
                               >
-                                {column.render
-                                  ? column.render(
-                                      value,
-                                      product
-                                    )
-                                  : value ??
-                                    "-"}
+                                {
+                                  column.render ? column.render(value,product) : value ?? "-"
+                                }
                               </TableCell>
                             );
                           }
@@ -322,12 +305,7 @@ const VendorSupplyRates = ({
                         <TableCell align="center">
                           <IconButton
                             size="small"
-                            onClick={() =>
-                              handleEdit(
-                                product,
-                                rowIndex
-                              )
-                            }
+                            onClick={() => handleEdit(product,rowIndex)}
                           >
                             <EditOutlinedIcon fontSize="small" />
                           </IconButton>
@@ -335,11 +313,7 @@ const VendorSupplyRates = ({
                           <IconButton
                             size="small"
                             color="error"
-                            onClick={() =>
-                              deleteRow({
-                                rowIndex,
-                              })
-                            }
+                            onClick={() => deleteRow({ rowIndex })}
                           >
                             <DeleteOutlineIcon fontSize="small" />
                           </IconButton>
@@ -351,15 +325,11 @@ const VendorSupplyRates = ({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={
-                      COLUMNS.length +
-                      1
-                    }
+                    colSpan={COLUMNS.length + 1}
                     align="center"
                     sx={{
                       py: 6,
-                      color:
-                        "text.secondary",
+                      color: "text.secondary",
                     }}
                   >
                     No supply rates
@@ -373,7 +343,7 @@ const VendorSupplyRates = ({
         </Paper>
       </Box>
 
-      <Box sx={{ mt: 4 }}>
+      <Box>
         <StepperButton
           steps={steps}
           index={index}
@@ -389,6 +359,7 @@ const VendorSupplyRates = ({
         product={productModal.product}
         onClose={handleCloseProductModal}
         onSubmit={handleProductSubmit}
+        vendorForm={vendorForm}
       />
     </>
   );

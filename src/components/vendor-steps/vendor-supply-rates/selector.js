@@ -9,14 +9,23 @@ export const COLUMNS = [
   {
     key: "description",
     label: "Description",
-    minWidth: 320,
+    width: 250,
   },
   {
     key: "code",
     label: "Type",
     width: 110,
   },
-
+  {
+    key: "rateWithoutBds",
+    label: "Without BDS",
+    align: "left",
+    width: 120,
+    render: (value) =>
+      value
+        ? `₹${Number(value).toLocaleString("en-IN")}`
+        : "-",
+  },
   {
     key: "rate",
     label: "Rate",
@@ -156,11 +165,21 @@ export const PRODUCT_FIELDS = [
   },
 
   {
+    key: "rateWithoutBds",
+    label: "Rate Without BDS",
+    type: "number",
+    placeholder: "0.00",
+    grid: (checkState) => checkState ? 4 : 6,
+    required: true,
+    condition: (form) => ["", "BAKELITE", "OTHERS", "ROLLER", "FRAME"].includes(form.code),
+  },
+
+  {
     key: "rate",
     label: "Rate",
     type: "number",
     placeholder: "0.00",
-    grid: 6,
+    grid: (checkState) => checkState ? 4 : 6,
     required: true,
   },
 
@@ -169,7 +188,7 @@ export const PRODUCT_FIELDS = [
     label: "Drawing No.",
     type: "text",
     placeholder: "e.g. T59B308HR-2",
-    grid: 6,
+    grid: (checkState) => checkState ? 4 : 6,
   },
 ];
 
