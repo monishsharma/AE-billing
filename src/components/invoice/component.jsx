@@ -42,7 +42,7 @@ const Invoice = ({
     // const [value, setValue] = React.useState(COMPANY_TYPE.ASHOK);
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
-        pageSize: 20,
+        pageSize: 10,
     });
     const [dateValue, setDateValue] = useState(new Date());
     const [btnLoading, setBtnLoading] = useState(false);
