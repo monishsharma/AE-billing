@@ -49,7 +49,7 @@ const ProductDialog = ({
     setForm((prev) => ({
       ...prev,
       [key]: value,
-      ...(key === "rateWithoutBds" && { rate: bdsRate.toFixed(3) }),
+      ...(key === "rateWithoutBds" && { rate: bdsRate.toFixed(4) }),
     }));
 
     setErrors((prev) => ({
